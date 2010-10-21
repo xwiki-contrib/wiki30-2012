@@ -1,0 +1,19 @@
+INSTALL & USE:
+
+Prerequisites: Maven 2.x+, JDK 1.5+
+
+To install and use the real-time editor:
+1) Run the following command: mvn clean package jetty:run-war
+2) Point your browser to http://localhost:8080/xwiki
+3) Login with admin credentials (username: Admin, password: admin)
+4) Go to XWiki Preferences page("Administration"): http://localhost:8080/xwiki/bin/admin/XWiki/XWikiPreferences
+5) Select "Import"
+6) Import the generated ${} XAR file then click "Upload"
+7) Left click on the imported xar file. The archive's content will be displayed in the upper right part. Expand the "XWiki" tree and make sure that all the files within are checked for import (this is the default setting).
+8) Accept default settings then click on the "Import" button
+9) Go to XWiki administration page, select Programming
+http://localhost:8080/xwiki/bin/admin/XWiki/XWikiPreferences?editor=globaladmin&section=Programming,
+then in the "Internationalization Document Bundles " type XWiki.RtI18N then click "Save"
+10) Go to the "Presentation" section from the "Administration": In the "Skin" section enter
+replace the XWiki.DefaultSkin with XWiki.RtSkin value, then "Save" your changes.
+11) To edit a document/page in real-time, select the option "Real Time" located in the "Edit" menu, than start editing.
