@@ -20,3 +20,6 @@ Automatique (INRIA)" (http://score.loria.fr/) and the well known Linux
 distribution editor Mandriva (http://www.mandriva.com).
 
 The current website of the project is https://wiki30.xwikisas.com/
+
+Installation steps:
+to do!
