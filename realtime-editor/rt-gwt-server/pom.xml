@@ -62,7 +62,7 @@
                     </execution>
                 </executions>
             </plugin>
-<!--hmm..-->
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -98,46 +98,14 @@
                 </executions>
             </plugin>
 
-        <!--TODO ??-->
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-remote-resources-plugin</artifactId>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>xwiki-configuration-resources</id>-->
-                        <!--<goals>-->
-                            <!--<goal>process</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<resourceBundles>-->
-                                <!--<resourceBundle>-->
-                                    <!--org.xwiki.platform.tools:xwiki-configuration-resources:1.4.4-->
-                                <!--</resourceBundle>-->
-                            <!--</resourceBundles>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
-
-<!--TODO ??-->
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-assembly-plugin</artifactId>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<phase>package</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>single</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <archiveClasses>true</archiveClasses>
+                    <!--Artifact used for overlaying, not a real web app-->
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    
                 </configuration>
             </plugin>
         </plugins>
