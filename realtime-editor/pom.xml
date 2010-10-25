@@ -27,6 +27,9 @@
         <platform.tool.xar-plugin.version>1.8</platform.tool.xar-plugin.version>
         <xe.version>2.5</xe.version>
         <xwiki.web.version>2.5</xwiki.web.version>
+
+        <gwt.version>2.1-SNAPSHOT</gwt.version>
+        <gwt.compiler.version>1.3-SNAPSHOT</gwt.compiler.version>
     </properties>
 
     <distributionManagement>
@@ -63,6 +66,27 @@
         <module>rt-gwt-server</module>
         <module>rt-application</module>
         <module>rt-distribution</module>
-  </modules>
+    </modules>
 
+    <repositories>
+        <repository>
+            <id>google-maven-snapshot-repository</id>
+            <name>Google Maven Snapshot Repository</name>
+            <url>http://oss.sonatype.org/content/repositories/google-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    
+    <pluginRepositories>
+           <pluginRepository>
+               <id>gwt-maven-plugin snapshots repo</id>
+               <name> GWT Maven plugins Repository</name>
+               <url>http://nexus.codehaus.org/snapshots</url>
+               <snapshots><enabled>true</enabled></snapshots>
+               <releases><enabled>false</enabled></releases>
+           </pluginRepository>
+     </pluginRepositories>
+    
 </project>

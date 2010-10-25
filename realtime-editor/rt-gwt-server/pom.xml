@@ -42,7 +42,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>1.2</version>
+                <version>${gwt.compiler.version}</version>
                 <configuration>
                     <modules>
                         <module>${xre.module}</module>
