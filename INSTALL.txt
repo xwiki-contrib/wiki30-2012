@@ -20,4 +20,8 @@ then in the "Internationalization Document Bundles" section type XWiki.RtI18N th
 10) Select Presentation category from the Administration page, and into the "Skin" section
 replace XWiki.DefaultSkin with XWiki.RtSkin value, then "Save" your changes.
 11) To edit a document/page using real-time editor, select the option "Real Time" located in the "Edit" menu.
+Lets say you create a new "TestPage" in "Sandbox" space then click on "Edit" and select "Real Time" option.
+Thus the url of the page would be: http://localhost:8080/xwiki/bin/edit/Sandbox/TestPage?&editor=rt
 12) To collaboratively edit the same page in real-time, point 2 browser instances with the "Real Time" edit mode to the same wiki page.
+In the second browser for instance use the same url (http://localhost:8080/xwiki/bin/edit/Sandbox/TestPage?&editor=rt)
+then ignore the "Force lock" and start typing. You should see the changes reflected in the other browser.
