@@ -25,8 +25,8 @@
         <!--todo bf: review versions-->
         <platform.tool.xar-handler.version>1.8</platform.tool.xar-handler.version>
         <platform.tool.xar-plugin.version>1.8</platform.tool.xar-plugin.version>
-        <xe.version>2.5-rc-1</xe.version>
-        <xwiki.web.version>2.5-rc-1</xwiki.web.version>
+        <xe.version>2.5</xe.version>
+        <xwiki.web.version>2.5</xwiki.web.version>
     </properties>
 
     <distributionManagement>
