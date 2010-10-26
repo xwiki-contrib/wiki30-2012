@@ -16,16 +16,20 @@ public abstract class Transformation {
                 return handleInsertInsert(m1, m2);
             } else if (m2 instanceof DeleteOperation) {
                 return handleInsertDelete(m1, m2);
-            } else return new NoOperation();
+            } else { //is NoOp
+                return m1;
+            }
 
         } else if (m1 instanceof DeleteOperation) {
             if (m2 instanceof InsertOperation) {
                 return handleDeleteInsert(m1, m2);
             } else if (m2 instanceof DeleteOperation) {
                 return handleDeleteDelete(m1, m2);
-            } else return new NoOperation();
+            } else { // is NoOp
+                return m1;    
+            }
         }
-
+        //NoOp
         return new NoOperation(0);
     }
 
