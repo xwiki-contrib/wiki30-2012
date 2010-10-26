@@ -60,9 +60,6 @@
                         <fileset>
                             <directory>overlays</directory>
                         </fileset>
-                        <fileset>
-                            <directory>database</directory>
-                        </fileset>
                     </filesets>
                 </configuration>
             </plugin>
