@@ -10,7 +10,6 @@ import java.util.Map;
  * Each site has a pair of a client and a server
  */
 public final class ClientServerCorrespondents {
-//    public static Map<Integer, ClientServerPair> correspondents = new HashMap<Integer, ClientServerPair>();
     private Map<Integer, ServerJupiterAlg> correspondents = new HashMap<Integer, ServerJupiterAlg>();
     private static ClientServerCorrespondents instance = new ClientServerCorrespondents();
 

@@ -7,6 +7,10 @@ import com.google.gwt.core.client.EntryPoint;
 
 //TODO multiple carets
 //TODO use log API instead of sout
+
+/**
+ * Expose the "real-time API"
+ */
 public class Rt implements EntryPoint {
 
     public void onModuleLoad() {

@@ -21,11 +21,7 @@ import org.xwiki.gwt.dom.client.JavaScriptObject;
 import org.xwiki.gwt.user.client.Config;
 import org.xwiki.gwt.user.client.internal.DefaultConfig;
 
-/**
- * User: bogdan
- * Date: Aug 27, 2010
- * Time: 5:35:37 PM
- */
+
 public class RtApi {
     public static int siteId = Random.nextInt(100);
     private static final int REFRESH_INTERVAL = 2000;

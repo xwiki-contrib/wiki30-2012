@@ -1,9 +1,7 @@
 package fr.loria.score.jupiter.transform;
 
 /**
- * User: bogdan
- * Date: Aug 31, 2010
- * Time: 4:58:47 PM
+ * Abstract Factory for transformations creation
  */
 
 public class TransformationFactory {
