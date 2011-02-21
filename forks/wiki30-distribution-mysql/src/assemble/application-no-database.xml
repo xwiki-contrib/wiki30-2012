@@ -38,6 +38,9 @@
           <exclude>**/hibernate.cfg.xml</exclude>
           <!-- Exclude forked Wiki3.0 specific components. -->
           <exclude>**/xwiki-plugin-wiki-manager-*.jar</exclude>
+          <!-- Currently disabling core fork since it is up to date with the trunk.
+          <exclude>%regex[.*/xwiki-core-[0-9]+.*jar]</exclude>
+          -->
         </excludes>
       </unpackOptions>
     </dependencySet>
@@ -68,11 +71,20 @@
     <!-- Add forked Wiki3.0 specific components. -->
     <dependencySet>
       <includes>
-        <include>org.xwiki.contrib.wiki30:xwiki-plugin-wiki-manager-wiki30-fork</include>
+        <include>org.xwiki.contrib.wiki30:wiki30-xwiki-plugin-wiki-manager</include>
       </includes>
       <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
       <unpack>false</unpack>
     </dependencySet>
+    <!-- Currently disabling core fork since it is up to date with the trunk.
+    <dependencySet>
+      <includes>
+        <include>org.xwiki.contrib.wiki30:wiki30-xwiki-core</include>
+      </includes>
+      <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
+      <unpack>false</unpack>
+    </dependencySet>
+     -->
   </dependencySets>
   <files>
   	<file>

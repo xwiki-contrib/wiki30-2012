@@ -38,9 +38,16 @@
   <dependencies>
     <dependency>
       <groupId>org.xwiki.contrib.wiki30</groupId>
-      <artifactId>xwiki-plugin-wiki-manager-wiki30-fork</artifactId>
+      <artifactId>wiki30-xwiki-plugin-wiki-manager</artifactId>
       <version>1.25-SNAPSHOT</version>
     </dependency>
+    <!-- Currently disabling core fork since it is up to date with the trunk.
+    <dependency>
+      <groupId>org.xwiki.contrib.wiki30</groupId>
+      <artifactId>wiki30-xwiki-core</artifactId>
+      <version>3.0-SNAPSHOT</version>
+    </dependency>
+    -->
   </dependencies>
   <build>
     <plugins>
