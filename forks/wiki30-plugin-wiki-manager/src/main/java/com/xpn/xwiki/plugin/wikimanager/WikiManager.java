@@ -62,12 +62,6 @@ public final class WikiManager
      */
     protected static final Log LOG = LogFactory.getLog(WikiManager.class);
 
-    /**
-     * Testing.
-     */
-    private static final String WIKI_30_SAYS_HELLO =
-        "\n\n\n\n\n\n#############\nHello Wiki3.0!\n#############\n\n\n\n\n\n\nP.S.: Don't panic :)";
-
     /** Admin right. */
     private static final String RIGHT_ADMIN = "admin";
 
@@ -520,8 +514,6 @@ public final class WikiManager
     public XWikiServer createNewWiki(XWikiServer userWikiSuperDoc, boolean failOnExist, String templateWikiName,
         String packageName, String comment, XWikiContext context) throws XWikiException
     {
-        LOG.fatal(WIKI_30_SAYS_HELLO);
-
         XWikiPluginMessageTool msg = getMessageTool(context);
 
         XWiki xwiki = context.getWiki();
@@ -817,7 +809,6 @@ public final class WikiManager
      */
     public List<XWikiServer> getWikiAliasList(XWikiContext context) throws XWikiException
     {
-        LOG.fatal(WIKI_30_SAYS_HELLO);
         return XWikiServerClass.getInstance(context).searchXObjectDocuments(context);
     }
 
@@ -882,7 +873,6 @@ public final class WikiManager
      */
     public List<XWikiServer> getWikiTemplateAliasList(XWikiContext context) throws XWikiException
     {
-        LOG.fatal(WIKI_30_SAYS_HELLO);
         return XWikiServerClass.getInstance(context).searchXObjectDocumentsByField(
             XWikiServerClass.FIELD_ISWIKITEMPLATE, 1, "IntegerProperty", context);
     }

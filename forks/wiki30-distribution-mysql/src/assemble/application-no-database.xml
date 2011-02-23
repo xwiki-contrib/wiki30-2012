@@ -36,6 +36,8 @@
       <unpackOptions>
         <excludes>
           <exclude>**/hibernate.cfg.xml</exclude>
+          <!-- Exclude default xwiki.cfg that uses domain based wikis. To be replaced with one that uses path based wikis. -->
+          <exclude>**/xwiki.cfg</exclude>
           <!-- Exclude forked Wiki3.0 specific components. -->
           <exclude>**/xwiki-plugin-wiki-manager-*.jar</exclude>
           <!-- Currently disabling core fork since it is up to date with the trunk.
@@ -89,6 +91,11 @@
   <files>
   	<file>
       <source>${basedir}/target/maven-shared-archive-resources/hibernate.cfg.xml</source>
+      <outputDirectory>webapps/xwiki/WEB-INF</outputDirectory>
+    </file>
+    <!-- Replacement xwiki.cfg that is configured to use path based wikis instead of domain based wikis. For easier testing purposes. -->
+    <file>
+      <source>${basedir}/src/main/resources/xwiki.cfg</source>
       <outputDirectory>webapps/xwiki/WEB-INF</outputDirectory>
     </file>
   </files>

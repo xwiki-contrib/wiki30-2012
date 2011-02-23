@@ -37,6 +37,8 @@
   <description>Manages creation and installation of children Wikis</description>
   <properties>
     <platform.plugin.wikimanager.version>${project.version}</platform.plugin.wikimanager.version>
+    <platform.tool.xmldoc.version>1.5-SNAPSHOT</platform.tool.xmldoc.version>
+    <product.enterprise.version>3.0-SNAPSHOT</product.enterprise.version>
   </properties>
   <dependencies>
     <dependency>
@@ -66,7 +68,54 @@
   </issueManagement>
   <build>
     <plugins>
-      <!-- For applicatiosn based on ApplicationManager, ensure application version in applications descriptors page is correct -->
+      <!-- Step 1: Download workspace template xar -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- <phase>generate-sources</phase> -->
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.xwiki.contrib.wiki30</groupId>
+                  <artifactId>wiki30-workspace-template</artifactId>
+                  <version>${product.enterprise.version}</version>
+                  <type>xar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/template</outputDirectory>
+                  <destFileName>workspace-template.xar</destFileName>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <!-- Step 2: Attach template xar to WikiManager install page -->
+      <plugin>
+        <groupId>org.xwiki.platform.tools</groupId>
+        <artifactId>xwiki-xmldoc-update-plugin</artifactId>
+        <version>${platform.tool.xmldoc.version}</version>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <id>attach-template-xar</id>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${project.build.directory}/template/workspace-template.xar</file>
+              <sourceDocument>${basedir}/src/main/resources/WikiManager/Install.xml</sourceDocument>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <!-- For applications based on ApplicationManager, ensure application version in applications descriptors page is correct -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>xml-maven-plugin</artifactId>
