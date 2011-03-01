@@ -36,11 +36,13 @@
   <packaging>pom</packaging>
   <description>Wiki30 - Distribution - MySQL</description>
   <dependencies>
+    <!-- Currently disabling wikimanager fork since it is up to date with the trunk.
     <dependency>
       <groupId>org.xwiki.contrib.wiki30</groupId>
       <artifactId>wiki30-xwiki-plugin-wiki-manager</artifactId>
       <version>1.25-SNAPSHOT</version>
     </dependency>
+    -->
     <!-- Currently disabling core fork since it is up to date with the trunk.
     <dependency>
       <groupId>org.xwiki.contrib.wiki30</groupId>
@@ -48,6 +50,11 @@
       <version>3.0-SNAPSHOT</version>
     </dependency>
     -->
+  	<dependency>
+      <groupId>org.xwiki.contrib.wiki30</groupId>
+  	  <artifactId>wiki30-components-workspace-manager</artifactId>
+  	  <version>1.0-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
   <build>
     <plugins>

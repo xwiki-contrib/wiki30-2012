@@ -39,7 +39,9 @@
           <!-- Exclude default xwiki.cfg that uses domain based wikis. To be replaced with one that uses path based wikis. -->
           <exclude>**/xwiki.cfg</exclude>
           <!-- Exclude forked Wiki3.0 specific components. -->
+          <!-- Currently disabling wikimanager fork since it is up to date with the trunk.
           <exclude>**/xwiki-plugin-wiki-manager-*.jar</exclude>
+          -->
           <!-- Currently disabling core fork since it is up to date with the trunk.
           <exclude>%regex[.*/xwiki-core-[0-9]+.*jar]</exclude>
           -->
@@ -71,6 +73,7 @@
       <unpack>false</unpack>
     </dependencySet>
     <!-- Add forked Wiki3.0 specific components. -->
+    <!-- Currently disabling core fork since it is up to date with the trunk.
     <dependencySet>
       <includes>
         <include>org.xwiki.contrib.wiki30:wiki30-xwiki-plugin-wiki-manager</include>
@@ -78,6 +81,7 @@
       <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
       <unpack>false</unpack>
     </dependencySet>
+    -->
     <!-- Currently disabling core fork since it is up to date with the trunk.
     <dependencySet>
       <includes>
@@ -86,7 +90,15 @@
       <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
       <unpack>false</unpack>
     </dependencySet>
-     -->
+    -->
+    <!-- Add Wiki3.0 specific components. -->
+    <dependencySet>
+      <includes>
+        <include>org.xwiki.contrib.wiki30:wiki30-components-workspace-manager</include>
+      </includes>
+      <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
+      <unpack>false</unpack>
+    </dependencySet>
   </dependencySets>
   <files>
   	<file>
