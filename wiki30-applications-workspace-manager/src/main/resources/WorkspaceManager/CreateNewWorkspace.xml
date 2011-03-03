@@ -5,21 +5,21 @@
 <language></language>
 <defaultLanguage>en</defaultLanguage>
 <translation>0</translation>
-<parent>WikiManager.WebHome</parent>
+<parent>WorkspaceManager.WebHome</parent>
 <creator>XWiki.Admin</creator>
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1298924963000</creationDate>
-<date>1298932214000</date>
-<contentUpdateDate>1298932214000</contentUpdateDate>
-<version>13.12</version>
-<title>$msg.get("wikimanager.createwiki")</title>
+<creationDate>1293832800000</creationDate>
+<date>1293832800000</date>
+<contentUpdateDate>1293832800000</contentUpdateDate>
+<version>1.1</version>
+<title>$msg.get("workspacemanager.createworkspace")</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
 <comment></comment>
-<minorEdit>true</minorEdit>
+<minorEdit>false</minorEdit>
 <syntaxId>xwiki/1.0</syntaxId>
 <hidden>false</hidden>
 <content>############################################################################################
@@ -34,10 +34,23 @@
 ##   1   : Step by step based on javascript
 ##
 ############################################################################################
+## TRANLSATIONS AUTOMATIC REGISTRATION
+#set ($WORKSPACE_MANAGER_TRANSLATIONS_PAGE = 'WorkspaceManager.Translations')
+#set ($xwikiPreferencesDocumentReference = $services.model.createDocumentReference('xwiki', 'XWiki', 'XWikiPreferences'))
+#set ($xwikiPreferencesDocument = $xwiki.getDocument($xwikiPreferencesDocumentReference))
+#set ($documentBundlesValue = $xwikiPreferencesDocument.documentBundles)
+#if (!$documentBundlesValue.contains($WORKSPACE_MANAGER_TRANSLATIONS_PAGE))
+  #set ($documentBundlesValue = "${WORKSPACE_MANAGER_TRANSLATIONS_PAGE},${documentBundlesValue}")
+  #set ($temp = $xwikiPreferencesDocument.set('documentBundles', $documentBundlesValue))
+  ## Save the preferences page using programming rights of the current document.
+  #set ($temp = $xwiki.getXWiki().saveDocument($xwikiPreferencesDocument.document, "Added $WORKSPACE_MANAGER_TRANSLATIONS_PAGE to the list of document bundles.", true, $xcontext.context))
+  #info($msg.get("workspacemanager.install.translations"))
+#end
+############################################################################################
 ## PLUGINS DEPENDANCIES
 #set ($WorkspaceManager = $services.workspaceManager)
 #if (!$WorkspaceManager)
-  #error("Workspace manager component is not installed.")
+  #error($msg.get("workspacemanager.pluginnotenabled"))
 #end
 #set ($WikiManager = $xwiki.wikimanager)
 #if (!$WikiManager)
@@ -110,7 +123,7 @@
 ############################################################################################
 ## TOOLS
 #set ($Exception = $WikiManager.DefaultException)
-#set ($ALIASSUFFIX = ".localdomain.com")
+#set ($ALIASSUFFIX = "")
 #set ($WSTEPID_INTRO = 0)    ## Wiki creation introduction
 #set ($WSTEPNAME_INTRO = "wstep_intro")
 #set ($WSTEPID_WIKINAME = 1) ## Wiki name
@@ -123,12 +136,12 @@
 #set ($WSTEPNAME_SUMMARY = "wstep_summary")
 #set ($WSTEPLIST = [$WSTEPNAME_INTRO, $WSTEPNAME_WIKINAME, $WSTEPNAME_WIKIDESC, $WSTEPNAME_USERS, $WSTEPNAME_SUMMARY])
 #set ($ISWIKINAMEAVAILABLE = $xwiki.getDocument("WikiCode.IsWikiOrDatabaseAvailableService").URL)
-#set ($MSG_ERROR_WIKIALREADYEXISTS = "&lt;span class='errormessage'&gt;&lt;span class='messagetype'&gt;$msg.get('error'): &lt;/span&gt;$msg.get('wikimanager.wikiname.error.wikialreadyexists')&lt;/span&gt;")
+#set ($MSG_ERROR_WIKIALREADYEXISTS = "&lt;span class='errormessage'&gt;&lt;span class='messagetype'&gt;$msg.get('error'): &lt;/span&gt;$msg.get('workspacemanager.wikiname.error.wikialreadyexists')&lt;/span&gt;")
 #set ($MSG_WARNING_DATABASEALREADYEXISTS = "&lt;span class='warningmessage'&gt;&lt;span class='messagetype'&gt;$msg.get('warning'): &lt;/span&gt;$msg.get('wikimanager.wikiname.error.databasealreadyexists')&lt;/span&gt;")
 #set ($MSG_ERROR_DATABASEALREADYEXISTS = "&lt;span class='errormessage'&gt;&lt;span class='messagetype'&gt;$msg.get('error'): &lt;/span&gt;$msg.get('wikimanager.wikiname.error.databasealreadyexists')&lt;/span&gt;")
 #set ($MSG_ERROR_WIKINAMEALREADYUSED = "&lt;span class='errormessage'&gt;&lt;span class='messagetype'&gt;$msg.get('error'): &lt;/span&gt;$msg.get('wikimanager.wikiname.error.alreadyused')&lt;/span&gt;")
 #set ($MSG_ERROR_WIKINAMEEMPTY = "&lt;span class='errormessage'&gt;&lt;span class='messagetype'&gt;$msg.get('error'): &lt;/span&gt;$msg.get('wikimanager.wikiname.error.empty')&lt;/span&gt;")
-#set ($MSG_INFO_WIKINAMEVALID = "&lt;span class='infomessage'&gt;&lt;span class='messagetype'&gt;$msg.get('info'): &lt;/span&gt;$msg.get('wikimanager.wikiname.info.valid')&lt;/span&gt;")
+#set ($MSG_INFO_WIKINAMEVALID = "&lt;span class='infomessage'&gt;&lt;span class='messagetype'&gt;$msg.get('info'): &lt;/span&gt;$msg.get('workspacemanager.wikiname.info.valid')&lt;/span&gt;")
 ##
 ############################################################################################
 ## REQUEST PARAMETERS
@@ -156,7 +169,11 @@
   $wikidocument.set("owner", "${xcontext.mainWikiName}:${wikidocument.owner}")
 #end
 #if ($wikidocument.server == "" &amp;&amp; $wikiname &amp;&amp; $wikiname != "")
-  $wikidocument.set("server", "${wikiname}.${ALIASSUFFIX}")
+  #if ("$ALIASSUFFIX" != "")
+    $wikidocument.set("server", "${wikiname}.${ALIASSUFFIX}")
+  #else
+    $wikidocument.set("server", "${wikiname}")
+  #end
 #end
 ##
 #set($readeruserlist = [])
@@ -179,7 +196,7 @@
 ##
 #############################################################################
 ##
-1 $msg.get("wikimanager.createwiki")
+1 $msg.get("workspacemanager.createworkspace")
 #if ($wstepbystep)
   [$msg.get("wikimanager.action.createwiki.nonstepbystep")&gt;CreateNewWorkspace#if($documentation)?doc=1#end]
 #else
@@ -208,12 +225,12 @@
     ##
     #set ($ok = $xcontext.setDatabase($currentwiki))
     ##
-    #info($msg.get("wikimanager.successcreatewiki", [$wikiname, $wikidocument.getHomePageUrl()]))
+    #info($msg.get("workspacemanager.successcreatewiki", [$wikiname, $wikidocument.getHomePageUrl()]))
   #else
     #if ($result == $Exception.ERROR_WM_WIKIALREADYEXISTS)
-      #error($msg.get("wikimanager.errorcreatewiki.ERROR_WM_WIKIALREADYEXISTS", [$wikiname, $result]))
+      #error($msg.get("workspacemanager.errorcreatewiki.ERROR_WM_WIKIALREADYEXISTS", [$wikiname, $result]))
     #else
-      #error($msg.get("wikimanager.errorcreatewiki", [$wikiname, $xcontext.lastexception]))
+      #error($msg.get("workspacemanager.errorcreatewiki", [$wikiname, $xcontext.lastexception]))
     #end
   #end
 #end
@@ -234,7 +251,7 @@
  {
    var str = "";
 
-   if (users.value != "" || users.value != "") {
+   if (users.value != "" || groups.value != "") {
      str = "&lt;ul class=\"star\"&gt;";
 
      if (users.value != "")
@@ -411,19 +428,19 @@
 &lt;form method="get" action="" id="wikicreationform"&gt;
   #if ($wstepbystep)
   &lt;div id="$WSTEPNAME_INTRO"&gt;
-    ##1.1 $msg.get("wikimanager.title.createwiki.intro")
-    &lt;p&gt;$msg.get("wikimanager.doc.createwiki.intro")&lt;/p&gt;
+    ##1.1 $msg.get("workspacemanager.title.createwiki.intro")
+    &lt;p&gt;$msg.get("workspacemanager.doc.createwiki.intro")&lt;/p&gt;
   &lt;/div&gt;
   #end
   ##
   #############################################################################
   ##
   &lt;div id="$WSTEPNAME_WIKINAME"&gt;
-    1.1 $msg.get("wikimanager.title.createwiki.wikiname")
+    1.1 $msg.get("workspacemanager.title.createwiki.wikiname")
 
     &lt;dl&gt;
-      &lt;dt&gt;&lt;label  for="wikiname"&gt;$msg.get("wikimanager.prop.wiki.wikiname")&lt;/label&gt;&lt;/dt&gt;
-      #if ($documentation) &lt;dd&gt;$msg.get("wikimanager.doc.createwiki.wikiname")&lt;/dd&gt; #end
+      &lt;dt&gt;&lt;label  for="wikiname"&gt;$msg.get("workspacemanager.prop.wiki.wikiname")&lt;/label&gt;&lt;/dt&gt;
+      #if ($documentation) &lt;dd&gt;$msg.get("workspacemanager.doc.createwiki.wikiname")&lt;/dd&gt; #end
       &lt;dd&gt;
         &lt;input size="40" id="wikiname" name="wikiname" type="text" onchange="wikiNameChanged();" onkeyup="wikiNameChanged();" /&gt;
         &lt;span id="wikinamevalidation"&gt;&lt;/span&gt;
@@ -435,30 +452,31 @@
   #############################################################################
   ##
   &lt;div id="$WSTEPNAME_WIKIDESC"&gt;
-    1.1 $msg.get("wikimanager.title.createwiki.desc")
-    #if ($documentation) $msg.get("wikimanager.doc.createwiki.desc") #end
+    1.1 $msg.get("workspacemanager.title.createwiki.desc")
+    #if ($documentation) $msg.get("workspacemanager.doc.createwiki.desc") #end
 
     &lt;dl&gt;
       &lt;dt&gt;&lt;label for="XWiki.XWikiServerClass_0_wikiprettyname"&gt;$msg.get("wikimanager.prop.wiki.wikiprettyname")&lt;/label&gt;&lt;/dt&gt;
-      #if ($documentation) &lt;dd&gt;$msg.get("wikimanager.doc.createwiki.desc.wikiprettyname")&lt;/dd&gt; #end
+      #if ($documentation) &lt;dd&gt;$msg.get("workspacemanager.doc.createwiki.desc.wikiprettyname")&lt;/dd&gt; #end
       &lt;dd&gt;&lt;input size="40" id="XWiki.XWikiServerClass_0_wikiprettyname" name="XWiki.XWikiServerClass_0_wikiprettyname" type="text" onchange="prettyNameChanged();" /&gt;&lt;/dd&gt;
     &lt;/dl&gt;
 
     &lt;dl&gt;
       &lt;dt&gt;&lt;label for="XWiki.XWikiServerClass_0_description"&gt;$msg.get("wikimanager.prop.wiki.description")&lt;/label&gt;&lt;/dt&gt;
-      #if ($documentation) &lt;td&gt;$msg.get("wikimanager.doc.createwiki.desc.description")&lt;/td&gt; #end
+      #if ($documentation) &lt;td&gt;$msg.get("workspacemanager.doc.createwiki.desc.description")&lt;/td&gt; #end
       &lt;dd&gt;$wikidocument.display("description", "edit")&lt;/dd&gt;
     &lt;/dl&gt;
 
     &lt;dl&gt;
       &lt;dt&gt;&lt;label for="XWiki.XWikiServerClass_0_server"&gt;$msg.get("wikimanager.prop.wiki.server")&lt;/label&gt;&lt;/dt&gt;
-      #if ($documentation) &lt;dd&gt;$msg.get("wikimanager.doc.createwiki.desc.server.creation", [$ALIASSUFFIX])&lt;/dd&gt; #end
+      #if ($documentation) &lt;dd&gt;$msg.get("workspacemanager.doc.createwiki.desc.server.creation", ["#if($ALIASSUFFIX != '')$ALIASSUFFIX#{else}NONE#end"])&lt;/dd&gt; #end
       &lt;dd&gt;&lt;input size="40" id="XWiki.XWikiServerClass_0_server" name="XWiki.XWikiServerClass_0_server" type="text" onchange="domainNameChanged();" /&gt;&lt;/dd&gt;
     &lt;/dl&gt;
 
+    ## TODO: Make this section available only to admins, so that only admins can create workspaces in the name of other users.
     &lt;dl&gt;
       &lt;dt&gt;&lt;label for="XWiki.XWikiServerClass_0_owner"&gt;$msg.get("wikimanager.prop.wiki.owner")&lt;/label&gt;&lt;/dt&gt;
-      #if ($documentation) &lt;dd&gt;$msg.get("wikimanager.doc.createwiki.desc.owner")&lt;/dd&gt; #end
+      #if ($documentation) &lt;dd&gt;$msg.get("workspacemanager.doc.createwiki.desc.owner")&lt;/dd&gt; #end
       &lt;dd&gt;$wikidocument.display("owner", "edit")&lt;/dd&gt;
     &lt;/dl&gt;
   &lt;/div&gt;
@@ -469,8 +487,8 @@
   #set ($users = $rightsmanager.usersApi.allGlobalUsersNames)
   #set ($groups = $rightsmanager.groupsApi.allGlobalGroupsNames)
   &lt;div id="$WSTEPNAME_USERS"&gt;
-    1.1 $msg.get("wikimanager.title.createwiki.members")
-    #if ($documentation) $msg.get("wikimanager.doc.createwiki.members") #end
+    1.1 $msg.get("workspacemanager.title.createwiki.members")
+    #if ($documentation) $msg.get("workspacemanager.doc.createwiki.members") #end
 
     &lt;dl&gt;
       &lt;dt&gt;&lt;label for="readersusers"&gt;$msg.get("wikimanager.readers")&lt;/label&gt;&lt;/dt&gt;
@@ -496,11 +514,11 @@
   #if ($wstepbystep)
   &lt;div id="$WSTEPNAME_SUMMARY"&gt;
     1.1 $msg.get("wikimanager.title.createwiki.summary")
-    #if ($documentation) $msg.get("wikimanager.doc.createwiki.summary") #end
+    #if ($documentation) $msg.get("workspacemanager.doc.createwiki.summary") #end
     &lt;table class="wiki-table" border="0" cellpadding="0" cellspacing="0"&gt;
       &lt;tbody&gt;
         &lt;tr&gt;&lt;th&gt;Properties&lt;/th&gt;&lt;th&gt;Values&lt;/th&gt;&lt;/tr&gt;
-        &lt;tr class="table-odd"&gt;&lt;td&gt;*$msg.get("wikimanager.prop.wiki.wikiname")*&lt;/td&gt;&lt;td id="summarywikiname"&gt;---&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr class="table-odd"&gt;&lt;td&gt;*$msg.get("workspacemanager.prop.wiki.wikiname")*&lt;/td&gt;&lt;td id="summarywikiname"&gt;---&lt;/td&gt;&lt;/tr&gt;
         &lt;tr class="table-odd"&gt;&lt;td&gt;*$msg.get("wikimanager.prop.wiki.wikiprettyname")*&lt;/td&gt;&lt;td id="summarywikiprettyname"&gt;---&lt;/td&gt;&lt;/tr&gt;
         &lt;tr class="table-odd"&gt;&lt;td&gt;*$msg.get("wikimanager.prop.wiki.description")*&lt;/td&gt;&lt;td id="summarywikidesc"&gt;---&lt;/td&gt;&lt;/tr&gt;
         &lt;tr class="table-even"&gt;&lt;td&gt;*$msg.get("wikimanager.prop.wiki.server")*&lt;/td&gt;&lt;td id="summarywikidomain"&gt;---&lt;/td&gt;&lt;/tr&gt;
