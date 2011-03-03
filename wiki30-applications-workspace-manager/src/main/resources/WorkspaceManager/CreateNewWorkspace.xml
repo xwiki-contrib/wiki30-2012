@@ -149,8 +149,11 @@
 #end
 ##
 #set ($wikiname = $request.getParameter("wikiname"))
+## Make sure to prefix the owner user with the wiki name.
 #if ($wikidocument.owner == "")
-  $wikidocument.set("owner", $xcontext.user)
+  $wikidocument.set("owner", "${xcontext.mainWikiName}:${xcontext.user}")
+#elseif (!($wikidocument.owner.startsWith("${xcontext.mainWikiName}:")))
+  $wikidocument.set("owner", "${xcontext.mainWikiName}:${wikidocument.owner}")
 #end
 #if ($wikidocument.server == "" &amp;&amp; $wikiname &amp;&amp; $wikiname != "")
   $wikidocument.set("server", "${wikiname}.${ALIASSUFFIX}")

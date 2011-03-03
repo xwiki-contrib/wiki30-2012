@@ -213,28 +213,28 @@ public class DefaultWorkspaceManager extends AbstractLogEnabled implements Works
             wikiManagerInternal.createNewWikiFromTemplate(newWikiXObjectDocument, "workspacetemplate", true, comment,
                 deprecatedContext);
 
-        /* Create new group for the workspace and put owner in it. */
-        String mainWikiName = deprecatedContext.getMainXWiki();
-
-        String workspaceGroupName = String.format("WorkspaceGroup%s", workspaceName);
-        DocumentReference workspaceGroupReference = new DocumentReference(mainWikiName, "XWiki", workspaceGroupName);
-        XWikiDocument workspaceGroupDocument = new XWikiDocument(workspaceGroupReference);
+        /* Use the XWiki.XWikiAllGroup of the new wiki and add the owner as a member. */
+        String workspaceGroupName = "XWikiAllGroup";
+        DocumentReference workspaceGroupReference = new DocumentReference(workspaceName, "XWiki", workspaceGroupName);
         String workspaceOwner = newWikiXObjectDocument.getOwner();
 
         String currentWikiName = deprecatedContext.getDatabase();
         try {
-            deprecatedContext.setDatabase(mainWikiName);
+            deprecatedContext.setDatabase(workspaceName);
 
             XWiki wiki = deprecatedContext.getWiki();
 
+            XWikiDocument workspaceGroupDocument = wiki.getDocument(workspaceGroupReference, deprecatedContext);
+
             DocumentReference groupClassReference = wiki.getGroupClass(deprecatedContext).getDocumentReference();
+            int workspaceGroupObjectNr = workspaceGroupDocument.createXObject(groupClassReference, deprecatedContext);
             BaseObject workspaceGroupObject =
-                workspaceGroupDocument.getXObject(groupClassReference, true, deprecatedContext);
+                workspaceGroupDocument.getXObject(groupClassReference, workspaceGroupObjectNr);
             workspaceGroupObject.setStringValue("member", workspaceOwner);
 
             wiki.saveDocument(workspaceGroupDocument, comment, deprecatedContext);
         } catch (Exception e) {
-            getLogger().error("Failed to create workspace global group.", e);
+            getLogger().error("Failed to add owner to workspace group.", e);
         } finally {
             deprecatedContext.setDatabase(currentWikiName);
         }
