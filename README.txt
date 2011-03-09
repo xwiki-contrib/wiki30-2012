@@ -21,4 +21,4 @@ distribution editor Mandriva (http://www.mandriva.com).
 
 The current website of the project is https://wiki30.xwikisas.com/
 
-NB: Please refer to INSTALL.txt file for installing, configuring and using the real-time editor 
+NB: Please refer to INSTALL.txt file for installing, configuring and using the real-time editor !
