@@ -63,6 +63,11 @@
   #error($msg.get("wikimanager.notinvirtualmode"))
 #end
 ############################################################################################
+## WORKSPACE TEMPLATE DEPENDENCY
+##
+## FIXME: Check that the 'workspacetemplate' wiki template is installed and available.
+##
+############################################################################################
 ## MACROS
 #macro(getRequestList $paramlist $paramname)
   #set ($paramtable = [])
@@ -110,7 +115,7 @@
   #end
   ##
   #if (($users != "") || ($groups != ""))
-    #set ($rightsobj = $prefdoc.newObject("XWiki.XWikiGlobalRights"))
+    #set ($rightsobj = $prefdoc.newObject("${prefdoc.wiki}:XWiki.XWikiGlobalRights"))
     ##
     #set ($ok = $rightsobj.set("users", $users))
     #set ($ok = $rightsobj.set("groups", $groups))
@@ -208,10 +213,7 @@
   ##
   #if ($result == $Exception.ERROR_NOERROR)
     ## Init new wiki global rights
-    #set ($currentwiki = $xcontext.database)
-    #set ($ok = $xcontext.setDatabase($wikidocument.wikiName))
-    ##
-    #set ($prefdoc = $xwiki.getDocument("XWiki.XWikiPreferences"))
+    #set ($prefdoc = $xwiki.getDocument("${wikidocument.wikiName}:XWiki.XWikiPreferences"))
     ##
     #set ($needsave = false)
     ##
@@ -222,8 +224,6 @@
     #if ($needsave)
       $prefdoc.save()
     #end
-    ##
-    #set ($ok = $xcontext.setDatabase($currentwiki))
     ##
     #info($msg.get("workspacemanager.successcreatewiki", [$wikiname, $wikidocument.getHomePageUrl()]))
   #else
@@ -473,12 +473,16 @@
       &lt;dd&gt;&lt;input size="40" id="XWiki.XWikiServerClass_0_server" name="XWiki.XWikiServerClass_0_server" type="text" onchange="domainNameChanged();" /&gt;&lt;/dd&gt;
     &lt;/dl&gt;
 
-    ## TODO: Make this section available only to admins, so that only admins can create workspaces in the name of other users.
+    ## Make this section available only to admins, so that only admins can create workspaces in the name of other users.
+    #if ($hasAdmin)
     &lt;dl&gt;
       &lt;dt&gt;&lt;label for="XWiki.XWikiServerClass_0_owner"&gt;$msg.get("wikimanager.prop.wiki.owner")&lt;/label&gt;&lt;/dt&gt;
       #if ($documentation) &lt;dd&gt;$msg.get("workspacemanager.doc.createwiki.desc.owner")&lt;/dd&gt; #end
       &lt;dd&gt;$wikidocument.display("owner", "edit")&lt;/dd&gt;
     &lt;/dl&gt;
+    #else
+      &lt;input id="XWiki.XWikiServerClass_0_owner" name="XWiki.XWikiServerClass_0_owner" type="hidden" value="${xcontext.mainWikiName}:${xcontext.user}" /&gt;
+    #end
   &lt;/div&gt;
   ##
   #############################################################################

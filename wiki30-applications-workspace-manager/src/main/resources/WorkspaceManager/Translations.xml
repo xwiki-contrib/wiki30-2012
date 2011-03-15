@@ -30,6 +30,18 @@ workspacemanager.createworkspace=Create a new workspace
 workspacemanager.title.createwiki.wikiname=Workspace identifier
 workspacemanager.title.createwiki.desc=Workspace description
 workspacemanager.title.createwiki.members=Initial workspace members
+workspacemanager.title.join=Join Workspace "{0}"
+workspacemanager.title.join.empty=Join Workspace
+workspacemanager.title.leave=Leave Workspace "{0}"
+workspacemanager.title.leave.empty=Leave Workspace
+workspacemanager.browse=Browse Workspaces
+workspacemanager.browse.emptyvalue=N/A
+workspacemanager.browse.wikiprettyname=Name
+workspacemanager.browse.description=Description
+workspacemanager.browse.owner=Owner
+workspacemanager.browse._actions=Actions
+workspacemanager.browse._actions.join=Join
+workspacemanager.browse._actions.leave=Leave
 
 # MESSAGES
 workspacemanager.wikiname.error.wikialreadyexists=A workspace with this identifier already exists
@@ -38,6 +50,7 @@ workspacemanager.successcreatewiki=Your workspace \"{0}\" has been created. You 
 workspacemanager.errorcreatewiki=Workspace \"{0}\" creation failed: {1}.
 workspacemanager.errorcreatewiki.ERROR_WM_WIKIALREADYEXISTS=This workspace \"{0}\" already exist. Please choose another name.
 workspacemanager.install.translations=The translations page has been automatically registered in XWiki's preferences.
+workspacemanager.error.workspacedoesnotexist=Workspace [{0}] does not exist
 
 # PROPERTIES
 workspacemanager.prop.wiki.wikiname=Workspace identifier
