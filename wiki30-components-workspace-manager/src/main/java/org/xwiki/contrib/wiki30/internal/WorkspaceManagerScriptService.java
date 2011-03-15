@@ -19,10 +19,13 @@
  */
 package org.xwiki.contrib.wiki30.internal;
 
+import java.util.List;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.component.logging.AbstractLogEnabled;
 import org.xwiki.context.Execution;
+import org.xwiki.contrib.wiki30.Workspace;
 import org.xwiki.contrib.wiki30.WorkspaceManager;
 import org.xwiki.script.service.ScriptService;
 
@@ -58,39 +61,29 @@ public class WorkspaceManagerScriptService extends AbstractLogEnabled implements
         return workspaceManager;
     }
 
-    /**
-     * @{inheritDoc
-     * @see org.xwiki.contrib.wiki30.WorkspaceManager#canCreateWorkspace(java.lang.String, java.lang.String)
-     */
+    /** @see org.xwiki.contrib.wiki30.WorkspaceManager#canCreateWorkspace(java.lang.String, java.lang.String) */
     public boolean canCreateWorkspace(String userName, String workspaceName)
     {
         return workspaceManager.canCreateWorkspace(userName, workspaceName);
     }
 
-    /**
-     * @{inheritDoc
-     * @see org.xwiki.contrib.wiki30.WorkspaceManager#canEditWorkspace(java.lang.String, java.lang.String)
-     */
+    /** @see org.xwiki.contrib.wiki30.WorkspaceManager#canEditWorkspace(java.lang.String, java.lang.String) */
     public boolean canEditWorkspace(String userName, String workspaceName)
     {
         return workspaceManager.canEditWorkspace(userName, workspaceName);
     }
 
-    /**
-     * @{inheritDoc
-     * @see org.xwiki.contrib.wiki30.WorkspaceManager#canDeleteWorkspace(java.lang.String, java.lang.String)
-     */
+    /** @see org.xwiki.contrib.wiki30.WorkspaceManager#canDeleteWorkspace(java.lang.String, java.lang.String) */
     public boolean canDeleteWorkspace(String userName, String workspaceName)
     {
         return workspaceManager.canDeleteWorkspace(userName, workspaceName);
     }
 
     /**
-     * @{inheritDoc
      * @see org.xwiki.contrib.wiki30.WorkspaceManager#createWorkspace(java.lang.String, java.lang.String,
      *      com.xpn.xwiki.plugin.wikimanager.doc.XWikiServer)
      */
-    public int createWorkspace(String workspaceName, XWikiServer newWikiXObjectDocument) throws XWikiException
+    public int createWorkspace(String workspaceName, XWikiServer newWikiXObjectDocument)
     {
         int returncode = XWikiExceptionApi.ERROR_NOERROR;
 
@@ -115,11 +108,8 @@ public class WorkspaceManagerScriptService extends AbstractLogEnabled implements
         return returncode;
     }
 
-    /**
-     * @{inheritDoc
-     * @see org.xwiki.contrib.wiki30.WorkspaceManager#deleteWorkspace(java.lang.String)
-     */
-    public int deleteWorkspace(String workspaceName) throws XWikiException
+    /** @see org.xwiki.contrib.wiki30.WorkspaceManager#deleteWorkspace(java.lang.String) */
+    public int deleteWorkspace(String workspaceName)
     {
         int returncode = XWikiExceptionApi.ERROR_NOERROR;
 
@@ -140,11 +130,10 @@ public class WorkspaceManagerScriptService extends AbstractLogEnabled implements
     }
 
     /**
-     * @{inheritDoc
      * @see org.xwiki.contrib.wiki30.WorkspaceManager#editWorkspace(java.lang.String,
      *      com.xpn.xwiki.plugin.wikimanager.doc.XWikiServer)
      */
-    public int editWorkspace(String workspaceName, XWikiServer modifiedWikiXObjectDocument) throws XWikiException
+    public int editWorkspace(String workspaceName, XWikiServer modifiedWikiXObjectDocument)
     {
         int returncode = XWikiExceptionApi.ERROR_NOERROR;
 
@@ -164,9 +153,7 @@ public class WorkspaceManagerScriptService extends AbstractLogEnabled implements
         return returncode;
     }
 
-    /**
-     * @return the deprecated xwiki context used to manipulate xwiki objects
-     */
+    /** @return the deprecated xwiki context used to manipulate xwiki objects */
     private XWikiContext getXWikiContext()
     {
         return (XWikiContext) execution.getContext().getProperty("xwikicontext");
@@ -176,7 +163,9 @@ public class WorkspaceManagerScriptService extends AbstractLogEnabled implements
      * Log error and store details in the context.
      * 
      * @param errorMessage error message.
-     * @param e the catched exception.
+     * @param e the caught exception.
+     * @deprecated stop using {@link XWikiException}, put exception in context under {@link #CONTEXT_LASTEXCEPTION} key
+     *             instead.
      */
     private void error(String errorMessage, XWikiException e)
     {
@@ -186,5 +175,64 @@ public class WorkspaceManagerScriptService extends AbstractLogEnabled implements
 
         deprecatedContext.put(CONTEXT_LASTERRORCODE, Integer.valueOf(e.getCode()));
         deprecatedContext.put(CONTEXT_LASTEXCEPTION, new XWikiExceptionApi(e, deprecatedContext));
+    }
+
+    /**
+     * Log exception and store it in the context.
+     * 
+     * @param errorMessage error message.
+     * @param e the caught exception.
+     * @see #CONTEXT_LASTEXCEPTION
+     */
+    private void error(String errorMessage, Exception e)
+    {
+        if (errorMessage == null) {
+            errorMessage = e.getMessage();
+        }
+
+        /* Log exception. */
+        getLogger().error(errorMessage, e);
+
+        /* Store exception in context. */
+        XWikiContext deprecatedContext = getXWikiContext();
+        deprecatedContext.put(CONTEXT_LASTEXCEPTION, e);
+    }
+
+    /**
+     * Log exception and store it in the context. The logged message is the exception's message. This allows the
+     * underlying component to define it's messages and removes duplication.
+     * 
+     * @param e the caught exception.
+     * @see #CONTEXT_LASTEXCEPTION
+     */
+    private void error(Exception e)
+    {
+        error(null, e);
+    }
+
+    /** @see org.xwiki.contrib.wiki30.WorkspaceManager#getWorkspace(String) */
+    public Workspace getWorkspace(String workspaceId)
+    {
+        Workspace result = null;
+        try {
+            result = workspaceManager.getWorkspace(workspaceId);
+        } catch (Exception e) {
+            error(e);
+        }
+
+        return result;
+    }
+
+    /** @see org.xwiki.contrib.wiki30.WorkspaceManager#getWorkspaces() */
+    public List<Workspace> getWorkspaces()
+    {
+        List<Workspace> result = null;
+        try {
+            result = workspaceManager.getWorkspaces();
+        } catch (Exception e) {
+            error(e);
+        }
+
+        return result;
     }
 }

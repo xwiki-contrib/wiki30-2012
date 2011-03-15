@@ -19,6 +19,8 @@
  */
 package org.xwiki.contrib.wiki30;
 
+import java.util.List;
+
 import org.xwiki.component.annotation.ComponentRole;
 
 import com.xpn.xwiki.XWikiException;
@@ -80,4 +82,22 @@ public interface WorkspaceManager
      * @throws XWikiException
      */
     void editWorkspace(String workspaceName, XWikiServer modifiedWikiXObjectDocument) throws XWikiException;
+
+    /**
+     * Retrieves a workspace by name.
+     * 
+     * @param workspaceName name (ID) of the workspace.
+     * @return the requested workspace or null if it does not exist.
+     * @throws WorkspaceManagerException if problems occur.
+     */
+    Workspace getWorkspace(String workspaceName) throws WorkspaceManagerException;
+
+    /**
+     * Get the list of all workspaces. It basically gets all wikis that have a {@code WorkspaceManager.WorkspaceClass}
+     * object in their {@code XWikiServer<wikiName>} page.
+     * 
+     * @return list of available workspaces.
+     * @throws WorkspaceManagerException if problems occur.
+     */
+    public List<Workspace> getWorkspaces() throws WorkspaceManagerException;
 }
