@@ -38,6 +38,8 @@
           <exclude>**/hibernate.cfg.xml</exclude>
           <!-- Exclude default xwiki.cfg that uses domain based wikis. To be replaced with one that uses path based wikis. -->
           <exclude>**/xwiki.cfg</exclude>
+          <!-- Exclude default rightsUI.vm that shows scope selection for users in a subwiki. -->
+          <exclude>**/rightsUI.vm</exclude>
           <!-- Exclude forked Wiki3.0 specific components. -->
           <!-- Currently disabling wikimanager fork since it is up to date with the trunk.
           <exclude>**/xwiki-plugin-wiki-manager-*.jar</exclude>
@@ -109,6 +111,11 @@
     <file>
       <source>${basedir}/src/main/resources/xwiki.cfg</source>
       <outputDirectory>webapps/xwiki/WEB-INF</outputDirectory>
+    </file>
+    <!-- Replacement rightsUI.vm that hides scope selection for users in a subwiki. -->
+    <file>
+      <source>${basedir}/src/main/resources/rightsUI.vm</source>
+      <outputDirectory>webapps/xwiki/templates</outputDirectory>
     </file>
   </files>
   <fileSets>

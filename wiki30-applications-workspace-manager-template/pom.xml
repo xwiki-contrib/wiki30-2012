@@ -31,11 +31,16 @@
       <plugin>
         <groupId>org.xwiki.platform.tools</groupId>
         <artifactId>xwiki-xar-plugin</artifactId>
-<!--        <configuration>-->
-<!--          <excludes>-->
-<!--            <exclude>**/META-INF/**</exclude>-->
-<!--          </excludes>-->
-<!--        </configuration>-->
+        <configuration>
+          <excludes>
+            <!-- Disable local user registration. -->
+            <exclude>**/XWiki/AdminRegistrationSheet.xml</exclude>
+            <exclude>**/XWiki/RegistrationConfig.xml</exclude>
+            <exclude>**/XWiki/RegistrationHelp.xml</exclude>
+            <!-- Disable local user management. -->
+            <exclude>**/XWiki/AdminUsersSheet.xml</exclude>
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
   </build>
