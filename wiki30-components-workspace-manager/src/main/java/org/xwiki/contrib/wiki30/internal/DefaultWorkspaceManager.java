@@ -70,9 +70,6 @@ public class DefaultWorkspaceManager extends AbstractLogEnabled implements Works
     @Requirement
     private Execution execution;
 
-    /** Wrapped wiki manager plugin. */
-    private WikiManagerPluginApi wikiManager;
-
     /** Internal wiki manager tookit required to overcome the rights checking of the API. */
     private WikiManager wikiManagerInternal;
 
@@ -88,13 +85,29 @@ public class DefaultWorkspaceManager extends AbstractLogEnabled implements Works
     {
         XWikiContext deprecatedContext = getXWikiContext();
 
-        this.wikiManager =
-            (WikiManagerPluginApi) deprecatedContext.getWiki().getPluginApi("wikimanager", deprecatedContext);
+        /* Should be ok if we initialize and cache (both) message tools with the current context. */
 
         WikiManagerMessageTool wikiManagerMessageTool = WikiManagerMessageTool.getDefault(deprecatedContext);
         this.wikiManagerInternal = new WikiManager(wikiManagerMessageTool);
 
         this.messageTool = new WorkspaceManagerMessageTool(deprecatedContext);
+    }
+
+    /**
+     * Note: This is a method instead of a cached field because the wiki manager plugin API is initialized, at every
+     * usage, with the current context. Caching the plugin API instance would mean caching the context and that caused
+     * problems.
+     * 
+     * @return Wrapped wiki manager plugin.
+     */
+    private WikiManagerPluginApi getWikiManager()
+    {
+        XWikiContext deprecatedContext = getXWikiContext();
+
+        WikiManagerPluginApi wikiManager =
+            (WikiManagerPluginApi) deprecatedContext.getWiki().getPluginApi("wikimanager", deprecatedContext);
+
+        return wikiManager;
     }
 
     /**
@@ -144,7 +157,7 @@ public class DefaultWorkspaceManager extends AbstractLogEnabled implements Works
         }
 
         try {
-            XWikiServer wikiServer = wikiManager.getWikiDocument(workspaceName);
+            XWikiServer wikiServer = getWikiManager().getWikiDocument(workspaceName);
             String wikiOwner = wikiServer.getOwner();
 
             XWikiRightService rightService = deprecatedContext.getWiki().getRightService();
@@ -181,7 +194,7 @@ public class DefaultWorkspaceManager extends AbstractLogEnabled implements Works
         }
 
         try {
-            XWikiServer wikiServer = wikiManager.getWikiDocument(workspaceName);
+            XWikiServer wikiServer = getWikiManager().getWikiDocument(workspaceName);
             String wikiOwner = wikiServer.getOwner();
 
             XWikiRightService rightService = deprecatedContext.getWiki().getRightService();
@@ -314,7 +327,8 @@ public class DefaultWorkspaceManager extends AbstractLogEnabled implements Works
 
             XWikiServer wikiDescriptor = wikiDocument.getFirstWikiAlias();
             if (wikiDescriptor == null || wikiDescriptor.isNew()) {
-                throw new WorkspaceManagerException(messageTool.get(WorkspaceManagerMessageTool.ERROR_WORKSPACEINVALID));
+                throw new WorkspaceManagerException(messageTool.get(WorkspaceManagerMessageTool.ERROR_WORKSPACEINVALID,
+                    Arrays.asList(workspaceId)));
             }
 
             BaseObject workspaceObject = getWorkspaceObject(wikiDocument);
@@ -345,7 +359,7 @@ public class DefaultWorkspaceManager extends AbstractLogEnabled implements Works
         List<Workspace> result = new ArrayList<Workspace>();
 
         try {
-            List<Wiki> wikis = wikiManager.getAllWikis();
+            List<Wiki> wikis = getWikiManager().getAllWikis();
             for (Wiki wiki : wikis) {
                 try {
                     BaseObject workspaceObject = getWorkspaceObject(wiki);
@@ -355,7 +369,9 @@ public class DefaultWorkspaceManager extends AbstractLogEnabled implements Works
                     }
                 } catch (Exception e) {
                     /* Log and skip. */
-                    getLogger().warn(messageTool.get(WorkspaceManagerMessageTool.LOG_WORKSPACEINVALID), e);
+                    getLogger().warn(
+                        messageTool.get(WorkspaceManagerMessageTool.LOG_WORKSPACEINVALID,
+                            Arrays.asList(wiki.getWikiName())), e);
                     continue;
                 }
             }
@@ -366,13 +382,21 @@ public class DefaultWorkspaceManager extends AbstractLogEnabled implements Works
         return result;
     }
 
-    private BaseObject getWorkspaceObject(Wiki wikiDocument)
+    private BaseObject getWorkspaceObject(Wiki wikiDocument) throws XWikiException
     {
         XWikiContext deprecatedContext = getXWikiContext();
 
+        // DocumentReference workspaceClassReference =
+        // new DocumentReference(deprecatedContext.getMainXWiki(), "WorkspaceManager", "WorkspaceClass");
+        // BaseObject workspaceObject = wikiDocument.getDocument().getXObject(workspaceClassReference);
+
+        XWiki xwiki = deprecatedContext.getWiki();
+
         DocumentReference workspaceClassReference =
             new DocumentReference(deprecatedContext.getMainXWiki(), "WorkspaceManager", "WorkspaceClass");
-        BaseObject workspaceObject = wikiDocument.getDocument().getXObject(workspaceClassReference);
+        XWikiDocument xwikiCoreDocument = xwiki.getDocument(wikiDocument.getDocumentReference(), deprecatedContext);
+
+        BaseObject workspaceObject = xwikiCoreDocument.getXObject(workspaceClassReference);
 
         return workspaceObject;
     }
