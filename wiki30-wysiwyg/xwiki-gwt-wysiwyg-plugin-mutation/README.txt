@@ -1,0 +1,1 @@
+In order to integrate this plugin in the WYSIWYG editor you have to apply the changes described in the xwiki-gwt-wysiwyg-client.patch file and then rebuild the editor.
