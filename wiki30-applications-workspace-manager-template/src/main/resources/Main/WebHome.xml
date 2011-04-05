@@ -14,7 +14,7 @@
 <date>1301083063000</date>
 <contentUpdateDate>1301083063000</contentUpdateDate>
 <version>4.1</version>
-<title>#set($wikiDescriptor = $services.workspaceManager.getWorkspace($xcontext.database).wikiDescriptor)#{if}("$!wikiDescriptor.wikiprettyname" != '')$wikiDescriptor.wikiprettyname#{else}$wikiDescriptor.wikiName#{end}</title>
+<title>#set($wikiDescriptor = $xwiki.wikimanager.getWikiDocument($xcontext.database))#{if}("$!wikiDescriptor.wikiprettyname" != '')$wikiDescriptor.wikiprettyname#{else}$wikiDescriptor.wikiName#{end}</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>

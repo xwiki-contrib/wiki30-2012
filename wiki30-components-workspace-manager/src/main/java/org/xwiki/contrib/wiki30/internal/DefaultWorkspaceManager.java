@@ -333,14 +333,16 @@ public class DefaultWorkspaceManager extends AbstractLogEnabled implements Works
 
             BaseObject workspaceObject = getWorkspaceObject(wikiDocument);
             if (workspaceObject == null) {
-                throw new WorkspaceManagerException(messageTool.get(WorkspaceManagerMessageTool.ERROR_WORKSPACEINVALID));
+                throw new WorkspaceManagerException(messageTool.get(WorkspaceManagerMessageTool.ERROR_NOTAWORKSPACE,
+                    Arrays.asList(workspaceId)));
             }
 
             DocumentReference groupReference =
                 new DocumentReference(workspaceId, Workspace.WORKSPACE_GROUP_SPACE, Workspace.WORKSPACE_GROUP_PAGE);
             XWikiDocument groupDocument = xwiki.getDocument(groupReference, deprecatedContext);
             if (groupDocument == null || groupDocument.isNew()) {
-                throw new WorkspaceManagerException(messageTool.get(WorkspaceManagerMessageTool.ERROR_WORKSPACEINVALID));
+                throw new WorkspaceManagerException(messageTool.get(WorkspaceManagerMessageTool.ERROR_WORKSPACEINVALID,
+                    Arrays.asList(workspaceId)));
             }
 
             result = new DefaultWorkspace(wikiDocument, wikiDescriptor, new Document(groupDocument, deprecatedContext));
