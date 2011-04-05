@@ -86,5 +86,17 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        
+        <repository>
+            <id>maven-central-manual</id>
+            <name>Maven2 central repository manually added</name>
+            <url>http://repo1.maven.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 </project>
