@@ -1,112 +1,197 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.xwiki.contrib.wiki30</groupId>
-    <artifactId>wiki30</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>Wiki30 Project - Parent POM</name>
-    <description>Wiki30 Project</description>
-    <url>http://wiki30.xwikisas.com</url>
+  <groupId>org.xwiki.contrib.wiki30</groupId>
+  <artifactId>wiki30</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Wiki30 Project - Parent POM</name>
+  <description>Wiki30 Project</description>
+  <url>http://wiki30.xwikisas.com</url>
 
-    <scm>
-        <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk</connection>
-        <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk
+  <scm>
+    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk</connection>
+    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk
         </developerConnection>
-        <url>http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk</url>
-    </scm>
+    <url>http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk</url>
+  </scm>
 
-    <developers>
-        <developer>
-            <name>Bogdan Flueras</name>
-            <organization>INRIA / LORIA / SCORE Team</organization>
-            <organizationUrl>http://score.loria.fr</organizationUrl>
-            <email>bogdan.flueras@loria.fr</email>
-        </developer>
-        <developer>
-            <name>Fabio Mancinelli</name>
-            <organization>XWiki SAS</organization>
-            <organizationUrl>http://www.xwiki.com</organizationUrl>
-            <email>fabio.mancinelli@xwiki.com</email>
-        </developer>
-    </developers>
+  <developers>
+    <developer>
+      <name>Bogdan Flueras</name>
+      <organization>INRIA / LORIA / SCORE Team</organization>
+      <organizationUrl>http://score.loria.fr</organizationUrl>
+      <email>bogdan.flueras@loria.fr</email>
+    </developer>
+    <developer>
+      <name>Fabio Mancinelli</name>
+      <organization>XWiki SAS</organization>
+      <organizationUrl>http://www.xwiki.com</organizationUrl>
+      <email>fabio.mancinelli@xwiki.com</email>
+    </developer>
+    <developer>
+      <name>Eduard Moraru</name>
+      <organization>XWiki SAS</organization>
+      <organizationUrl>http://www.xwiki.com</organizationUrl>
+      <email>eduard.moraru@xwiki.com</email>
+    </developer>
+  </developers>
 
-    <issueManagement>
-        <system>jira</system>
-        <url>http://jira.xwiki.org/jira/browse/WIKITHREEDOTO</url>
-    </issueManagement>
+  <issueManagement>
+    <system>jira</system>
+    <url>http://jira.xwiki.org/jira/browse/WIKITHREEDOTO</url>
+  </issueManagement>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mvn.compiler.plugin>2.3.2</mvn.compiler.plugin>
-    </properties>
+  <distributionManagement>
+    <repository>
+      <id>xwiki-staging</id>
+      <name>XWiki Staging Repository</name>
+      <url>http://nexus.xwiki.org/nexus/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 
-    <distributionManagement>
-        <repository>
-            <id>xwiki-staging</id>
-            <name>XWiki Staging Repository</name>
-            <url>http://nexus.xwiki.org/nexus/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
+  <modules>
+    <!-- This will become wiki30-realtime once Bogdan will agree -->
+    <module>realtime-editor</module>
+    <module>wiki30-social</module>
+    <module>wiki30-realtime</module>
+    <module>wiki30-tools</module>
+    <module>wiki30-distribution</module>
+  </modules>
 
-    <modules>
-        <!-- This will become wiki30-realtime once Bogdan will agree -->
-        <module>realtime-editor</module>
-        <module>wiki30-social</module>
-        <module>wiki30-realtime</module>
-        <module>wiki30-tools</module>        
-    </modules>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <xe.version>3.1-SNAPSHOT</xe.version>
+  </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <groupId>org.apache.maven.plugins</groupId>
-                <version>${mvn.compiler.plugin}</version>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+  <dependencyManagement>
+    <dependencies>
+      <!-- XWiki Documents/Applications -->
+      <dependency>
+        <groupId>org.xwiki.enterprise</groupId>
+        <artifactId>xwiki-enterprise-wiki</artifactId>
+        <version>${xe.version}</version>
+        <type>xar</type>
+      </dependency>
+      <!-- XWiki Plugins -->
+      <dependency>
+        <groupId>com.xpn.xwiki.platform.plugins</groupId>
+        <artifactId>xwiki-plugin-wiki-manager</artifactId>
+        <version>1.26</version>
+      </dependency>
+      <dependency>
+        <groupId>com.xpn.xwiki.platform.plugins</groupId>
+        <artifactId>xwiki-plugin-application-manager</artifactId>
+        <version>1.19-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xwiki.platform.applications</groupId>
+        <artifactId>xwiki-application-application-manager</artifactId>
+        <version>1.20-SNAPSHOT</version>
+        <type>xar</type>
+      </dependency>
+      <!-- XWiki Core -->
+      <dependency>
+        <groupId>com.xpn.xwiki.platform</groupId>
+        <artifactId>xwiki-core</artifactId>
+        <version>${xe.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-component-default</artifactId>
+        <version>${xe.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-script</artifactId>
+        <version>${xe.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-test</artifactId>
+        <version>${xe.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
-    <repositories>
-        <repository>
-            <id>xwiki-releases</id>
-            <name>XWiki Maven2 Remote Repository for Releases</name>
-            <url>http://maven.xwiki.org/releases</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.xwiki.platform.tools</groupId>
+          <artifactId>xwiki-xmldoc-update-plugin</artifactId>
+          <version>1.5-SNAPSHOT</version>
+        </plugin>
 
-        <repository>
-            <id>xwiki-snapshots</id>
-            <name>XWiki Maven2 Remote Repository for Snapshots</name>
-            <url>http://maven.xwiki.org/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        
-        <repository>
-            <id>maven-central-manual</id>
-            <name>Maven2 central repository manually added</name>
-            <url>http://repo1.maven.org/maven2</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+        <plugin>
+          <groupId>org.xwiki.platform.tools</groupId>
+          <artifactId>xwiki-xar-plugin</artifactId>
+          <version>1.15-SNAPSHOT</version>
+        </plugin>
+        <plugin>
+          <groupId>org.xwiki.platform.tools</groupId>
+          <artifactId>xwiki-xar-handlers</artifactId>
+          <version>1.10-SNAPSHOT</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.3.2</version>
+          <configuration>
+            <source>1.5</source>
+            <target>1.5</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.1</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <!-- TODO: Remove if not needed. -->
+    </plugins>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>xwiki-releases</id>
+      <name>XWiki Maven2 Remote Repository for Releases</name>
+      <url>http://maven.xwiki.org/releases</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+
+    <repository>
+      <id>xwiki-snapshots</id>
+      <name>XWiki Maven2 Remote Repository for Snapshots</name>
+      <url>http://maven.xwiki.org/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+
+    <repository>
+      <id>maven-central-manual</id>
+      <name>Maven2 central repository manually added</name>
+      <url>http://repo1.maven.org/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 </project>
