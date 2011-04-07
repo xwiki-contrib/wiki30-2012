@@ -24,6 +24,12 @@
             <organizationUrl>http://score.loria.fr</organizationUrl>
             <email>bogdan.flueras@loria.fr</email>
         </developer>
+        <developer>
+            <name>Fabio Mancinelli</name>
+            <organization>XWiki SAS</organization>
+            <organizationUrl>http://www.xwiki.com</organizationUrl>
+            <email>fabio.mancinelli@xwiki.com</email>
+        </developer>
     </developers>
 
     <issueManagement>
@@ -45,7 +51,11 @@
     </distributionManagement>
 
     <modules>
+        <!-- This will become wiki30-realtime once Bogdan will agree -->
         <module>realtime-editor</module>
+        <module>wiki30-social</module>
+        <module>wiki30-realtime</module>
+        <module>wiki30-tools</module>        
     </modules>
 
     <build>
