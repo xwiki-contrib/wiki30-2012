@@ -103,10 +103,10 @@
                 </xwikiCfgPlugins>
                 <xwikiCfgVirtual>1</xwikiCfgVirtual>
                 <xwikiCfgAdditionalProperties>
-                  xwiki.work.dir=work
+xwiki.work.dir=work
 
-                  xwiki.virtual.usepath=1
-                  xwiki.virtual.usepath.servletpath=wiki
+xwiki.virtual.usepath=1
+xwiki.virtual.usepath.servletpath=wiki
                 </xwikiCfgAdditionalProperties>
               </properties>
             </configuration>

@@ -35,6 +35,15 @@
       <type>zip</type>
       <optional>true</optional>
     </dependency>
+    <!-- Add the database JAR since the default XE/XEM war has only hsqldb 
+      included. The Hibernate config file is automatically added by the remote 
+      resources plugin -->
+    <dependency>
+      <groupId>${xwiki.db.jdbc.groupId}</groupId>
+      <artifactId>${xwiki.db.jdbc.artifactId}</artifactId>
+      <version>${xwiki.db.jdbc.version}</version>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 
   <build>
@@ -98,10 +107,10 @@
                 </xwikiCfgPlugins>
                 <xwikiCfgVirtual>1</xwikiCfgVirtual>
                 <xwikiCfgAdditionalProperties>
-                  xwiki.work.dir=work
+xwiki.work.dir=work
 
-                  xwiki.virtual.usepath=1
-                  xwiki.virtual.usepath.servletpath=wiki
+xwiki.virtual.usepath=1
+xwiki.virtual.usepath.servletpath=wiki
                 </xwikiCfgAdditionalProperties>
               </properties>
             </configuration>
