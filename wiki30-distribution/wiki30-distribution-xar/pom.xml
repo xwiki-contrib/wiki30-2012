@@ -1,0 +1,69 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>wiki30-distribution</artifactId>
+    <groupId>org.xwiki.contrib.wiki30</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>wiki30-distribution-xar</artifactId>
+  <packaging>xar</packaging>
+
+  <name>Wiki3.0 - Distribution - XAR</name>
+  <description>XAR distribution complete with a XEM distribution XAR. Server-side modules also have to be included for the applications to work. The server-sode modules are included in the war or the zip Wiki3.0 distributions.</description>
+
+  <dependencies>
+    <!-- Package all xars into one. -->
+    <dependency>
+      <groupId>org.xwiki.contrib.wiki30</groupId>
+      <artifactId>rt-application</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <type>xar</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib.wiki30</groupId>
+      <artifactId>wiki30-applications-workspace-manager</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.manager</groupId>
+      <artifactId>xwiki-enterprise-manager-wiki-administrator</artifactId>
+      <version>3.1-SNAPSHOT</version>
+      <type>xar</type>
+    </dependency>
+
+    <!-- Runtime dependencies, just for the record. -->
+    <dependency>
+      <groupId>org.xwiki.contrib.wiki30</groupId>
+      <artifactId>rt-gwt-server</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <type>war</type>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib.wiki30</groupId>
+      <artifactId>wiki30-components-workspace-manager</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.xwiki.platform.tools</groupId>
+        <artifactId>xwiki-xar-handlers</artifactId>
+      </extension>
+    </extensions>
+    <plugins>
+      <!-- Do the work. -->
+      <plugin>
+        <groupId>org.xwiki.platform</groupId>
+        <artifactId>xwiki-platform-tool-xar-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

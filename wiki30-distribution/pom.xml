@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.xwiki.contrib.wiki30</groupId>
+    <artifactId>wiki30</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>wiki30-distribution</artifactId>
+  <packaging>pom</packaging>
+
+  <name>Wiki3.0 - Workspaces - Distribution</name>
+  <description>Distribution parent POM.</description>
+
+  <modules>
+    <module>wiki30-distribution-war</module>
+    <module>wiki30-distribution-zip</module>
+    <module>wiki30-distribution-xar</module>
+  </modules>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+          <configuration>
+            <dependentWarExcludes />
+            <webResources>
+              <!-- Include Configuration resources that have been re-configured, 
+                based on the active profile. They will override the ones already existing 
+                in the XEM war. -->
+              <resource>
+                <directory>${project.build.directory}/maven-shared-archive-resources</directory>
+                <targetPath>WEB-INF</targetPath>
+                <includes>
+                  <include>hibernate.cfg.xml</include>
+                  <include>xwiki.cfg</include>
+                  <include>xwiki.properties</include>
+                </includes>
+              </resource>
+            </webResources>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>

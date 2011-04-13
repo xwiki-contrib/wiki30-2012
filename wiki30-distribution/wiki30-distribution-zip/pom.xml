@@ -1,0 +1,131 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>wiki30-distribution</artifactId>
+    <groupId>org.xwiki.contrib.wiki30</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>wiki30-distribution-zip</artifactId>
+  <packaging>pom</packaging>
+
+  <name>Wiki30 - Distribution - ZIP</name>
+  <description>ZIP packaging complete with jetty web application server.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>wiki30-distribution-war</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform.tools</groupId>
+      <artifactId>xwiki-rootwebapp</artifactId>
+      <version>${platform.tool.rootwebapp.version}</version>
+      <type>war</type>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform.tools</groupId>
+      <artifactId>xwiki-jetty-resources</artifactId>
+      <version>${platform.tool.jetty.version}</version>
+      <type>zip</type>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Inject Hibernate's configuration for the specified database -->
+      <!-- Put Hibernate.cfg.xml, xwiki.cfg and xwiki.properties configuration 
+        files in the classpath. -->
+      <!-- Hibernate.cfg.xml is already configured, based on the active profile, 
+        inherited from XE parent pom. -->
+      <!-- xwiki.cfg is already configured, inherited from XE parent pom, 
+        but we need to reconfigure it since this is producing a XEM output. The XEM 
+        configuration could not be inheritable since it is defined in a distribution 
+        project and contained unwanted dependencies. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>xwiki-configuration-resources</id>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <resourceBundles>
+                <resourceBundle>org.xwiki.platform.tools:xwiki-configuration-resources:${platform.tool.configuration.version}</resourceBundle>
+              </resourceBundles>
+              <properties>
+                <xwikiDbHbmCommonExtraMappings>activitystream.hbm.xml</xwikiDbHbmCommonExtraMappings>
+                <xwikiCfgPlugins>\
+                  com.xpn.xwiki.monitor.api.MonitorPlugin,\
+                  com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
+                  com.xpn.xwiki.plugin.skinx.JsSkinFileExtensionPlugin,\
+                  com.xpn.xwiki.plugin.skinx.CssSkinExtensionPlugin,\
+                  com.xpn.xwiki.plugin.skinx.CssSkinFileExtensionPlugin,\
+                  com.xpn.xwiki.plugin.skinx.LinkExtensionPlugin,\
+                  com.xpn.xwiki.plugin.feed.FeedPlugin,\
+                  com.xpn.xwiki.plugin.ldap.LDAPPlugin,\
+                  com.xpn.xwiki.plugin.google.GooglePlugin,\
+                  com.xpn.xwiki.plugin.mail.MailPlugin,\
+                  com.xpn.xwiki.plugin.packaging.PackagePlugin,\
+                  com.xpn.xwiki.plugin.query.QueryPlugin,\
+                  com.xpn.xwiki.plugin.svg.SVGPlugin,\
+                  com.xpn.xwiki.plugin.charts.ChartingPlugin,\
+                  com.xpn.xwiki.plugin.fileupload.FileUploadPlugin,\
+                  com.xpn.xwiki.plugin.image.ImagePlugin,\
+                  com.xpn.xwiki.plugin.userdirectory.UserDirectoryPlugin,\
+                  com.xpn.xwiki.plugin.usertools.XWikiUserManagementToolsImpl,\
+                  com.xpn.xwiki.plugin.zipexplorer.ZipExplorerPlugin,\
+                  com.xpn.xwiki.plugin.autotag.AutoTagPlugin,\
+                  com.xpn.xwiki.plugin.lucene.LucenePlugin,\
+                  com.xpn.xwiki.plugin.diff.DiffPlugin,\
+                  com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin,\
+                  com.xpn.xwiki.plugin.jodatime.JodaTimePlugin,\
+                  com.xpn.xwiki.plugin.scheduler.SchedulerPlugin,\
+                  com.xpn.xwiki.plugin.mailsender.MailSenderPlugin,\
+                  com.xpn.xwiki.plugin.activitystream.plugin.ActivityStreamPlugin,\
+                  com.xpn.xwiki.plugin.watchlist.WatchListPlugin, \
+                  com.xpn.xwiki.plugin.tag.TagPlugin,\
+                  com.xpn.xwiki.plugin.wikimanager.WikiManagerPlugin,\
+                  com.xpn.xwiki.plugin.applicationmanager.ApplicationManagerPlugin
+                </xwikiCfgPlugins>
+                <xwikiCfgVirtual>1</xwikiCfgVirtual>
+                <xwikiCfgAdditionalProperties>
+                  xwiki.work.dir=work
+
+                  xwiki.virtual.usepath=1
+                  xwiki.virtual.usepath.servletpath=wiki
+                </xwikiCfgAdditionalProperties>
+              </properties>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Build the zip packagin. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assemble/application-no-database.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

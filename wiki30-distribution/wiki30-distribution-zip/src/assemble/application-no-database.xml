@@ -1,0 +1,74 @@
+<!--
+ *
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+-->
+
+<assembly>
+  <id>distribution</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>true</includeBaseDirectory>
+  <dependencySets>
+    <dependencySet>
+      <includes>
+        <include>org.xwiki.contrib.wiki30:wiki30-distribution-war</include>
+      </includes>
+      <outputDirectory>webapps/xwiki</outputDirectory>
+      <unpack>true</unpack>
+      <unpackOptions>
+        <excludes>
+          <!-- Exclude hibernate config since it needs to be reconfigured for the current build's active profile. -->
+          <exclude>**/hibernate.cfg.xml</exclude>
+        </excludes>
+      </unpackOptions>
+    </dependencySet>
+    <!-- ROOT webapp, redirecting to /xwiki/ when no application is specified. -->
+    <dependencySet>
+      <includes>
+        <include>org.xwiki.platform.tools:xwiki-rootwebapp</include>
+      </includes>
+      <outputDirectory>webapps/root</outputDirectory>
+      <unpack>true</unpack>
+    </dependencySet>
+    <!-- Unpack Jetty files -->
+    <dependencySet>
+      <includes>
+        <include>org.xwiki.platform.tools:xwiki-jetty-resources</include>
+      </includes>
+      <outputDirectory>/</outputDirectory>
+      <unpack>true</unpack>
+    </dependencySet>
+  </dependencySets>
+  <files>
+    <!-- Add newly reconfigured hibernate configuration. -->
+  	<file>
+      <source>${basedir}/target/maven-shared-archive-resources/hibernate.cfg.xml</source>
+      <outputDirectory>webapps/xwiki/WEB-INF</outputDirectory>
+    </file>
+  </files>
+  <fileSets>
+    <!-- Add License/Notice files -->
+    <fileSet>
+      <directory>${basedir}/target/maven-shared-archive-resources/META-INF</directory>
+      <outputDirectory>META-INF</outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>

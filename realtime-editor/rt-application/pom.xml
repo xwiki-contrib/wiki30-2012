@@ -18,19 +18,6 @@
     <description>The XAR module to be imported for the real time editor application</description>
     <url>http://wiki30.xwikisas.com</url>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.xwiki.platform.tools</groupId>
-            <artifactId>xwiki-xar-handlers</artifactId>
-            <version>${platform.tool.xar-handler.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.xwiki.platform.tools</groupId>
-            <artifactId>xwiki-xar-plugin</artifactId>
-            <version>${platform.tool.xar-plugin.version}</version>
-        </dependency>
-    </dependencies>
-
     <build>
         <extensions>
             <extension>

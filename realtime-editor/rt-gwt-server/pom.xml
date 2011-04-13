@@ -26,7 +26,7 @@
         <dependency>
             <groupId>org.xwiki.contrib.wiki30</groupId>
             <artifactId>rt-gwt-client</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -81,7 +81,7 @@
                                 <artifactItem>
                                     <groupId>org.xwiki.contrib.wiki30</groupId>
                                     <artifactId>rt-gwt-client</artifactId>
-                                    <version>${pom.version}</version>
+                                    <version>${project.version}</version>
                                     <classifier>shared</classifier>
                                     <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/lib</outputDirectory>
                                 </artifactItem>

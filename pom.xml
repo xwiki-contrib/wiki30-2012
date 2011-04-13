@@ -1,5 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>xwiki-enterprise-manager-parent</artifactId>
+    <groupId>org.xwiki.manager</groupId>
+    <version>3.1-SNAPSHOT</version>
+  </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.xwiki.contrib.wiki30</groupId>
@@ -55,8 +60,6 @@
     <!-- This will become wiki30-realtime once Bogdan will agree -->
     <module>realtime-editor</module>
     <module>wiki30-social</module>
-    <module>wiki30-realtime</module>
-    <module>wiki30-tools</module>
     <module>wiki30-distribution</module>
   </modules>
 
@@ -78,17 +81,17 @@
       <dependency>
         <groupId>com.xpn.xwiki.platform.plugins</groupId>
         <artifactId>xwiki-plugin-wiki-manager</artifactId>
-        <version>1.26</version>
+        <version>${platform.plugin.wikimanager.version}</version>
       </dependency>
       <dependency>
         <groupId>com.xpn.xwiki.platform.plugins</groupId>
         <artifactId>xwiki-plugin-application-manager</artifactId>
-        <version>1.19-SNAPSHOT</version>
+        <version>${platform.plugin.applicationmanager.version}</version>
       </dependency>
       <dependency>
         <groupId>org.xwiki.platform.applications</groupId>
         <artifactId>xwiki-application-application-manager</artifactId>
-        <version>1.20-SNAPSHOT</version>
+        <version>${platform.plugin.applicationmanager.version}</version>
         <type>xar</type>
       </dependency>
       <!-- XWiki Core -->
@@ -127,12 +130,12 @@
         <plugin>
           <groupId>org.xwiki.platform.tools</groupId>
           <artifactId>xwiki-xar-plugin</artifactId>
-          <version>1.15-SNAPSHOT</version>
+          <version>${platform.tool.xar-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.xwiki.platform.tools</groupId>
           <artifactId>xwiki-xar-handlers</artifactId>
-          <version>1.10-SNAPSHOT</version>
+          <version>${platform.tool.xar-handler.version}</version>
         </plugin>
 
         <plugin>
@@ -152,9 +155,6 @@
         </plugin>
       </plugins>
     </pluginManagement>
-    <plugins>
-      <!-- TODO: Remove if not needed. -->
-    </plugins>
   </build>
 
   <repositories>
@@ -194,4 +194,5 @@
       </snapshots>
     </repository>
   </repositories>
+
 </project>
