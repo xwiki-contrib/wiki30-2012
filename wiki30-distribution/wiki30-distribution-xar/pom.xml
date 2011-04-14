@@ -20,7 +20,6 @@
       <artifactId>rt-application</artifactId>
       <version>1.0-SNAPSHOT</version>
       <type>xar</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.xwiki.contrib.wiki30</groupId>
