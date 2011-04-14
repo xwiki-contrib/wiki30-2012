@@ -195,6 +195,14 @@
         </plugin>
       </plugins>
     </pluginManagement>
+    <!-- XAR packaging support. -->
+    <extensions>
+      <extension>
+        <groupId>org.xwiki.platform.tools</groupId>
+        <artifactId>xwiki-xar-handlers</artifactId>
+        <version>${platform.tool.xar-handler.version}</version>
+      </extension>
+    </extensions>
   </build>
 
   <repositories>
