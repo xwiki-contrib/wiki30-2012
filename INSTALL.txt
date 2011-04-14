@@ -4,24 +4,30 @@ Prerequisites: Maven 2.x+, JDK 1.5+
 
 To install and use the real-time editor:
 1) Execute the run.sh script (you might have to change it's permissions)  
-2) Point your browser to http://localhost:8080/xwiki
+2) Point your browser to http://localhost:8080/xwiki. This url will be reffered from now on as ${URL}
 3) Login with admin credentials (username: Admin, password: admin)
 3.1)If you see a warn message like: "Your wiki seems empty. You may want to import the default XWiki Enterprise wiki..."
 please follow the instructions and import the required file.
 To successfully do so, you'll upload the required file, select it, then click on the "Import" button (right lower corner)
 4) Go to Administration page - http://localhost:8080/xwiki/bin/admin/XWiki/XWikiPreferences
 and select Import category
-6) Import the file located in /realtime-editor/rt-application/target/rt-application.xar then click "Upload".
+6) Import the file located in ?/realtime-editor/rt-application/target/rt-application.xar
+ /home/bogdan/work/xwikiSVN/contrib/projects/wiki30/trunk/realtime-editor/rt-application/target/rt-application.xar
+ then click "Upload".
 Select the imported file. The archive's content will be displayed in the upper right part.
 Expand the "XWiki" tree and make sure that all the files within are checked for import.
-Accept default settings then click on the "Import" button.
-9) From the Administration page, select Programming category
-then in the "Internationalization Document Bundles" section type XWiki.RtI18N then click "Save"
+Accept default settings then click on the "Import" button. You should see an information message like: "Importing rt-application.xar: Import successful"
+9) From the Administration page, select Programming category and type XWiki.RtI18N
+in the "Internationalization Document Bundles" section then click "Save"
 10) Select Presentation category from the Administration page, and into the "Skin" section
 replace XWiki.DefaultSkin with XWiki.RtSkin value, then "Save" your changes.
+----
 11) To edit a document/page using real-time editor, select the option "Real Time" located in the "Edit" menu.
 Lets say you create a new "TestPage" in "Sandbox" space then click on "Edit" and select "Real Time" option.
 Thus the url of the page would be: http://localhost:8080/xwiki/bin/edit/Sandbox/TestPage?&editor=rt
-12) To collaboratively edit the same page in real-time, point 2 browser instances with the "Real Time" edit mode to the same wiki page.
+12) Make sure that the user(s) has edit rights on the page 
+TODO: hack this!
+12.1) Make sure that the page itself can be edited by others [an Admin will go to that page, and set the edit rights [Edit->Access Rights]
+13) To collaboratively edit the same page in real-time, point 2 browser instances with the "Real Time" edit mode to the same wiki page.
 In the second browser for instance use the same url (http://localhost:8080/xwiki/bin/edit/Sandbox/TestPage?&editor=rt)
 then ignore the "Force lock" and start typing. You should see the changes reflected in the other browser.
