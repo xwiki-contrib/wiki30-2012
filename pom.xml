@@ -3,7 +3,7 @@
   <parent>
     <artifactId>xwiki-enterprise-manager-parent</artifactId>
     <groupId>org.xwiki.manager</groupId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -65,7 +65,10 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <xe.version>3.1-SNAPSHOT</xe.version>
+    <xe.version>3.0</xe.version>
+
+    <gwt.version>2.1.1</gwt.version>
+    <gwt.compiler.version>2.1.0-1</gwt.compiler.version>
   </properties>
 
   <dependencyManagement>
@@ -74,6 +77,12 @@
       <dependency>
         <groupId>org.xwiki.enterprise</groupId>
         <artifactId>xwiki-enterprise-wiki</artifactId>
+        <version>${xe.version}</version>
+        <type>xar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.xwiki.manager</groupId>
+        <artifactId>xwiki-enterprise-manager-wiki-administrator</artifactId>
         <version>${xe.version}</version>
         <type>xar</type>
       </dependency>
@@ -102,6 +111,11 @@
       </dependency>
       <dependency>
         <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-component-api</artifactId>
+        <version>${xe.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-component-default</artifactId>
         <version>${xe.version}</version>
       </dependency>
@@ -115,6 +129,42 @@
         <artifactId>xwiki-commons-test</artifactId>
         <version>${xe.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.xwiki.enterprise</groupId>
+        <artifactId>xwiki-enterprise-web</artifactId>
+        <version>${xe.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.xwiki.manager</groupId>
+        <artifactId>xwiki-enterprise-manager-web</artifactId>
+        <version>${xe.version}</version>
+        <type>war</type>
+      </dependency>
+      <!-- XWiki GWT modules -->
+      <dependency>
+        <groupId>org.xwiki.platform</groupId>
+        <artifactId>xwiki-web-gwt-user</artifactId>
+        <version>${xe.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xwiki.platform</groupId>
+        <artifactId>xwiki-web-gwt-dom</artifactId>
+        <version>${xe.version}</version>
+      </dependency>
+      <!-- Tools -->
+      <dependency>
+        <groupId>org.xwiki.platform.tools</groupId>
+        <artifactId>xwiki-rootwebapp</artifactId>
+        <version>${platform.tool.rootwebapp.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.xwiki.platform.tools</groupId>
+        <artifactId>xwiki-jetty-resources</artifactId>
+        <version>${platform.tool.jetty.version}</version>
+        <type>zip</type>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -124,7 +174,7 @@
         <plugin>
           <groupId>org.xwiki.platform.tools</groupId>
           <artifactId>xwiki-xmldoc-update-plugin</artifactId>
-          <version>1.5-SNAPSHOT</version>
+          <version>${platform.tool.xmldoc.version}</version>
         </plugin>
 
         <plugin>
@@ -139,19 +189,9 @@
         </plugin>
 
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.3.2</version>
-          <configuration>
-            <source>1.5</source>
-            <target>1.5</target>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-dependency-plugin</artifactId>
-          <!-- Lock down plugin version for build reproducibility -->
-          <version>2.1</version>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>gwt-maven-plugin</artifactId>
+          <version>${gwt.compiler.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
