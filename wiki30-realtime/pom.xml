@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.xwiki.contrib.wiki30</groupId>
+    <artifactId>wiki30</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>realtime-editor</artifactId>
+  <packaging>pom</packaging>
+  <name>Wiki30 Project - Real-time editor - Parent POM</name>
+  <description>Wiki30 Project - Real-time editor parent module</description>
+  <url>http://wiki30.xwikisas.com</url>
+
+  <scm>
+    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk</connection>
+    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk
+        </developerConnection>
+    <url>http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk</url>
+  </scm>
+
+<!--   <properties> -->
+<!--     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> -->
+<!--   </properties> -->
+
+  <distributionManagement>
+    <repository>
+      <id>xwiki-staging</id>
+      <name>XWiki Staging Repository</name>
+      <url>http://nexus.xwiki.org/nexus/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit-dep</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>${gwt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-servlet</artifactId>
+      <version>${gwt.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <modules>
+    <module>rt-gwt-client</module>
+    <module>rt-gwt-server</module>
+    <module>rt-application</module>
+    <module>rt-distribution</module>
+  </modules>
+
+  <repositories>
+    <repository>
+      <id>google-maven-releases-repository</id>
+      <name>Google Maven Releases Repository</name>
+      <url>https://nexus.codehaus.org/content/repositories/releases</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>gwt-maven-plugin-repository</id>
+      <url>https://nexus.codehaus.org/content/repositories/releases</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+</project>

@@ -1,0 +1,37 @@
+// ------------------------------------------------------------------
+// NOTICE file containing copyrights,
+// in this case for XWiki Products - Enterprise - Database - HSQLDB
+// ------------------------------------------------------------------
+
+XWiki Products - Enterprise - Database - HSQLDB
+Copyright 2004-2010 XWiki
+
+This product includes/uses software developed by 'an unknown organization'
+  - HSQLDB (http://hsqldb.org/)
+  - Unnamed - org.opensymphony.quartz:quartz:jar:1.6.5 (http://www.opensymphony.com/quartz)
+
+This product includes/uses software developed by 'The Apache Software Foundation' (http://www.apache.org/)
+  - Commons Collections (http://commons.apache.org/collections/)
+
+This product includes/uses software developed by 'XWiki' (http://xwiki.org/)
+  - XWiki Platform - Plugins - Scheduler (http://xwiki.org/xwiki-plugins/xwiki-plugin-scheduler)
+  - XWiki Platform - Plugins - Tag (http://xwiki.org/xwiki-plugins/xwiki-plugin-tag)
+  - XWiki Platform - Plugins - WatchList Manager (http://xwiki.org/xwiki-plugins/xwiki-plugin-watchlist)
+  - XWiki Products - Enterprise - Wiki (http://xwiki.org/xwiki-enterprise-parent/xwiki-enterprise-wiki)
+  - XWiki Platform - Core - Parent POM (http://xwiki.org/xwiki-core-parent)
+  - XWiki Platform - Applications - Administration (http://xwiki.org/xwiki-applications/xwiki-application-administration)
+  - XWiki Platform - Applications - Annotations (http://xwiki.org/xwiki-applications/xwiki-application-annotations)
+  - XWiki Platform - Applications - Blog (http://xwiki.org/xwiki-applications/xwiki-application-blog)
+  - XWiki Platform - Applications - Extension (http://xwiki.org/xwiki-applications/xwiki-application-extension)
+  - XWiki Platform - Applications - Invitation (http://xwiki.org/xwiki-applications/xwiki-application-invitation)
+  - XWiki Platform - Applications - Office Importer (http://xwiki.org/xwiki-applications/xwiki-application-officeimporter)
+  - XWiki Platform - Applications - Panels (http://xwiki.org/xwiki-applications/xwiki-application-panels)
+  - XWiki Platform - Applications - Scheduler (http://xwiki.org/xwiki-applications/xwiki-application-scheduler)
+  - XWiki Platform - Applications - Search (http://xwiki.org/xwiki-applications/xwiki-application-search)
+  - XWiki Platform - Applications - Statistics (http://xwiki.org/xwiki-applications/xwiki-application-statistics)
+  - XWiki Platform - Applications - Tag (http://xwiki.org/xwiki-applications/xwiki-application-tag)
+  - XWiki Platform - Applications - WatchList (http://xwiki.org/xwiki-applications/xwiki-application-watchlist)
+  - XWiki Platform - Applications - WebDAV (http://xwiki.org/xwiki-applications/xwiki-application-webdav)
+  - XWiki Platform - Applications - Wiki Macro Bridge (http://xwiki.org/xwiki-applications/xwiki-application-wiki-macro-bridge)
+
+

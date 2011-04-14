@@ -1,0 +1,1 @@
+fr.loria.score.server.CommunicationServiceImpl

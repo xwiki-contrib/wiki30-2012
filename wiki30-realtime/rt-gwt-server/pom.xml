@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.xwiki.contrib.wiki30</groupId>
+    <artifactId>realtime-editor</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>rt-gwt-server</artifactId>
+  <packaging>war</packaging>
+
+  <name>Wiki30 Project - Real-time editor - GWT server side module</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.xwiki.contrib.wiki30</groupId>
+      <artifactId>rt-gwt-client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <gwt.style>OBF</gwt.style>
+    <gwt.output.directory>${project.build.directory}/${project.build.finalName}/resources/js/xwiki/rte</gwt.output.directory>
+    <xre.directory>${gwt.output.directory}/xre</xre.directory>
+    <xre.module>fr.loria.score.Rt</xre.module>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <configuration>
+          <modules>
+            <module>${xre.module}</module>
+          </modules>
+          <!--where GWT compiler will write output files -->
+          <webappDirectory>${gwt.output.directory}</webappDirectory>
+          <style>${gwt.style}</style>
+          <disableCastChecking>true</disableCastChecking>
+          <disableClassMetadata>true</disableClassMetadata>
+          <soyc>false</soyc>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <!-- We need to copy the jar with the classes shared by the 
+                client and server side of the RT editor to the library directory of the generated 
+                war. We do it like this because we can't exclude all transitive dependencies 
+                of the shared jar at once. -->
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.xwiki.contrib.wiki30</groupId>
+                  <artifactId>rt-gwt-client</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>shared</classifier>
+                  <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/lib</outputDirectory>
+                </artifactItem>
+
+                <artifactItem>
+                  <!-- FIXME: Is this really necesary? -->
+                  <groupId>hsqldb</groupId>
+                  <artifactId>hsqldb</artifactId>
+                  <version>1.8.0.7</version>
+                  <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/lib</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <archiveClasses>true</archiveClasses>
+          <!--Artifact used for overlaying, not a real web app -->
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
