@@ -57,8 +57,7 @@
   </distributionManagement>
 
   <modules>
-    <!-- This will become wiki30-realtime once Bogdan will agree -->
-    <module>realtime-editor</module>
+    <module>wiki30-realtime</module>
     <module>wiki30-social</module>
     <module>wiki30-distribution</module>
   </modules>
