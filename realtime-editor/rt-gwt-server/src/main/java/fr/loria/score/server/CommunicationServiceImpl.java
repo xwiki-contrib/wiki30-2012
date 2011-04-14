@@ -3,33 +3,30 @@ package fr.loria.score.server;
 import fr.loria.score.client.ClientJupiterAlg;
 import fr.loria.score.client.CommunicationService;
 import fr.loria.score.jupiter.model.Message;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CommunicationServiceImpl implements CommunicationService {
-    private static final Log LOG = LogFactory.getLog(CommunicationService.class);
-    private ClientServerCorrespondents clientServerCorrespondents = ClientServerCorrespondents.getInstance();
+    //the client id generator
+    private final AtomicInteger atomicInt = new AtomicInteger();
+
+    //todo: just a hack!
+    //the mapping between the editing session id and the list of ids of the clients that share the same editing session
+    private Map<Integer, List<Integer>> locks = new HashMap<Integer, List<Integer>>();
+    {
+        locks.put(0, new ArrayList<Integer>());
+    }
 
     /**
      * {@inheritDoc}
      */
     public Message[] clientReceive(int siteId) {
-        ServerJupiterAlg server = clientServerCorrespondents.getCorrespondents().get(siteId);
-        // todo: bf in case not found, create one.
-        // It is the case when the user has left the tab open, the server went down and the client asks the content for an unexistent id
-        if (server == null) {
-        }
-
-        //todo: add buffering
-        Message[] msgs;
-        List<Message> list = server.unsentMessages;
-        synchronized (list) {
-            msgs = list.toArray(new Message[0]);
-            list.clear();
-        }
-        return msgs;
+        System.out.println("Client receive for siteId: " + siteId);
+        ServerJupiterAlg server = ClientServerCorrespondents.getInstance().getCorrespondents().get(siteId);
+        Message[] msg = server.getMessages();
+        System.out.println(">>> Client #: " + siteId + " receives: " + Arrays.asList(msg));
+        return msg;
     }
 
     /**
@@ -37,19 +34,57 @@ public class CommunicationServiceImpl implements CommunicationService {
      */
     public void serverReceive(Message msg) {
         // now the corresponding server receives the message and atomically notifies peer servers which send their updates to their clients
-        synchronized (CommunicationServiceImpl.class) {
-            LOG.debug("Server received message " + msg);
+        System.out.println("Thread: "+Thread.currentThread().getName()+ " Server receives message: " + msg );
+        int esid = msg.getEditingSessionId();
+        Map<Integer, List<Integer>> locks = getEditingSessions();
+        if (locks.containsKey(esid)) {
             int siteId = msg.getSiteId();
-            ServerJupiterAlg serverJupiter = clientServerCorrespondents.getCorrespondents().get(siteId);
-            serverJupiter.receive(msg);
+            ServerJupiterAlg serverJupiter = ClientServerCorrespondents.getInstance().getCorrespondents().get(siteId);
+            // overkill for performance, but that's a Jupiter constraint to serialize receive operations
+            //sync on a per editing session lock
+            Object editingSessionLock = locks.get(esid);
+            synchronized (editingSessionLock) {
+                serverJupiter.receive(msg);
+            }
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public String createServerPairForClient(ClientJupiterAlg clientJupiterAlg) {
-        LOG.debug("Adding server correspondent for client " + clientJupiterAlg);
-        return clientServerCorrespondents.addServerForClient(clientJupiterAlg);
+    public Integer generateClientId() {
+        int increment = atomicInt.getAndIncrement();
+        System.out.println("Generated client id: " + increment);
+        return increment;
     }
-}  
+
+    /**
+     * {@inheritDoc}
+     */
+    public String createServerPairForClient(ClientJupiterAlg clientJupiterAlg) {
+        System.out.println("Create server pair..");
+        updateEditingSessions(clientJupiterAlg);
+        return ClientServerCorrespondents.getInstance().addServerForClient(clientJupiterAlg);
+    }
+
+    /**
+     * @return the mapping between editing sessions and the participants
+     */
+    protected Map<Integer, List<Integer>> getEditingSessions() {
+        return locks;
+    }
+
+    /**
+     * Based on it's editing session id the client's id is added to the sessions map
+     * @param clientJupiterAlg it's id is to be added to the editing sessions map
+     */
+    private void updateEditingSessions(ClientJupiterAlg clientJupiterAlg) {
+        System.out.println("Update editing sessions ..");
+        int esid = clientJupiterAlg.getEditingSessionId();
+        Map<Integer, List<Integer>> locks = getEditingSessions();
+        synchronized (locks) {
+            locks.get(esid).add(clientJupiterAlg.getSiteId());
+            ClientServerCorrespondents.getInstance().setEditingSessions(locks);
+        }
+    }
+}
