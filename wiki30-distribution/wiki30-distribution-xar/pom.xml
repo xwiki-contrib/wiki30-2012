@@ -53,8 +53,8 @@
     <plugins>
       <!-- Do the work. -->
       <plugin>
-        <groupId>org.xwiki.platform</groupId>
-        <artifactId>xwiki-platform-tool-xar-plugin</artifactId>
+        <groupId>org.xwiki.platform.tools</groupId>
+        <artifactId>xwiki-xar-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
