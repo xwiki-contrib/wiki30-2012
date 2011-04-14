@@ -1,6 +1,6 @@
 package fr.loria.score.jupiter;
 
-
+import com.google.gwt.core.client.GWT;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.model.Operation;
 import fr.loria.score.jupiter.model.State;
@@ -14,9 +14,10 @@ import java.util.List;
 
 /**
  * Base class which uses the Jupiter algorithm for achieving convergence across divergent copies of data.
- * <b>Note: it only respects C1 </b>
+ * <b>Note: it only requires that TP1 is satisfied bytransformation functions.</b>
  */
 public abstract class JupiterAlg implements Serializable {
+
     // Identifies a client to the server.
     // If 2 operations are simultaneously received by the server, it will sequentially apply them in an ascending order
     protected int siteId;
@@ -26,6 +27,7 @@ public abstract class JupiterAlg implements Serializable {
     //the outgoing list of processed operations used to transform the received operations
     protected transient List<Message> queue = new LinkedList<Message>();
     protected transient Transformation xform;
+
     protected volatile String data;
 
     public JupiterAlg() {
@@ -41,20 +43,24 @@ public abstract class JupiterAlg implements Serializable {
         this(initalData, siteId, TransformationFactory.createResselTransformation());
     }
 
+    public JupiterAlg(String initalData) {
+        this.data = initalData;
+    }
+
     /**
      * Generates a local operation
      *
      * @param op the operation to be applied and sent
      */
     public void generate(Operation op) {
-        System.out.println(this + "\t Generate: " + op);
+        GWT.log(this + "\t Generate: " + op);
         //apply op locally
         data = op.execute(data);
         //todo: clone
         Message newMsg = new Message(new State(currentState.getGeneratedMsgs(), currentState.getReceivedMsgs()), op);
         queue.add(newMsg);
         currentState.incGeneratedMsgs();
-        System.out.println(this);
+        GWT.log(this.toString());
         send(newMsg);
     }
 
@@ -64,51 +70,60 @@ public abstract class JupiterAlg implements Serializable {
      * @param receivedMsg the received message
      */
     public void receive(Message receivedMsg) {
-        System.out.println(this + "\tReceive: " + receivedMsg);
+        GWT.log(this + "\tReceive: " + receivedMsg);
         // Discard acknowledged messages
         for (Iterator<Message> it = queue.iterator(); it.hasNext();) {
             Message m = it.next();
             if (m.getState().getGeneratedMsgs() < receivedMsg.getState().getReceivedMsgs()) {
-                System.out.println(this + "\tRemove " + m);
+                GWT.log(this + "\tRemove " + m);
                 it.remove();
             }
         }
         assert (receivedMsg.getState().getGeneratedMsgs() == currentState.getReceivedMsgs());
 
-        // Transform new message and the ones in the queue
-        Operation op1 = receivedMsg.getOperation();
+        // Transform received message and the ones in the queue
+        Operation opr = receivedMsg.getOperation();
         for (Message m : queue) {
-            Operation tmp = op1;
+            Operation tmp = opr;
 
-            op1 = xform.transform(op1, m.getOperation());
-            System.out.println(this + "\tTransformed op1 = " + op1);
+            opr = xform.transform(opr, m.getOperation());
+            GWT.log(this + "\tTransformed op1 = " + opr);
 
             Operation op2 = xform.transform(m.getOperation(), tmp);
-            System.out.println(this + "\tTransformed op2 = " + op2);
+            GWT.log(this + "\tTransformed op2 = " + op2);
 
             m.setOperation(op2);
         }
         //apply transformed receivedMsg
-        data = op1.execute(data);
-        //todo: clone
-        Message newMsg = new Message(new State(currentState.getGeneratedMsgs(), currentState.getReceivedMsgs()), op1);
+        data = opr.execute(data);
+        //todo: clone instead of copy constructor
+        Message newMsg = new Message(new State(currentState.getGeneratedMsgs(), currentState.getReceivedMsgs()), opr);
+		//newMsg.setEditingSessionId(receivedMsg.getEditingSessionId());
         currentState.incReceivedMsgs();
         execute(newMsg);
-        System.out.println(this);
-    }
-
-    public String getData() {
-        return data;
+        GWT.log(this.toString());
     }
 
     public void setData(String data) {
         this.data = data;
     }
 
+    public String getData() {
+        return data;
+    }
+
+    public void setSiteId(int siteId) {
+        this.siteId = siteId;
+    }
+
     public int getSiteId() {
         return siteId;
     }
 
+    public State getCurrentState() {
+        return new State(currentState);
+    }
+    
     /**
      * Both client and server must execute some action after receiving the message
      *
@@ -124,10 +139,12 @@ public abstract class JupiterAlg implements Serializable {
     protected abstract void send(Message m);
 
 
+    @Override
     public int hashCode() {
         return siteId;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o instanceof JupiterAlg) {
             JupiterAlg other = (JupiterAlg) o;
@@ -136,6 +153,7 @@ public abstract class JupiterAlg implements Serializable {
         return false;
     }
 
+    @Override
     public String toString() {
         return getClass().getName() + "@" + siteId + "#" + data + ", " + currentState + "#";
     }

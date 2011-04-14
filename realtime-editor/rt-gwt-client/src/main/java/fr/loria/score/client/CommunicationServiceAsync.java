@@ -33,4 +33,11 @@ public interface CommunicationServiceAsync {
      * @return the available content on which other clients are performing real time operations <b>if any</b>
      */
     void createServerPairForClient(ClientJupiterAlg clientJupiterAlg, AsyncCallback<String> async);
+
+    /**
+     * Every new generated client gets an ID
+     *
+     * @param callback to be executed on client side after call completion
+     */
+    void generateClientId(AsyncCallback<Integer> callback);
 }

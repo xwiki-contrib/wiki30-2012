@@ -24,6 +24,11 @@ public interface CommunicationService extends RemoteService {
      */
     String createServerPairForClient(ClientJupiterAlg clientJupiterAlg);
 
+    /**
+     * {@inheritDoc}
+     */
+    Integer generateClientId();
+
     static class ServiceHelper {
         private static CommunicationServiceAsync communicationService = GWT.create(CommunicationService.class);
 

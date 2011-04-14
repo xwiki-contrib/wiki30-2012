@@ -1,6 +1,6 @@
 ##The module name must match the value of the rename-to attribute from Rt.gwt.xml
 #set($moduleName = "xre")
-//todo bf: review and remove unnecessary stuff!
+
 /**
  * XWiki's custom RT editor controller.
  * Usage: \$xwiki.jsfx.use("path/to/XWikiRt.js", {'forceSkinAction': true, 'lazy': false})
@@ -27,7 +27,7 @@ var Rt =
     instances: {},
 
     /**
-     * Loads the RT code on demand.
+     * Loads the RT JS code on demand(which is Rt.onModuleLoad() ).
      */
     load : function() {
         // Test if the code has been already loaded.
@@ -180,8 +180,7 @@ var Rt =
             }
 
             // Prevent further calls to this method.
-            this.maybeHookOnScriptLoad = function() {
-            };
+            this.maybeHookOnScriptLoad = function() {};
         }
     },
 
@@ -208,12 +207,11 @@ var Rt =
         }
 
         // Prevent further calls to this method.
-        this.hookGwtOnLoad = function() {
-        };
+        this.hookGwtOnLoad = function() {};
     },
 
     /**
-     * @return the WYSIWYG editor instance associated with the given hookId
+     * @return the RT editor instance associated with the given hookId
      */
     getInstance: function(hookId) {
         return this.instances[hookId];

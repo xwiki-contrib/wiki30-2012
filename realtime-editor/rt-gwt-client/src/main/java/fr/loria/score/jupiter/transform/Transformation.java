@@ -1,7 +1,6 @@
 package fr.loria.score.jupiter.transform;
 
 import fr.loria.score.jupiter.model.DeleteOperation;
-import fr.loria.score.jupiter.model.NoOperation;
 import fr.loria.score.jupiter.model.InsertOperation;
 import fr.loria.score.jupiter.model.Operation;
 
@@ -28,9 +27,10 @@ public abstract class Transformation {
             } else { // is NoOp
                 return m1;    
             }
+        } else { 
+            // m1 is NoOp
+            return m1;
         }
-        //NoOp
-        return new NoOperation(0);
     }
 
     protected abstract Operation handleInsertInsert(Operation m1, Operation m2);

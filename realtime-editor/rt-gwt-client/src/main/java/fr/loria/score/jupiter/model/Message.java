@@ -8,6 +8,15 @@ import java.io.Serializable;
 public class Message implements Serializable {
     private State state;
     private Operation operation;
+    private int editingSessionId; // TODO: not sure esid is necessary here.
+
+    public Message() {
+    }
+    
+    public Message(State state, Operation operation, int sesssionId) {
+        this(state, operation);
+        this.editingSessionId = sesssionId;
+    }
 
     public Message(State state, Operation operation) {
         this.state = state;
@@ -15,11 +24,7 @@ public class Message implements Serializable {
     }
 
     public Message(Message m) {
-        this.state = new State(m.getState());
-        this.operation = m.getOperation();
-    }
-
-    public Message() {
+        this(new State(m.getState()), m.getOperation());
     }
 
     public Operation getOperation() {
@@ -38,8 +43,16 @@ public class Message implements Serializable {
         return operation.getSiteId();
     }
 
+    public int getEditingSessionId() {
+        return editingSessionId;
+    }
+
+    public void setEditingSessionId(int editingSessionId) {
+        this.editingSessionId = editingSessionId;
+    }
+
     @Override
     public String toString() {
-        return "Message: " + state + ", " + operation;
+        return "Message: " + state + ", " + operation + ", editingSessionId:" + editingSessionId;
     }
 }

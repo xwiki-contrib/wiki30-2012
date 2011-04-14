@@ -1,16 +1,11 @@
 package fr.loria.score.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.dom.client.Node;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TextArea;
 import fr.loria.score.jupiter.model.DeleteOperation;
@@ -21,17 +16,32 @@ import org.xwiki.gwt.dom.client.JavaScriptObject;
 import org.xwiki.gwt.user.client.Config;
 import org.xwiki.gwt.user.client.internal.DefaultConfig;
 
+import java.util.Arrays;
 
 public class RtApi {
-    public static int siteId = Random.nextInt(100);
     private static final int REFRESH_INTERVAL = 2000;
 
-    private TextArea textArea;
+    private Editor editor = Editor.getEditor();
 
     private CommunicationServiceAsync comService = CommunicationService.ServiceHelper.getCommunicationService();
-    private ClientJupiterAlg clientJupiter;
+    private ClientJupiterAlg clientJupiter = new ClientJupiterAlg("", Random.nextInt(100));
+
+
+    /**
+     * Publishes the RT editor API.
+     */
+    public static native void  publish()/*-{
+          $wnd.RtApi = function(cfg) {
+            if(typeof cfg == 'object') {
+                this.instance = @fr.loria.score.client.RtApi::new(Lorg/xwiki/gwt/dom/client/JavaScriptObject;)(cfg);
+            }
+          }
+    }-*/;
 
     public RtApi(JavaScriptObject jsConfig) {
+        initClient();
+        editor.addHooksToEventListeners(new EditorApi());
+
         Config config = new DefaultConfig(jsConfig);
 
         // Get the text area element
@@ -39,166 +49,145 @@ public class RtApi {
         if (hook == null) {
             return;
         }
-        //todo bf:review!
-        if (hook.getNodeName().equalsIgnoreCase("textarea")) {
-            textArea = TextArea.wrap(hook);
-            clientJupiter = new ClientJupiterAlg(textArea.getText(), siteId);
+
+        Node txtArea;
+        if (hook.hasChildNodes()) {
+            txtArea = hook.getChild(0);
         }
 
-        createServerPairForClient();
+        if (hook.getNodeName().equalsIgnoreCase("textarea")) {
+            //TODO: replace the text area with the canvas & set the canvas size
+            int width = 500;
+            int height = 210;
+//            if (hook.hasAttribute("offsetHeight") && hook.hasAttribute("offsetWidth")) {
+//                width = Integer.valueOf(hook.getAttribute("width"));
+//                height = Integer.valueOf(hook.getAttribute("height"));
+//            }
 
-        //simulate the server-push via simple-polling
-        receiveFromServer();
+            TextArea tArea = TextArea.wrap(hook);
+            height = tArea.getOffsetHeight();
+            width = tArea.getOffsetWidth();
 
-        textArea.addKeyDownHandler(new KeyDownHandler() {
-            public void onKeyDown(KeyDownEvent event) {
-                int nativeKeyCode = event.getNativeKeyCode();
-                if (nativeKeyCode != 0) {
-                    Operation operation = null;
-                    int position = textArea.getCursorPos();
+            Element canvasEl = DOM.createElement("canvas");
+            canvasEl.setId(config.getParameter("hookId"));
+            canvasEl.setInnerHTML(tArea.getText());
+            canvasEl.setPropertyInt("width", width);
+            canvasEl.setPropertyInt("height", height);
 
-                    switch (nativeKeyCode) {
-                        case KeyCodes.KEY_UP:
-                        case KeyCodes.KEY_DOWN:
-                        case KeyCodes.KEY_LEFT:
-                        case KeyCodes.KEY_RIGHT:
-                        case KeyCodes.KEY_HOME:
-                        case KeyCodes.KEY_END:
-                        case KeyCodes.KEY_CTRL:// when user pressed CTRL key in any combination, its intent was not to edit the data, but rather to achieve some other OS functionality
-                        case KeyCodes.KEY_ESCAPE:
-                        case KeyCodes.KEY_PAGEDOWN:
-                        case KeyCodes.KEY_PAGEUP:
-                            break;
-
-                        case KeyCodes.KEY_TAB: {
-                            //when TAB is hit, by default it moves the focus to the next "focusable" element
-                            //prevent default behaviour and stop bubbling
-                            event.preventDefault();
-                            event.stopPropagation();
-
-                            //insert the TAB at the current cursor position
-                            if (event.getSource() instanceof TextArea) {
-                                String text = textArea.getText();
-                                textArea.setText(text.substring(0, position) + "\t" + text.substring(position));
-                                textArea.setCursorPos(position + 1);
-                            }
-                            operation = new InsertOperation(position, '\t', siteId);
-                            break;
-                        }
-                        case KeyCodes.KEY_ENTER: {
-                            operation = new InsertOperation(position, '\n', siteId);
-                            break;
-                        }
-                        case KeyCodes.KEY_BACKSPACE: {
-                            operation = new DeleteOperation(position - 1, siteId);
-                            break;
-                        }
-                        case KeyCodes.KEY_DELETE: {
-                            operation = new DeleteOperation(position, siteId);
-                            break;
-                        }
-                    }
-                    if (operation != null) {
-                        clientJupiter.generate(operation);
-                    }
-                }
-            }
-        });
-
-        // todo: study case when user holds the key pressed for long time- which is KP for
-        textArea.addKeyPressHandler(new KeyPressHandler() {
-            public void onKeyPress(KeyPressEvent event) {
-
-                Operation operation = null;
-                char charCode = event.getCharCode();
-                int position = textArea.getCursorPos();
-
-                switch (charCode) {
-                    case 0:
-                        break;
-                    default: {
-                        operation = new InsertOperation(position, charCode, siteId);
-                    }
-                }
-                // todo: handle mouse selection or shift selection delete and copy paste + key shortcuts!!
-                if (operation != null) {
-                    clientJupiter.generate(operation);
-                }
-            }
-        });
-
+            com.google.gwt.dom.client.Element parentElem = hook.getParentElement();
+            parentElem.replaceChild(hook, canvasEl);
+        }
     }
 
     /**
-     * Sends every typed character to server. TODO: add buffering
+     * Set the server generated id for this client
      */
-    private void sendToServer() {
-        //todo:bf impl
+    private void initClient() {
+        comService.generateClientId(new AsyncCallback<Integer>() {
+            public void onFailure(Throwable throwable) {
+                //recover somehow, either throw e
+                GWT.log("Failed to generate siteId, using local generated id. " + throwable);
+            }
+
+            public void onSuccess(Integer id) {
+                GWT.log("Generated site id: " + id);
+                clientJupiter.setSiteId(id);
+                clientJupiter.setEditor(editor);
+
+                clientJupiter.setEditingSessionId(0); // todo: set it by namespace, page, id
+                createServerPairForClient();
+                serverPushForClient();
+            }
+        });
     }
 
     /**
-     * Simulate the server-push via simple-polling
+     * Create the corresponding server component for this client on the server side AND update the text area with the available content
      */
-    private void receiveFromServer() {
-        Timer timer = new Timer() {
-            @Override
-            public void run() {
-                clientReceive();
-            }
-        };
-        timer.scheduleRepeating(REFRESH_INTERVAL);
-    }
-
     private void createServerPairForClient() {
-        //create the corresponding server component for this client on the server side AND update the text area with the available content
-        AsyncCallback<String> callback = new AsyncCallback<String>() {
+        comService.createServerPairForClient(clientJupiter, new AsyncCallback<String>() {
             public void onFailure(Throwable caught) {
                 GWT.log("Fail to create server pair. Error: " + caught);
             }
 
             public void onSuccess(String result) {
-                GWT.log("Created server pair with id: " + siteId);
-                clientJupiter.setData(result);
-                //todo:bf check if result not empty
-                textArea.setText(result);
-            }
-        };
-        comService.createServerPairForClient(clientJupiter, callback);
-    }
-
-    private void clientReceive() {
-        AsyncCallback<Message[]> callback = new AsyncCallback<Message[]>() {
-            public void onFailure(Throwable caught) {
-                GWT.log("Error: " + caught);
-            }
-
-            public void onSuccess(Message[] messages) {
-                if (messages.length > 0) {
-                    for (int i = 0; i < messages.length; i++) {
-                        Message message = messages[i];
-                        clientJupiter.receive(message);
-                    }
-                    //update txtArea with transformed text
-                    String clientData = clientJupiter.getData();
-                    if (!textArea.getText().equals(clientData)) {
-                        int oldCaretPos = textArea.getCursorPos(); // todo: put the cursor to its original position
-                        textArea.setText(clientData);
-                    }
+                GWT.log("Created the server pair for this client");
+                if (result != null) {
+                    clientJupiter.setData(result);
+                    //update UI
+                    editor.setContent(result);
+//                    editor.paint();
                 }
             }
-        };
-        comService.clientReceive(siteId, callback);
+        });
     }
 
     /**
-     * Publishes the RT editor API.
+     * Simulate the server-push via simple polling
      */
-    public static native void publish()
-        /*-{
-          $wnd.RtApi = function(cfg) {
-            if(typeof cfg == 'object') {
-                this.instance = @fr.loria.score.client.RtApi::new(Lorg/xwiki/gwt/dom/client/JavaScriptObject;)(cfg);
+    private void serverPushForClient() {
+
+        final Timer timer = new Timer() {
+            @Override
+            public void run() {
+                System.out.println(">> Server push for client: clientId = " + clientJupiter.getSiteId());
+                comService.clientReceive(clientJupiter.getSiteId(), new AsyncCallback<Message[]>() {
+                    public void onFailure(Throwable caught) {
+                        GWT.log("Error: " + caught);
+                    }
+
+                    public void onSuccess(Message[] messages) {
+                        GWT.log("Receive server sent messages: " + Arrays.asList(messages));
+                        if (messages.length > 0) {
+                            for (int i = 0; i < messages.length; i++) {
+                                Message message = messages[i];
+                                clientJupiter.receive(message);
+                            }
+                        }
+                    }
+                });
             }
-          }
-        }-*/;
+        };
+
+        timer.scheduleRepeating(REFRESH_INTERVAL);
+    }
+
+    private native void replaceTxtAreaWithCanvas() /*-{
+
+    }-*/;
+
+    //EDITOR API
+    class EditorApi {
+        /**
+     * On insertion/deletion, the JavaScript editor generates an insert/delete operation which is then sent to server
+     * @param s the inserted string(split in chars sequence)/character
+     * @param position the insertion position
+     */
+        public void clientInsert(String s, int position) {
+            if (s.length() > 1) {
+                char [] charSeq = s.toCharArray();
+                for (int i = 0; i < charSeq.length; i++) {
+                    clientInsert(charSeq[i], position + i);
+                }
+            } else if (s.length() == 1){
+              clientInsert(s.charAt(0), position);
+            }
+        }
+
+        public void clientInsert(char c, int position) {
+            Operation op = new InsertOperation(position, c, clientJupiter.getSiteId());
+            clientJupiter.generate(op);
+        }
+
+        public void clientDelete(int pos) {
+            Operation op = new DeleteOperation(pos, clientJupiter.getSiteId());
+            clientJupiter.generate(op);
+        }
+
+        public void clientDelete(int from, int to) {
+            for (int i = to - 1; i >= from; i--) { // from index is inclusive, to is exclusive, as the end selection idx is positioned at the next position
+                clientDelete(i);
+            }
+        }
+    }
 }

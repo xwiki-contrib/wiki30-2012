@@ -1,57 +1,58 @@
 package fr.loria.score.jupiter.model;
 
+import com.google.gwt.core.client.GWT;
+import fr.loria.score.client.Editor;
+
 /**
- * Inserts a character at a given position
+ * Inserts a char at a given position
  */
 public class InsertOperation extends Operation {
-    public static final String POSITION_GREATER_THAN_DATA_LENGTH = "Position is greater than data length: ";
 
-    // the character to be inserted
-    private char character;
-
-    public InsertOperation(int position, char character) {
-        super(position);
-        this.character = character;
-    }
-
-    public InsertOperation(int position, char character, int siteId) {
-        super(position, siteId);
-        this.character = character;
-    }
+    // the char to be inserted
+    private char chr;
 
     public InsertOperation() {
+        super();
+    }
+    
+    public InsertOperation(int position, char c, int siteId) {
+        super(position, siteId);
+        this.chr = c;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public String execute(String data) {
-        System.out.println("\tExecuting " + this + " on data = " + data);
+        GWT.log("\tExecuting " + this + " on data = " + data);
         int length = data.length();
 
         if (position > length) {
-            throw new IllegalArgumentException(POSITION_GREATER_THAN_DATA_LENGTH + length);
+            String errMsg = POSITION_GREATER_THAN_DATA_LENGTH + length;
+            GWT.log(errMsg);
+            throw new IllegalArgumentException(errMsg);
         }
 
-        StringBuilder sb = new StringBuilder(length + 1);
-        if (length == 0) {
-            sb = sb.append(character);
-        } else if (position == 0) {
-            sb = sb.append(character).append(data);
-        } else if (position == length) {
-            sb = sb.append(data).append(character);
-        } else {
-            sb = sb.append(data.substring(0, position)).append(character).append(data.substring(position, length));
-        }
+        StringBuilder sb = new StringBuilder(data);
+        sb.insert(position, chr);
         return sb.toString();
     }
 
-    public char getCharacter() {
-        return character;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateUI(Editor editor) {
+        editor.shiftCaret(editor.getOldCaretPos() + 1);
+    }
+
+    public char getChr() {
+        return chr;
     }
 
     @Override
     public String toString() {
-        return "InsertOperation(" + position + ", " + character + ")";
+        return "InsertOperation(" + position + ", " + chr + ")" + super.toString();
     }
 }

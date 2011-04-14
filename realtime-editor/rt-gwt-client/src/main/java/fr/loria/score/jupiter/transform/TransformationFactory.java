@@ -8,8 +8,4 @@ public class TransformationFactory {
     public static Transformation createResselTransformation() {
         return new ResselTransformation();
     }
-
-    public static Transformation createSunTransformation() {
-        return new SunTransformation();
-    }
 }

@@ -8,6 +8,7 @@ import fr.loria.score.jupiter.model.Operation;
 /**
  * Ressel transformation implementation
  */
+// TODO: it is not mandatory to create new operation, shifting parameters is enough
 public class ResselTransformation extends Transformation {
 
     @Override
@@ -21,9 +22,9 @@ public class ResselTransformation extends Transformation {
         InsertOperation i1 = (InsertOperation) m1;
 
         if ((p1 < p2) || ((p1 == p2) && (siteId1 < siteId2))) {
-            return new InsertOperation(p1, i1.getCharacter(), siteId1);
+            return new InsertOperation(p1, i1.getChr(), siteId1);
         } else {
-            return new InsertOperation(p1 + 1, i1.getCharacter(), siteId1);
+            return new InsertOperation(p1 + 1, i1.getChr(), siteId1);
         }
     }
 
@@ -36,9 +37,9 @@ public class ResselTransformation extends Transformation {
         int siteId1 = m1.getSiteId();
 
         if (p1 <= p2) {
-            return new InsertOperation(p1, i1.getCharacter(), siteId1);
+            return new InsertOperation(p1, i1.getChr(), siteId1);
         } else {
-            return new InsertOperation(p1 - 1, i1.getCharacter(), siteId1);
+            return new InsertOperation(p1 - 1, i1.getChr(), siteId1);
         }
     }
 
@@ -66,7 +67,7 @@ public class ResselTransformation extends Transformation {
         } else if (p1 > p2) {
             return new DeleteOperation(p1 - 1, siteId1);
         } else {
-            return new NoOperation();
+            return new NoOperation(p1, siteId1);
         }
     }
 }

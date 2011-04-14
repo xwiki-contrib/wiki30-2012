@@ -1,46 +1,50 @@
 package fr.loria.score.jupiter.model;
 
+import com.google.gwt.core.client.GWT;
+import fr.loria.score.client.Editor;
+
 /**
  * Deletes a character at the given position
  */
 public class DeleteOperation extends Operation {
-    public static final String POSITION_GREATER_THAN_DATA_LENGTH = "Position is greater than data length";
-
-    public DeleteOperation(int position) {
-        super(position);
-    }
-
-    public DeleteOperation(int position, int siteId) {
-        super(position, siteId);
-    }
 
     public DeleteOperation() {
+        super();
+    }
+    
+    public DeleteOperation(int startPos, int siteId) {
+        super(startPos, siteId);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public String execute(String data) {
-        System.out.println("\tExecuting " + this + " on data = " + data);
+        GWT.log("\tExecuting " + this + " on data = " + data);
         int length = data.length();
 
         if (position >= length) {
-            throw new IllegalArgumentException(POSITION_GREATER_THAN_DATA_LENGTH);
+            String errMsg = POSITION_GREATER_THAN_DATA_LENGTH + length;
+            GWT.log(errMsg);
+            throw new IllegalArgumentException(errMsg);
         }
-
-        StringBuilder sb = new StringBuilder(length - 1);
-        if (position == 0) {
-            sb = sb.append(data.substring(1, length));
-        } else if (position == length - 1) {
-            sb = sb.append(data.substring(0, position));
-        } else {
-            sb = sb.append(data.substring(0, position)).append(data.substring(position + 1, length));
-        }
+        
+        StringBuilder sb = new StringBuilder(data);
+        sb.deleteCharAt(position);
         return sb.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateUI(Editor editor) {
+        editor.shiftCaret(editor.getOldCaretPos() - 1);
     }
 
     @Override
     public String toString() {
-        return "DeleteOperation(" + position + ")";
+        return "DeleteOperation(" + position + ")" + super.toString();
     }
 }

@@ -1,15 +1,18 @@
 package fr.loria.score.jupiter.model;
 
+import fr.loria.score.client.Editor;
+
 /**
  * No op
  */
 public class NoOperation extends Operation {
-    public NoOperation(int position) {
-        super(position);
-    }
-
+    
     public NoOperation() {
-        super(0);
+        super();
+    }
+    
+    public NoOperation(int position, int siteId) {
+        super(position, siteId);
     }
 
     /**
@@ -20,8 +23,15 @@ public class NoOperation extends Operation {
         return data;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateUI(Editor editor) {
+    }
+
     @Override
     public String toString() {
-        return "NoOperation";
+        return "NoOperation()" + super.toString();
     }
 }
