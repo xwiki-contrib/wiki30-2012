@@ -258,37 +258,37 @@ public class RtApi {
     }
 
     interface JsBundle extends ClientBundle {
-        @Source("editor/jquery-1.4.3.min.js")
+        @Source("jquery-1.4.3.min.js")
         TextResource jquery();
 
-        @Source("editor/theme.js")
+        @Source("theme.js")
         TextResource theme();
 
-        @Source("editor/utils.js")
+        @Source("utils.js")
         TextResource utils();
 
-        @Source("editor/keys.js")
+        @Source("keys.js")
         TextResource keys();
 
-        @Source("editor/clipboard.js")
+        @Source("clipboard.js")
         TextResource clipboard();
 
-        @Source("editor/history.js")
+        @Source("history.js")
         TextResource history();
 
-        @Source("editor/cursor.js")
+        @Source("cursor.js")
         TextResource cursor();
 
-        @Source("editor/editor.js")
+        @Source("editor.js")
         TextResource editor();
 
-        @Source("editor/model.js")
+        @Source("model.js")
         TextResource model();
 
-        @Source("editor/parser.js")
+        @Source("parser.js")
         TextResource parser();
 
-        @Source("editor/init-editor.js")
+        @Source("init-editor.js")
         TextResource initEditor();
     }
 }
