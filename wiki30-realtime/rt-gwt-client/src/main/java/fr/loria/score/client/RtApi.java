@@ -1,7 +1,10 @@
 package fr.loria.score.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.ScriptElement;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Random;
@@ -22,6 +25,7 @@ public class RtApi {
     private static final int REFRESH_INTERVAL = 2000;
 
     private Editor editor = Editor.getEditor();
+    private JsBundle bundle = GWT.create(JsBundle.class);
 
     private CommunicationServiceAsync comService = CommunicationService.ServiceHelper.getCommunicationService();
     private ClientJupiterAlg clientJupiter = new ClientJupiterAlg("", Random.nextInt(100));
@@ -41,43 +45,105 @@ public class RtApi {
     public RtApi(JavaScriptObject jsConfig) {
         initClient();
         editor.addHooksToEventListeners(new EditorApi());
-
+       //todo: fix shortcuts to editor
+        // and set the caret at pos 0
         Config config = new DefaultConfig(jsConfig);
 
         // Get the text area element
-        Element hook = DOM.getElementById(config.getParameter("hookId"));
-        if (hook == null) {
+//        Element htmlTextAreaElement = DOM.getElementById(config.getParameter("hookId"));
+        Element htmlTextAreaElement = DOM.getElementById("content");
+        if (htmlTextAreaElement == null) {
             return;
         }
 
-        Node txtArea;
-        if (hook.hasChildNodes()) {
-            txtArea = hook.getChild(0);
-        }
-
-        if (hook.getNodeName().equalsIgnoreCase("textarea")) {
-            //TODO: replace the text area with the canvas & set the canvas size
+        if (htmlTextAreaElement.getTagName().equalsIgnoreCase("textarea")) {
             int width = 500;
             int height = 210;
-//            if (hook.hasAttribute("offsetHeight") && hook.hasAttribute("offsetWidth")) {
-//                width = Integer.valueOf(hook.getAttribute("width"));
-//                height = Integer.valueOf(hook.getAttribute("height"));
+//            if (htmlTextAreaElement.hasAttribute("offsetHeight") && htmlTextAreaElement.hasAttribute("offsetWidth")) {
+//                width = Integer.valueOf(htmlTextAreaElement.getAttribute("width"));
+//                height = Integer.valueOf(htmlTextAreaElement.getAttribute("height"));
 //            }
 
-            TextArea tArea = TextArea.wrap(hook);
+            TextArea tArea = TextArea.wrap(htmlTextAreaElement);
             height = tArea.getOffsetHeight();
             width = tArea.getOffsetWidth();
+//            editor.setContent(tArea.getText());
 
             Element canvasEl = DOM.createElement("canvas");
-            canvasEl.setId(config.getParameter("hookId"));
-            canvasEl.setInnerHTML(tArea.getText());
+            canvasEl.setId("editor");
             canvasEl.setPropertyInt("width", width);
             canvasEl.setPropertyInt("height", height);
 
-            com.google.gwt.dom.client.Element parentElem = hook.getParentElement();
-            parentElem.replaceChild(hook, canvasEl);
-        }
+            com.google.gwt.dom.client.Element parentElem = htmlTextAreaElement.getParentElement();
+            parentElem.insertFirst(canvasEl);
+            parentElem.removeChild(htmlTextAreaElement);
+
+            injectJSFilesForRTEditor(parentElem);
+
+//            var rtConfigO5qN = {
+//                page: 'WebHome'
+//                space: 'Main'
+//                wiki: 'xwiki'
+//                hookId: 'content'
+//                inputURL: 'http:\/\/localhost:8080\/xwiki\/bin\/edit\/Main\/WebHome?xpage=wysiwyginput&key=7w76&render=true'
+              }
     }
+
+    private void injectJSFilesForRTEditor(com.google.gwt.dom.client.Element parentElem) {
+        ScriptElement u1 = createScriptElement();
+        u1.setText(bundle.jquery().getText());
+        parentElem.appendChild(u1);
+
+        ScriptElement u2 = createScriptElement();
+        u2.setText(bundle.theme().getText());
+        parentElem.appendChild(u2);
+
+        ScriptElement u3 = createScriptElement();
+        u3.setText(bundle.utils().getText());
+        parentElem.appendChild(u3);
+
+        ScriptElement u4 = createScriptElement();
+        u4.setText(bundle.keys().getText());
+        parentElem.appendChild(u4);
+
+        ScriptElement u5 = createScriptElement();
+        u5.setText(bundle.clipboard().getText());
+        parentElem.appendChild(u5);
+
+        ScriptElement u6 = createScriptElement();
+        u6.setText(bundle.history().getText());
+        parentElem.appendChild(u6);
+
+        ScriptElement u7 = createScriptElement();
+        u7.setText(bundle.cursor().getText());
+        parentElem.appendChild(u7);
+
+        ScriptElement u8 = createScriptElement();
+        u8.setText(bundle.editor().getText());
+        parentElem.appendChild(u8);
+
+        ScriptElement u9 = createScriptElement();
+        u9.setText(bundle.model().getText());
+        parentElem.appendChild(u9);
+
+        ScriptElement u10 = createScriptElement();
+        u10.setText(bundle.model().getText());
+        parentElem.appendChild(u10);
+
+        ScriptElement u11 = createScriptElement();
+        u11.setText(bundle.parser().getText());
+        parentElem.appendChild(u11);
+
+        ScriptElement u12 = createScriptElement();
+        u12.setText(bundle.initEditor().getText());
+        parentElem.appendChild(u12);
+    }
+
+    private static ScriptElement createScriptElement() {
+        ScriptElement script = Document.get().createScriptElement();
+        script.setAttribute("language", "javascript");
+        return script;
+      }
 
     /**
      * Set the server generated id for this client
@@ -189,5 +255,40 @@ public class RtApi {
                 clientDelete(i);
             }
         }
+    }
+
+    interface JsBundle extends ClientBundle {
+        @Source("editor/jquery-1.4.3.min.js")
+        TextResource jquery();
+
+        @Source("editor/theme.js")
+        TextResource theme();
+
+        @Source("editor/utils.js")
+        TextResource utils();
+
+        @Source("editor/keys.js")
+        TextResource keys();
+
+        @Source("editor/clipboard.js")
+        TextResource clipboard();
+
+        @Source("editor/history.js")
+        TextResource history();
+
+        @Source("editor/cursor.js")
+        TextResource cursor();
+
+        @Source("editor/editor.js")
+        TextResource editor();
+
+        @Source("editor/model.js")
+        TextResource model();
+
+        @Source("editor/parser.js")
+        TextResource parser();
+
+        @Source("editor/init-editor.js")
+        TextResource initEditor();
     }
 }
