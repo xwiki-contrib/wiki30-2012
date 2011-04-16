@@ -9,9 +9,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.xwiki.contrib.wiki30</groupId>
   <artifactId>rt-application</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <packaging>xar</packaging>
 
   <name>Wiki30 Project - Real-time editor - XAR application</name>
@@ -20,9 +18,60 @@
 
   <build>
     <plugins>
+      <!-- Attach template overrides to the RtSkin page -->
       <plugin>
         <groupId>org.xwiki.platform.tools</groupId>
-        <artifactId>xwiki-xar-plugin</artifactId>
+        <artifactId>xwiki-xmldoc-update-plugin</artifactId>
+        <executions>
+          <!-- contentmenu.vm -->
+          <execution>
+            <phase>process-resources</phase>
+            <id>attach-contentmenu.vm-xar</id>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${basedir}/src/main/template-overrides/contentmenu.vm</file>
+              <sourceDocument>${project.build.outputDirectory}/XWiki/RtSkin.xml</sourceDocument>
+            </configuration>
+          </execution>
+          <!-- edit.vm -->
+          <execution>
+            <phase>process-resources</phase>
+            <id>attach-edit.vm-xar</id>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${basedir}/src/main/template-overrides/edit.vm</file>
+              <sourceDocument>${project.build.outputDirectory}/XWiki/RtSkin.xml</sourceDocument>
+            </configuration>
+          </execution>
+          <!-- editmenu.vm -->
+          <execution>
+            <phase>process-resources</phase>
+            <id>attach-editmenu.vm-xar</id>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${basedir}/src/main/template-overrides/editmenu.vm</file>
+              <sourceDocument>${project.build.outputDirectory}/XWiki/RtSkin.xml</sourceDocument>
+            </configuration>
+          </execution>
+          <!-- editrt.vm -->
+          <execution>
+            <phase>process-resources</phase>
+            <id>attach-editrt.vm-xar</id>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${basedir}/src/main/template-overrides/editrt.vm</file>
+              <sourceDocument>${project.build.outputDirectory}/XWiki/RtSkin.xml</sourceDocument>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

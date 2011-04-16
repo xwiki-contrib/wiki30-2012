@@ -1,0 +1,204 @@
+## Insert JS and CSS needed for the fullscreen edit feature
+$xwiki.jsfx.use('js/xwiki/editors/fullScreenEdit.js', {'forceSkinAction': true, 'language': ${context.language}})
+$xwiki.ssfx.use('js/xwiki/editors/fullScreenEdit.css', true)
+
+#set($formname = "edit")
+#set($saveaction = "save") ## todo-bf: what to save && what to preview??
+#set($previewenabled = true)
+#set($xredirect = "$!{escapetool.xml($request.getParameter('xredirect'))}")
+
+<div>
+    <div class="hidden">
+        <input type="hidden" name="template" value="$!{escapetool.xml($request.template)}" />
+        #if($request.section && $request.section!="")
+         #set($xcontinue=$doc.getURL("edit", "editor=rt&amp;section=$!{escapetool.xml($request.section)}"))
+        #else
+         #set($xcontinue=$doc.getURL("edit", "editor=rt"))
+        #end
+        <input type="hidden" name="xcontinue" value="$xcontinue"/>
+        <input type="hidden" name="xredirect" value="$!xredirect" />
+        <input type="hidden" name="language" value="$!tdoc.realLanguage" />
+    </div>
+    <div id="xwikitext">
+        <div id="xwikieditcontent">
+            <div id="xwikieditcontentinner">
+                $xwiki.getTextArea($tdoc.content)
+                #rt_editProperty($tdoc "content")
+            </div>
+        </div> ## xwikieditcontent
+    </div> ## xwikitext
+</div>
+#set($editactions = "bottom")
+<div class="bottombuttons">#template("editactions.vm")</div>
+
+##LOCAL TEMPLATES! Perhaps a refactoring to some macros in macros.vm will be availabe to use!
+
+#**
+  * Loads the RT-based editor for the specified object property. The special "content" document property is
+  * also supported.
+  *
+  * @param $editedDocument the xwiki document whose objects are being edited
+  * @param $propertyIds A comma separated list of property identifiers. An example of a property identifier is "XWiki.ArticleClass_0_content".
+  *#
+#macro(rt_editProperty $editedDocument $propertyId)
+#set($parameters = $util.hashMap)
+#rt_storeConfig($parameters $editedDocument $propertyId)
+#rt_editPropertyCustom($editedDocument $propertyId $parameters)
+#end
+
+#**
+  * Stores the RT configuration in a map of (parameter, value) pairs.
+  *
+  * @param $parameters the map of parameters where the RT configuration will be stored
+  * @param $editedDocument the document being edited
+  * @param $fieldId identifies the form field to be replaced by the RT editor
+  *#
+#macro(rt_storeConfig $parameters $editedDocument $fieldId)
+    #if(!$parameters.containsKey('hookId'))
+        #set($ok = $parameters.put('hookId', $fieldId))
+    #end
+    #set($ok = $parameters.put('wiki', $editedDocument.wiki))   ## what for?
+    #set($ok = $parameters.put('space', $editedDocument.space))
+    #set($ok = $parameters.put('page', $editedDocument.name))
+#end
+
+
+#**
+  * Loads the RT-based editor for the specified object property, using the given configuration parameters. The
+  * special "content" document property is also supported.
+  *
+  * @param $editedDocument the document whose objects are being edited
+  * @param $propertyIds A comma separated list of property identifiers. An example of a property identifier is "XWiki.ArticleClass_0_content".
+  * @param $parameters RT editor configuration parameters
+  *#
+#macro(rt_editPropertyCustom $editedDocument $propertyId $parameters)
+## HOOK to hide the plain text area and display the loading image.
+#rt_hide_hook($propertyId)
+## Import required JavaScript files (lazy=false).
+#rt_import(false)
+## Set the input value for the editor.            todo:bf
+#rt_inputProperty($editedDocument $propertyId $parameters)
+## Display conversion errors, if present.
+##wysiwyg_displayConversionError($propertyId)
+## Create the editor UI.
+#rt_createEditor($parameters)
+#end
+
+#**
+  * Sets the input of the RT editor.
+  *
+  * @param $fieldId identifies the rich form field for which to set the RT input
+  * @param $fieldValue the rich form field value to be set as the input for the RT editor; if there is a conversion
+  *            error on the current session for the specified field then this value is discarded and the value provided
+  *            by the ConversionFilter is used instead
+  * @param $parameters RT editor configuration parameter map to put the input URL query string in
+  *#
+#macro(rt_input $fieldId $fieldValue $parameters)
+##
+## In real-time mode the input value must be the empty string (this is a temporary limitation).
+##
+#if($request.sync) ## todo:bf: what's this ?
+    #set($fieldValue = "")
+#end
+
+#set($renderFieldValue = true)
+
+## todo bf: got it ?
+## Put the field value in the RT input map.  ??
+##
+#set($rtInput = $request.getSession().getAttribute("com.xpn.xwiki.wysiwyg.input"))
+#if(!$rtInput)
+    #set($rtInput = $util.getHashMap())
+    $request.getSession().setAttribute("com.xpn.xwiki.wysiwyg.input", $rtInput)
+#end
+#set($rtInputKey = $util.generateRandomString(4))
+#set($ok = $rtInput.put($rtInputKey, $fieldValue))
+##
+## Build the query string for the input URL.
+##
+##todo bf:what's this used for ?
+#set($ok = $parameters.put('inputURLQueryString', "xpage=wysiwyginput&key=${rtInputKey}&render=${renderFieldValue}"))
+#end
+
+
+#**
+ * Imports the JavaScript files required by the RT editor.
+ *
+ * @param $lazy {@code true} to download the WYSIWYG code only when it is needed, {@code false} to download it when the page is loaded
+*#
+##todo: !!
+#macro(rt_import $lazy)
+$xwiki.jsfx.use("js/xwiki/rte/xre/XWikiRt.js", {"forceSkinAction": true, "lazy": ${lazy}, 'defer': false})
+#end
+
+#**
+  * Sets the input of the RT editor based on a object property identifier. An example of a property identifier is
+  * "XWiki.ArticleClass_0_content". The special "content" property is also supported, which represents the content of
+  * the edited document.
+  *
+  * @param $editedDocument the document whose objects are being edited
+  * @param $propertyId identifies the rich text object property for which to set the RT input
+  * @param $parameters RT editor configuration parameter map to put the input URL in
+  *#
+#macro(rt_inputProperty $editedDocument $propertyId $parameters)
+#set($propertyValue = '')
+#if("$!propertyId" == "content")
+    #set($propertyValue = $editedDocument.content)  ##extract the text
+#else
+    #set($found = false)
+    #foreach($entry in $editedDocument.xWikiObjects.entrySet())
+        ## If class name matches..
+        #if($propertyId.startsWith("${entry.key}_"))
+            #foreach($object in $entry.value)
+                #set($classNameAndObjectNumber = $entry.key + '_' + $object.number + '_')
+                ## If object number matches..
+                #if($propertyId.startsWith($classNameAndObjectNumber))
+                    #set($propertyName = $propertyId.substring($classNameAndObjectNumber.length()))
+                    ## Make sure the property value is always a string. Use the empty string for unset properties.
+                    #set($propertyValue = "$!{object.getProperty($propertyName).getValue()}")
+                    #set($found = true)
+                    #break
+                #end ## If object number matches..
+            #end ## foreach object
+            #if($found)
+                #break
+            #end
+        #end ## If class name matches..
+    #end ## foreach class name
+#end
+#rt_input($propertyId $propertyValue $parameters)
+#set($ok = $parameters.put('inputURL', $editedDocument.getExternalURL('edit', $parameters.remove('inputURLQueryString'))))
+#end
+
+#**
+  * Creates a new RT editor instance using the given configuration parameters.
+  *
+  * @param $parameters RT editor configuration parameters
+  *#
+#macro(rt_createEditor $parameters)
+#set($jsVarName = "rtConfig${util.generateRandomString(4)}")
+#wysiwyg_writeConfig($jsVarName $parameters)
+<script type="text/javascript">
+//<![CDATA[
+##todo:bf review
+Rt.onModuleLoad(function() {
+  new RtApi($jsVarName);
+  $jsVarName = undefined;
+});
+//]]>
+</script>
+#end
+
+#**
+  * Hides the element that will be replaced by the RT editor and shows the loading animation instead.
+  *
+  * @param $fieldId identifies the form field that will be replaced by the RT editor
+  *#
+#macro(rt_hide_hook $fieldId)
+<script type="text/javascript">
+//<![CDATA[
+(function() {  }
+).call();
+//]]>
+</script>
+#end

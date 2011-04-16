@@ -10,6 +10,7 @@
 
   <artifactId>realtime-editor</artifactId>
   <packaging>pom</packaging>
+  
   <name>Wiki30 Project - Real-time editor - Parent POM</name>
   <description>Wiki30 Project - Real-time editor parent module</description>
   <url>http://wiki30.xwikisas.com</url>
@@ -20,10 +21,6 @@
         </developerConnection>
     <url>http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk</url>
   </scm>
-
-<!--   <properties> -->
-<!--     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> -->
-<!--   </properties> -->
 
   <distributionManagement>
     <repository>
