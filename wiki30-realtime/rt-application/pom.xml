@@ -23,6 +23,18 @@
         <groupId>org.xwiki.platform.tools</groupId>
         <artifactId>xwiki-xmldoc-update-plugin</artifactId>
         <executions>
+          <!-- editactions.vm -->
+          <execution>
+            <phase>process-resources</phase>
+            <id>attach-editactions.vm-xar</id>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${basedir}/src/main/template-overrides/editactions.vm</file>
+              <sourceDocument>${project.build.outputDirectory}/XWiki/RtSkin.xml</sourceDocument>
+            </configuration>
+          </execution>
           <!-- contentmenu.vm -->
           <execution>
             <phase>process-resources</phase>

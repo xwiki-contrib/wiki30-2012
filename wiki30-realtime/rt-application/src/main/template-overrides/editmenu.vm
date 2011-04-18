@@ -27,6 +27,10 @@
   #else ## !isAdvanced
     #xwikitopmenuentry('' $currentEditorTitle 'tmCurrentEditor' "$currentEditorId hasIcon")
   #end
+ 
+  ## I've put this here because putting it only in editactions.vm doesn't seem to work (Fabio) 
+  #set ($keyboardShortcutsEnabled = (($editor != 'wysiwyg') && ($editor != 'rt')))
+  
   #if($keyboardShortcutsEnabled)
     <script type="text/javascript">
     //<![CDATA[
