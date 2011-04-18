@@ -24,7 +24,7 @@ import java.util.Arrays;
 public class RtApi {
     private static final int REFRESH_INTERVAL = 2000;
 
-    private Editor editor = Editor.getEditor();
+    private Editor editor;
     private JsBundle bundle = GWT.create(JsBundle.class);
 
     private CommunicationServiceAsync comService = CommunicationService.ServiceHelper.getCommunicationService();
@@ -43,9 +43,7 @@ public class RtApi {
     }-*/;
 
     public RtApi(JavaScriptObject jsConfig) {
-        initClient();
-        editor.addHooksToEventListeners(new EditorApi());
-       //todo: fix shortcuts to editor
+        //todo: fix shortcuts to editor
         // and set the caret at pos 0
         Config config = new DefaultConfig(jsConfig);
 
@@ -67,7 +65,6 @@ public class RtApi {
             TextArea tArea = TextArea.wrap(htmlTextAreaElement);
             height = tArea.getOffsetHeight();
             width = tArea.getOffsetWidth();
-//            editor.setContent(tArea.getText());
 
             Element canvasEl = DOM.createElement("canvas");
             canvasEl.setId("editor");
@@ -79,7 +76,9 @@ public class RtApi {
             parentElem.removeChild(htmlTextAreaElement);
 
             injectJSFilesForRTEditor(parentElem);
-
+            clientJupiter.setData(tArea.getText());
+            initClient();
+//            editor.setContent(tArea.getText());
 //            var rtConfigO5qN = {
 //                page: 'WebHome'
 //                space: 'Main'
@@ -181,8 +180,11 @@ public class RtApi {
                 if (result != null) {
                     clientJupiter.setData(result);
                     //update UI
+                    editor = Editor.getEditor();
+                    editor.addHooksToEventListeners(new EditorApi());
+                    clientJupiter.setEditor(editor);
                     editor.setContent(result);
-//                    editor.paint();
+                    editor.paint();
                 }
             }
         });
