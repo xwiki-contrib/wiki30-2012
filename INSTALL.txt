@@ -1,6 +1,29 @@
 INSTALL & USE:
 
-Prerequisites: Maven 2.x+, JDK 1.5+
+Prerequisites: Maven 2.x+, JDK 1.5+, MySQL
+
+1) Create an 'xwiki' user on MySQL and grant him all privileges and create an xwiki database
+1.1) mysql -u root -p -e "grant all privileges on *.* to xwiki@127.0.0.1 identified by 'xwiki'"
+1.2) mysql -u root -p -e "create database xwiki"
+
+2) Build the Wiki30 distribution
+2.1) mvn clean install -Pmysql
+2.2) Unpack the wiki30-distribution/wiki30-distribution-zip/target/wiki30-distribution-zip-1.0-SNAPSHOT.zip
+2.3) Start XWiki
+
+3) Import the wiki30-distribution/wiki30-distribution-xar/target/wiki30-distribution-xar.xar
+3.1) Do it from http://localhost:8080/xwiki/bin/import/XWiki/XWikiPreferences
+
+4) Import the wiki30-realtime/rt-application/target/rt-application.xar
+4.1) Do it from http://localhost:8080/xwiki/bin/import/XWiki/XWikiPreferences?editor=globaladmin&section=Import
+
+5) Go to http://localhost:8080/xwiki/bin/view/WorkspaceManager/Install and click on YES to add the Workspace default template.
+
+6) You will have Workspace creation button in the Add menu and the Realtime edition button in the Edit menu.
+
+
+
+---- OLD
 
 To install and use the real-time editor:
 1) Execute the runWeb.sh script (you might have to change it's permissions)
