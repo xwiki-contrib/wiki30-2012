@@ -5,10 +5,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ScriptElement;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.TextResource;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Random;
-import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TextArea;
 import fr.loria.score.jupiter.model.DeleteOperation;
@@ -23,6 +20,7 @@ import java.util.Arrays;
 
 public class RtApi {
     private static final int REFRESH_INTERVAL = 2000;
+    private static final String DOCUMENT_ID = "documentId";
 
     private Editor editor;
     private JsBundle bundle = GWT.create(JsBundle.class);
@@ -43,13 +41,11 @@ public class RtApi {
     }-*/;
 
     public RtApi(JavaScriptObject jsConfig) {
-        //todo: fix shortcuts to editor
         // and set the caret at pos 0
         Config config = new DefaultConfig(jsConfig);
 
         // Get the text area element
-//        Element htmlTextAreaElement = DOM.getElementById(config.getParameter("hookId"));
-        Element htmlTextAreaElement = DOM.getElementById("content");
+        Element htmlTextAreaElement = DOM.getElementById(config.getParameter("hookId"));
         if (htmlTextAreaElement == null) {
             return;
         }
@@ -57,10 +53,6 @@ public class RtApi {
         if (htmlTextAreaElement.getTagName().equalsIgnoreCase("textarea")) {
             int width = 500;
             int height = 210;
-//            if (htmlTextAreaElement.hasAttribute("offsetHeight") && htmlTextAreaElement.hasAttribute("offsetWidth")) {
-//                width = Integer.valueOf(htmlTextAreaElement.getAttribute("width"));
-//                height = Integer.valueOf(htmlTextAreaElement.getAttribute("height"));
-//            }
 
             TextArea tArea = TextArea.wrap(htmlTextAreaElement);
             height = tArea.getOffsetHeight();
@@ -77,15 +69,9 @@ public class RtApi {
 
             injectJSFilesForRTEditor(parentElem);
             clientJupiter.setData(tArea.getText());
+            clientJupiter.setEditingSessionId(Integer.valueOf(config.getParameter(DOCUMENT_ID)));
             initClient();
-//            editor.setContent(tArea.getText());
-//            var rtConfigO5qN = {
-//                page: 'WebHome'
-//                space: 'Main'
-//                wiki: 'xwiki'
-//                hookId: 'content'
-//                inputURL: 'http:\/\/localhost:8080\/xwiki\/bin\/edit\/Main\/WebHome?xpage=wysiwyginput&key=7w76&render=true'
-              }
+        }
     }
 
     private void injectJSFilesForRTEditor(com.google.gwt.dom.client.Element parentElem) {
@@ -157,9 +143,7 @@ public class RtApi {
             public void onSuccess(Integer id) {
                 GWT.log("Generated site id: " + id);
                 clientJupiter.setSiteId(id);
-                clientJupiter.setEditor(editor);
 
-                clientJupiter.setEditingSessionId(0); // todo: set it by namespace, page, id
                 createServerPairForClient();
                 serverPushForClient();
             }
@@ -181,8 +165,9 @@ public class RtApi {
                     clientJupiter.setData(result);
                     //update UI
                     editor = Editor.getEditor();
-                    editor.addHooksToEventListeners(new EditorApi());
                     clientJupiter.setEditor(editor);
+
+                    editor.addHooksToEventListeners(new EditorApi());
                     editor.setContent(result);
                     editor.paint();
                 }
@@ -216,13 +201,8 @@ public class RtApi {
                 });
             }
         };
-
         timer.scheduleRepeating(REFRESH_INTERVAL);
     }
-
-    private native void replaceTxtAreaWithCanvas() /*-{
-
-    }-*/;
 
     //EDITOR API
     class EditorApi {

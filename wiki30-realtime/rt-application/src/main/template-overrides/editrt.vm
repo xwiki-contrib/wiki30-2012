@@ -22,7 +22,7 @@ $xwiki.ssfx.use('js/xwiki/editors/fullScreenEdit.css', true)
     <div id="xwikitext">
         <div id="xwikieditcontent">
             <div id="xwikieditcontentinner">
-                $xwiki.getTextArea($tdoc.content)
+                $xwiki.getTextArea($tdoc.content)       ##todo-bf: replace with canvas & inject the js files here..
                 #rt_editProperty($tdoc "content")
             </div>
         </div> ## xwikieditcontent
@@ -60,6 +60,8 @@ $xwiki.ssfx.use('js/xwiki/editors/fullScreenEdit.css', true)
     #set($ok = $parameters.put('wiki', $editedDocument.wiki))   ## what for?
     #set($ok = $parameters.put('space', $editedDocument.space))
     #set($ok = $parameters.put('page', $editedDocument.name))
+    #set($ok = $parameters.put('prefixedFullName', $editedDocument.prefixedFullName))
+    #set($ok = $parameters.put('documentId', $editedDocument.id))
 #end
 
 
@@ -79,7 +81,6 @@ $xwiki.ssfx.use('js/xwiki/editors/fullScreenEdit.css', true)
 ## Set the input value for the editor.            todo:bf
 #rt_inputProperty($editedDocument $propertyId $parameters)
 ## Display conversion errors, if present.
-##wysiwyg_displayConversionError($propertyId)
 ## Create the editor UI.
 #rt_createEditor($parameters)
 #end

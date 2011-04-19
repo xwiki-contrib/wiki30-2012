@@ -8,14 +8,14 @@ import java.io.Serializable;
 public class Message implements Serializable {
     private State state;
     private Operation operation;
-    private int editingSessionId; // TODO: not sure esid is necessary here.
+    private int editingSessionId;
 
     public Message() {
     }
     
-    public Message(State state, Operation operation, int sesssionId) {
+    public Message(State state, Operation operation, int sessionId) {
         this(state, operation);
-        this.editingSessionId = sesssionId;
+        this.editingSessionId = sessionId;
     }
 
     public Message(State state, Operation operation) {

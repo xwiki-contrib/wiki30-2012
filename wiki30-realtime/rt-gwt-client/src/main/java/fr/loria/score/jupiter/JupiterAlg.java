@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Base class which uses the Jupiter algorithm for achieving convergence across divergent copies of data.
- * <b>Note: it only requires that TP1 is satisfied bytransformation functions.</b>
+ * <b>Note: it only requires that TP1 is satisfied by transformation functions.</b>
  */
 public abstract class JupiterAlg implements Serializable {
 
@@ -98,7 +98,7 @@ public abstract class JupiterAlg implements Serializable {
         data = opr.execute(data);
         //todo: clone instead of copy constructor
         Message newMsg = new Message(new State(currentState.getGeneratedMsgs(), currentState.getReceivedMsgs()), opr);
-		//newMsg.setEditingSessionId(receivedMsg.getEditingSessionId());
+		newMsg.setEditingSessionId(receivedMsg.getEditingSessionId());
         currentState.incReceivedMsgs();
         execute(newMsg);
         GWT.log(this.toString());

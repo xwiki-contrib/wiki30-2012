@@ -15,7 +15,6 @@ public class ClientJupiterAlg extends JupiterAlg {
 
     protected transient Editor editor;
 
-    
     public ClientJupiterAlg() {
     }
 
