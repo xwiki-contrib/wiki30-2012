@@ -6,12 +6,12 @@
     <artifactId>xwiki-enterprise-manager-parent</artifactId>
     <version>3.0</version>
   </parent>
-  
+
   <groupId>org.xwiki.contrib.wiki30</groupId>
   <artifactId>wiki30</artifactId>
   <version>1.0-SNAPSHOT</version>
+
   <packaging>pom</packaging>
-  
   <name>Wiki30 Project - Parent POM</name>
   <description>Wiki30 Project</description>
   <url>http://wiki30.xwikisas.com</url>
@@ -86,7 +86,7 @@
         <version>${xe.version}</version>
         <type>xar</type>
       </dependency>
-      
+
       <!-- XWiki Plugins -->
       <dependency>
         <groupId>com.xpn.xwiki.platform.plugins</groupId>
@@ -104,7 +104,7 @@
         <version>${platform.plugin.applicationmanager.version}</version>
         <type>xar</type>
       </dependency>
-      
+
       <!-- XWiki Core -->
       <dependency>
         <groupId>com.xpn.xwiki.platform</groupId>
@@ -143,7 +143,7 @@
         <version>${xe.version}</version>
         <type>war</type>
       </dependency>
-      
+
       <!-- XWiki GWT modules -->
       <dependency>
         <groupId>org.xwiki.platform</groupId>
@@ -155,7 +155,7 @@
         <artifactId>xwiki-web-gwt-dom</artifactId>
         <version>${xe.version}</version>
       </dependency>
-      
+
       <!-- Tools -->
       <dependency>
         <groupId>org.xwiki.platform.tools</groupId>
@@ -192,9 +192,19 @@
           <artifactId>gwt-maven-plugin</artifactId>
           <version>${gwt.compiler.version}</version>
         </plugin>
+
+        <!-- Previous version is bugged when trying to transform the same 
+          file (source == destination). See if XWiki>3.0 has already updated this plugin 
+          dependency. See http://jira.codehaus.org/browse/MOJO-1447 for more details 
+          on issue. -->
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>xml-maven-plugin</artifactId>
+          <version>1.0</version>
+        </plugin>
       </plugins>
     </pluginManagement>
-    
+
     <!-- XAR packaging support. -->
     <extensions>
       <extension>

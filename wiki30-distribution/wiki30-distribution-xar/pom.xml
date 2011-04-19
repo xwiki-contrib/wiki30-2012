@@ -51,10 +51,62 @@
 
   <build>
     <plugins>
-      <!-- Do the work. -->
+
+      <!-- Unpack XEM xar so that we can transform XWiki.XWikiPreferences -->
       <plugin>
         <groupId>org.xwiki.platform.tools</groupId>
         <artifactId>xwiki-xar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unxar-xwiki-enterprise-manager-wiki-administrator</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unxar</goal>
+            </goals>
+            <configuration>
+              <artifactId>xwiki-enterprise-manager-wiki-administrator</artifactId>
+              <groupId>org.xwiki.manager</groupId>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Update XWiki.XWikiPreferences page and register skin + translations -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>register-skin-and-translations</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <transformationSets>
+            <transformationSet>
+              <dir>${project.build.outputDirectory}</dir>
+              <outputDir>${project.build.outputDirectory}</outputDir>
+              <includes>
+                <include>XWiki/XWikiPreferences.xml</include>
+              </includes>
+              <stylesheet>src/main/build/transformation/register.xsl</stylesheet>
+              <parameters>
+                <parameter>
+                  <name>translations</name>
+                  <value>WorkspaceManager.Translations, XWiki.RtI18N</value>
+                </parameter>
+                <parameter>
+                  <name>skin</name>
+                  <value>XWiki.RtSkin</value>
+                </parameter>
+              </parameters>
+            </transformationSet>
+          </transformationSets>
+        </configuration>
       </plugin>
     </plugins>
   </build>
