@@ -11,15 +11,12 @@ Prerequisites: Maven 2.x+, JDK 1.5+, MySQL
 2.2) Unpack the wiki30-distribution/wiki30-distribution-zip/target/wiki30-distribution-zip-1.0-SNAPSHOT.zip
 2.3) Start XWiki
 
-3) Import the wiki30-distribution/wiki30-distribution-xar/target/wiki30-distribution-xar.xar
-3.1) Do it from http://localhost:8080/xwiki/bin/import/XWiki/XWikiPreferences
+3) Import the wiki30-realtime/rt-application/target/rt-application.xar
+3.1) Do it from http://localhost:8080/xwiki/bin/import/XWiki/XWikiPreferences?editor=globaladmin&section=Import
 
-4) Import the wiki30-realtime/rt-application/target/rt-application.xar
-4.1) Do it from http://localhost:8080/xwiki/bin/import/XWiki/XWikiPreferences?editor=globaladmin&section=Import
+4) Go to http://localhost:8080/xwiki/bin/view/WorkspaceManager/Install and click on YES to add the Workspace default template.
 
-5) Go to http://localhost:8080/xwiki/bin/view/WorkspaceManager/Install and click on YES to add the Workspace default template.
-
-6) You will have Workspace creation button in the Add menu and the Realtime edition button in the Edit menu.
+5) You will have Workspace creation button in the Add menu and the Realtime edition button in the Edit menu.
 
 
 
