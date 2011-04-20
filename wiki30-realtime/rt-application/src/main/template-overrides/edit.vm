@@ -53,9 +53,15 @@ $xwiki.jsfx.use('js/xwiki/actionbuttons/actionButtons.js', true)
   $response.setStatus(423)
   #set($newquerystring = "$!{request.getQueryString().replaceAll('&', '&amp;').replaceAll('&amp;amp;', '&amp;')}&amp;force=1")
   #set($forceEditURL = $doc.getURL($context.action, ${newquerystring}))
-  #xwikimessageboxstart($msg.get('notice') "$msg.get('doclockedby') $xwiki.getUserName($doc.getLockingUser())")
-    <a href="$forceEditURL">$msg.get('forcelock')</a>
-  #xwikimessageboxend()
+  #if ($editor == 'rt')
+    #xwikimessageboxstart($msg.get('notice') "$msg.get('doceditedby') $xwiki.getUserName($doc.getLockingUser())")
+        <a href="$forceEditURL">$msg.get('joinrtsession')</a>
+    #xwikimessageboxend()
+  #else
+    #xwikimessageboxstart($msg.get('notice') "$msg.get('doclockedby') $xwiki.getUserName($doc.getLockingUser())")
+        <a href="$forceEditURL">$msg.get('forcelock')</a>
+    #xwikimessageboxend()
+  #end
   </div>
 #else
   ##################

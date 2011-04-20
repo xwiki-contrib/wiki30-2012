@@ -23,4 +23,6 @@
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
 <content>core.menu.edit.rt=Real Time
-workspaces.menu.create=Workspace</content></xwikidoc>
+workspaces.menu.create=Workspace
+doceditedby=Document currently edited by
+joinrtsession=Join the real-time editing session</content></xwikidoc>
