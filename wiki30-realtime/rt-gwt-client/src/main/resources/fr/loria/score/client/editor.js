@@ -48,6 +48,12 @@ Textile.Editor = Textile.Utils.makeClass({
         document.addEventListener('keyup', Textile.Utils.bind(this.onKeyup, this), true);
         this.el.addEventListener('mousewheel', Textile.Utils.bind(this.onMousewheel, this), true);
 
+        //resize the editor to fit it's parent container dimensions
+        window.onresize = function(evt) {
+            var parentElement = document.getElementById("xwikieditcontentinner"); //todo-bf: get the parent element programatically
+            this.editor.resize(parentElement.clientWidth, parentElement.clientHeight);
+        };
+
         // Gecko hacks
         this.el.addEventListener('DOMMouseScroll', Textile.Utils.bind(this.onMousewheelGecko, this), true);
 
