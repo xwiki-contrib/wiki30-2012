@@ -13,13 +13,4 @@
         <!--<url-pattern>/xre/CommunicationService.gwtrpc</url-pattern>-->
         <url-pattern>/xre/../receive</url-pattern>
     </servlet-mapping>
-
-	<servlet>
-        <servlet-name>esidchecker</servlet-name>
-        <servlet-class>fr.loria.score.server.EditingSessionIdCheckerServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>esidchecker</servlet-name>
-        <url-pattern>/esidchecker</url-pattern>
-    </servlet-mapping>
 </web-app>
