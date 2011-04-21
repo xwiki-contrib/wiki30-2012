@@ -48,7 +48,7 @@
   #xwikitopmenuentrystart('' $msg.get('core.menu.create') 'tmCreate' 'hasIcon')
   #set ($hasPreviousMenuSection = false)
   #if ($hasCreateWorkspace)
-    #submenuitem("$xwiki.getURL($services.model.createDocumentReference('xwiki', 'WorkspaceManager', 'CreateNewWorkspace'), 'view', 'doc=1&stepbystep=0')" $msg.get('workspaces.menu.create') 'tmCreateWorkspace', '')
+    #submenuitem("$xwiki.getURL($services.model.createDocumentReference('xwiki', 'WorkspaceManager', 'CreateNewWorkspace'))" $msg.get('workspaces.menu.create') 'tmCreateWorkspace', '')
     #set ($hasPreviousMenuSection = true)
   #end
   #if ($hasCreateSpace)
