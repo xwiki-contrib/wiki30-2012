@@ -72,10 +72,10 @@ Textile.Editor = Textile.Utils.makeClass({
     },
 
     getPosition: function() {
-        var pos = $(this.el).position();
+        var pos = jQuery(this.el).position();
         return {
-            top: pos.top + parseInt($(this.el).css('borderTopWidth')) + parseInt($(this.el).css('paddingTop')) + parseInt($(this.el).css('marginTop')),
-            left: pos.left + parseInt($(this.el).css('borderLeftWidth')) + + parseInt($(this.el).css('paddingLeft')) + + parseInt($(this.el).css('marginLeft'))
+            top: pos.top + parseInt(jQuery(this.el).css('borderTopWidth')) + parseInt(jQuery(this.el).css('paddingTop')) + parseInt(jQuery(this.el).css('marginTop')),
+            left: pos.left + parseInt(jQuery(this.el).css('borderLeftWidth')) + + parseInt(jQuery(this.el).css('paddingLeft')) + + parseInt(jQuery(this.el).css('marginLeft'))
         }
     },
 
