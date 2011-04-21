@@ -1,5 +1,5 @@
 #!/bin/sh
-mvn clean install
+mvn clean install -Pmysql
 echo ">>> Changing directory to: wiki30-distribution-zip"
 cd wiki30-distribution/wiki30-distribution-zip/target
 echo ">>> Unzipping archive"
