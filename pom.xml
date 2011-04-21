@@ -202,6 +202,15 @@
           <artifactId>xml-maven-plugin</artifactId>
           <version>1.0</version>
         </plugin>
+
+        <!-- 6.1.1 Seems to have some problems throwing a weird exception. 
+          It does not disturb the process, but it's better to use something more stable. 
+          Will remove this once XWiki uses a newer version. -->
+        <plugin>
+          <groupId>org.mortbay.jetty</groupId>
+          <artifactId>maven-jetty-plugin</artifactId>
+          <version>6.1.26</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
