@@ -40,4 +40,6 @@ public interface CommunicationServiceAsync {
      * @param callback to be executed on client side after call completion
      */
     void generateClientId(AsyncCallback<Integer> callback);
+
+    void removeServerPairForClient(ClientJupiterAlg clientJupiterAlg, AsyncCallback<Void> async);
 }

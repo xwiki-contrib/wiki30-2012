@@ -25,6 +25,12 @@ public interface CommunicationService extends RemoteService {
     String createServerPairForClient(ClientJupiterAlg clientJupiterAlg);
 
     /**
+     * As the client quits the real-time editing session, it's corresponding server pair is removed
+     * @param clientJupiterAlg the client for whom to remove it's corresponding server pair
+     */
+    void removeServerPairForClient(ClientJupiterAlg clientJupiterAlg);
+
+    /**
      * {@inheritDoc}
      */
     Integer generateClientId();

@@ -37,6 +37,11 @@ public final class Editor extends JavaScriptObject {
         $wnd.tabHook = function(position) {
             api.@fr.loria.score.client.RtApi.EditorApi::clientInsert(Ljava/lang/String;I)("    ", position);
         };
+
+        //clientQuitsEditingSession
+         $wnd.jQuery('input[name=action_cancel]').click(function() {
+           api.@fr.loria.score.client.RtApi.EditorApi::clientQuitsEditingSession()();
+        });
     }-*/;
 
 

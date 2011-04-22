@@ -206,7 +206,7 @@ public class RtApi {
 
     //EDITOR API
     class EditorApi {
-        /**
+     /**
      * On insertion/deletion, the JavaScript editor generates an insert/delete operation which is then sent to server
      * @param s the inserted string(split in chars sequence)/character
      * @param position the insertion position
@@ -236,6 +236,10 @@ public class RtApi {
             for (int i = to - 1; i >= from; i--) { // from index is inclusive, to is exclusive, as the end selection idx is positioned at the next position
                 clientDelete(i);
             }
+        }
+
+        public void clientQuitsEditingSession() {
+            clientJupiter.quitEditingSession();
         }
     }
 

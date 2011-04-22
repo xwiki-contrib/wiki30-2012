@@ -6,8 +6,11 @@ import fr.loria.score.jupiter.model.Message;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 public class CommunicationServiceImpl implements CommunicationService {
+    private static final Logger logger = Logger.getLogger(CommunicationServiceImpl.class.getName());
+
     //the client id generator
     private final AtomicInteger atomicInt = new AtomicInteger();
 
@@ -67,5 +70,19 @@ public class CommunicationServiceImpl implements CommunicationService {
         }
         System.out.println("Create server pair..");
         return ClientServerCorrespondents.getInstance().addServerForClient(clientJupiterAlg);
+    }
+
+    public void removeServerPairForClient(ClientJupiterAlg clientJupiterAlg) {
+        logger.fine("Removing server pair for client with id: " + clientJupiterAlg.getSiteId());
+
+        //1. remove it from the editing session id
+        int esid = clientJupiterAlg.getEditingSessionId();
+        if (locks.containsKey(esid)) {
+            synchronized (locks) {
+                locks.get(esid).remove(Integer.valueOf(clientJupiterAlg.getSiteId()));
+            }
+        }
+        //2. remove it's server correspondent
+        ClientServerCorrespondents.getInstance().removeServerForClient(clientJupiterAlg);
     }
 }

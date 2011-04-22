@@ -50,6 +50,15 @@ public final class ClientServerCorrespondents {
         return availableContent;
     }
 
+    public void removeServerForClient(ClientJupiterAlg clientJupiterAlg) {
+        int key = clientJupiterAlg.getSiteId();
+        if (correspondents.containsKey(key)) {
+            synchronized (correspondents) {
+                correspondents.remove(key);
+            }
+        }
+    }
+
     /**
      * @return the server correspondents map
      */

@@ -41,7 +41,19 @@ public class ClientJupiterAlg extends JupiterAlg {
     public void setEditor(Editor editor) {
         this.editor = editor;
     }
-    
+
+    public void quitEditingSession() {
+        CommunicationService.ServiceHelper.getCommunicationService().removeServerPairForClient(this, new AsyncCallback<Void>() {
+            public void onFailure(Throwable throwable) {
+                GWT.log("Could not remove server pair for client. Error: " + throwable.getMessage());
+            }
+
+            public void onSuccess(Void aVoid) {
+                GWT.log("Successfully removed server pair for client");
+            }
+        });
+    }
+
     @Override
     protected void execute(Message receivedMsg) {
         int oldCaretPos = editor.getCaretPosition(); // the caret position in the editor's old data model
