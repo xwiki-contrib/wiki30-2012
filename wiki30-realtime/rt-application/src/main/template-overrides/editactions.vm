@@ -25,6 +25,9 @@
   #end
   </div> ## meta-versionSummary
   <div class="buttons">
+    #if ($previewenabled && $editor != 'rt')
+        #editActionButton('preview', 'preview')
+    #end
     #editActionButton('saveandcontinue', 'saveandcontinue')
     #editActionButton($saveaction, 'saveandview')
     #editActionButton('cancel', 'cancel')
