@@ -11,7 +11,7 @@ Prerequisites: Maven 2.x+, JDK 1.5+, MySQL
 2.2) Unpack the wiki30-distribution/wiki30-distribution-zip/target/wiki30-distribution-zip-1.0-SNAPSHOT.zip
 2.3) Start XWiki
 
-3) Import the wiki30-realtime/rt-application/target/rt-application.xar
+3) Import the wiki30-distribution-xar.xar file located in wiki30-distribution/wiki30-distribution-xar/target directory
 3.1) Do it from http://localhost:8080/xwiki/bin/import/XWiki/XWikiPreferences?editor=globaladmin&section=Import
 
 4) Go to http://localhost:8080/xwiki/bin/view/WorkspaceManager/Install and click on YES to add the Workspace default template.
@@ -40,4 +40,4 @@ Lets say you create a new "TestPage" in "Sandbox" space then click on "Edit" and
 Thus the url of the page would be: http://localhost:8080/xwiki/bin/edit/Sandbox/TestPage?&editor=rt.
 8) To collaboratively edit the same page in real-time, point 2 browser instances with the "Real Time" edit mode to the same wiki page.
 In the second browser for instance use the same url (http://localhost:8080/xwiki/bin/edit/Sandbox/TestPage?&editor=rt)
-then ignore the "Force lock" and start typing. You should see the changes reflected in the other browser.
+then click the "Join editing session" and start typing. You should see the changes reflected in the other browser.
