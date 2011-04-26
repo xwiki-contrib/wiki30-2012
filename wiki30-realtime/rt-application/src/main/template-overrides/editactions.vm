@@ -1,7 +1,11 @@
 ### Buttons displayed in the edit interface: cancel, preview (when enabled), save and continue, save and view.
 ###
 #if ("$!showactions" != '0')
-  $xwiki.jsfx.use('js/xwiki/actionbuttons/actionButtons.js', true)
+  #if ($editor == 'rt')
+    $xwiki.jsfx.use('js/xwiki/rte/xre/actionButtonsRT.js', true)
+  #else
+    $xwiki.jsfx.use('js/xwiki/actionbuttons/actionButtons.js', true)
+  #end
   $xwiki.ssfx.use('js/xwiki/actionbuttons/actionButtons.css', true)
   ## Disabling the keyboard shortcuts if editor == 'rt', but apparently this is not enough so I added this line also in editmenu.vm (Fabio)
   #set ($keyboardShortcutsEnabled = (($editor != 'wysiwyg') && ($editor != 'rt'))) 

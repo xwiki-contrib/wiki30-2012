@@ -7,7 +7,7 @@
 ## Determine what editor to show
 ##
 $xwiki.jsfx.use('js/scriptaculous/scriptaculous.js')
-$xwiki.jsfx.use('js/xwiki/actionbuttons/actionButtons.js', true)
+$xwiki.jsfx.use('js/xwiki/rte/xre/actionButtonsRT.js', true)
 #if("$!editor" == '')
   ## Normally no special characters should exist in the editor parameter, so this is just a protection measure.
   #set($editor = "$!{escapetool.xml($request.getParameter('editor'))}")

@@ -38,10 +38,20 @@ public final class Editor extends JavaScriptObject {
             api.@fr.loria.score.client.RtApi.EditorApi::clientInsert(Ljava/lang/String;I)("    ", position);
         };
 
-        //clientQuitsEditingSession
-         $wnd.jQuery('input[name=action_cancel]').click(function() {
-           api.@fr.loria.score.client.RtApi.EditorApi::clientQuitsEditingSession()();
-        });
+        //Cancel
+        $wnd.onCancelHook = function() {
+            api.@fr.loria.score.client.RtApi.EditorApi::clientQuitsEditingSession()();
+        }
+
+        //Save&View
+        $wnd.onSaveAndViewHook = function() {
+            //save is handled into actionButtonsRT.js
+            $wnd.onCancelHook();
+        }
+
+        $wnd.onSaveAndContinueHook = function() {
+            //nothing to be done
+        }
     }-*/;
 
 
