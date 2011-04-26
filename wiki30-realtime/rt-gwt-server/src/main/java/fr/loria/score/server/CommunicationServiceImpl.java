@@ -23,8 +23,11 @@ public class CommunicationServiceImpl implements CommunicationService {
     public Message[] clientReceive(int siteId) {
         System.out.println("Client receive for siteId: " + siteId);
         ServerJupiterAlg server = ClientServerCorrespondents.getInstance().getCorrespondents().get(siteId);
-        Message[] msg = server.getMessages();
-        System.out.println(">>> Client #: " + siteId + " receives: " + Arrays.asList(msg));
+        Message[] msg = new Message[]{};
+        if (server != null) {
+            msg = server.getMessages();
+            System.out.println(">>> Client #: " + siteId + " receives: " + Arrays.asList(msg));
+        }
         return msg;
     }
 
