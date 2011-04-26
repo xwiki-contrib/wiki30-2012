@@ -36,27 +36,3 @@ Thus the url of the page would be: http://localhost:8080/xwiki/bin/edit/Sandbox/
 6) To collaboratively edit the same page in real-time, point 2 browser instances with the "Real Time" edit mode to the same wiki page.
 In the second browser for instance use the same url (http://localhost:8080/xwiki/bin/edit/Sandbox/TestPage?&editor=rt)
 then click the "Join editing session" and start typing. You should see the changes reflected in the other browser.
-
----- OLD
-
-To install and use the real-time editor:
-1) Execute the runWeb.sh script (you might have to change it's permissions)
-2) Point your browser to http://localhost:8080/xwiki. This url will be reffered from now on as ${URL}
-3) Login with admin credentials (username: Admin, password: admin)
-4) Go to Administration page - http://localhost:8080/xwiki/bin/admin/XWiki/XWikiPreferences
-4.1) If you see a warn message like: "Your wiki seems empty. You may want to import the default XWiki Enterprise wiki..."
- browse for the file located in ../trunk/wiki30-distribution/wiki30-distribution-xar/target/wiki30-distribution-xar.xar
- then click "Upload". After successful uploading, you'll see the imported package in the "Available packages" section
- on same page.
-4.2) Select the imported file. The archive's content will be displayed in the upper right part.
-4.3) Accept default settings then click on the "Import" button. You should see an information message like: "Import successful"
-5) From the Administration page, select Localization category and make sure the text "XWiki.RtI18N" exists among the other
-in the "Internationalization Document Bundles" section. If not, add it and "Save" your changes.
-6) From the Administration page, select Presentation category and make sure the "Skin" section
-has the value "XWiki.RtSkin". If not, add it and "Save" your changes.
-7) To edit a document/page using real-time editor, select the option "Real Time" located in the "Edit" menu.
-Lets say you create a new "TestPage" in "Sandbox" space then click on "Edit" and select "Real Time" option.
-Thus the url of the page would be: http://localhost:8080/xwiki/bin/edit/Sandbox/TestPage?&editor=rt.
-8) To collaboratively edit the same page in real-time, point 2 browser instances with the "Real Time" edit mode to the same wiki page.
-In the second browser for instance use the same url (http://localhost:8080/xwiki/bin/edit/Sandbox/TestPage?&editor=rt)
-then click the "Join editing session" and start typing. You should see the changes reflected in the other browser.
