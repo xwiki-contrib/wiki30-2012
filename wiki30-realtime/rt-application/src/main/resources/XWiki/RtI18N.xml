@@ -13,7 +13,7 @@
 <creationDate>1286985346000</creationDate>
 <date>1303153887000</date>
 <contentUpdateDate>1303153887000</contentUpdateDate>
-<version>6.2</version>
+<version>1.1</version>
 <title>RtI18N</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
@@ -24,5 +24,7 @@
 <hidden>false</hidden>
 <content>core.menu.edit.rt=Real Time
 workspaces.menu.create=Workspace
+workspaces.menu.workspaces=Workspaces
+workspaces.profile.category.workspaces=Workspaces
 doceditedby=Document currently edited by
 joinrtsession=Join the real-time editing session</content></xwikidoc>

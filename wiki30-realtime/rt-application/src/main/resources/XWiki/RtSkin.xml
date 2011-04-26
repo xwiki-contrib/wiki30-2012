@@ -151,6 +151,10 @@
 
 .actionmenu #tmCreateWorkspace {
   background-image: url("$xwiki.getSkinFile('icons/silk/chart_organisation_add.gif')");
+}
+
+.actionmenu #tmUserWorkspaces {
+  background-image: url("$xwiki.getSkinFile('icons/silk/chart_organisation.gif')");
 }</style.css>
 </property>
 <property>

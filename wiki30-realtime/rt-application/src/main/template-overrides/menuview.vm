@@ -31,6 +31,7 @@
     #submenuitem($xwiki.getURL($xcontext.user, 'view', 'category=watchlist') $msg.get('core.menu.watchlist.management') 'tmWatchlistManager', '')
     #submenuitem($xwiki.getURL($xcontext.user, 'view', 'category=network') $msg.get('core.menu.network') 'tmUserNetwork', '')
   #end
+  #submenuitem($xwiki.getURL($xcontext.user, 'view', 'category=workspaces') $msg.get('workspaces.menu.workspaces') 'tmUserWorkspaces', '')
   #xwikitopmenuentryend()
 #end
 #end
