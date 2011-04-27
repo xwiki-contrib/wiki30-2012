@@ -3,13 +3,15 @@ package fr.loria.score.server;
 import fr.loria.score.client.ClientJupiterAlg;
 import fr.loria.score.client.CommunicationService;
 import fr.loria.score.jupiter.model.Message;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
+
 
 public class CommunicationServiceImpl implements CommunicationService {
-    private static final Logger logger = Logger.getLogger(CommunicationServiceImpl.class.getName());
+    private static final Log logger = LogFactory.getLog(CommunicationServiceImpl.class);
 
     //the client id generator
     private final AtomicInteger atomicInt = new AtomicInteger();
@@ -21,12 +23,12 @@ public class CommunicationServiceImpl implements CommunicationService {
      * {@inheritDoc}
      */
     public Message[] clientReceive(int siteId) {
-        System.out.println("Client receive for siteId: " + siteId);
+        logger.debug("Client receive for siteId: " + siteId);
         ServerJupiterAlg server = ClientServerCorrespondents.getInstance().getCorrespondents().get(siteId);
         Message[] msg = new Message[]{};
         if (server != null) {
             msg = server.getMessages();
-            System.out.println(">>> Client #: " + siteId + " receives: " + Arrays.asList(msg));
+            logger.debug("Client #: " + siteId + " receives: " + Arrays.asList(msg));
         }
         return msg;
     }
@@ -36,7 +38,7 @@ public class CommunicationServiceImpl implements CommunicationService {
      */
     public void serverReceive(Message msg) {
         // now the corresponding server receives the message and atomically notifies peer servers which send their updates to their clients
-        System.out.println("Thread: "+Thread.currentThread().getName()+ " Server receives message: " + msg );
+        logger.debug(" Server receives message: " + msg );
         int esid = msg.getEditingSessionId();
         if (locks.containsKey(esid)) {
             int siteId = msg.getSiteId();
@@ -54,7 +56,7 @@ public class CommunicationServiceImpl implements CommunicationService {
      */
     public Integer generateClientId() {
         int increment = atomicInt.getAndIncrement();
-        System.out.println("Generated client id: " + increment);
+        logger.debug("Generated client id: " + increment);
         return increment;
     }
 
@@ -62,6 +64,7 @@ public class CommunicationServiceImpl implements CommunicationService {
      * {@inheritDoc}
      */
     public String createServerPairForClient(ClientJupiterAlg clientJupiterAlg) {
+        logger.debug("Create server pair for client: " + clientJupiterAlg);
         //Based on it's editing session id the client's id is added to the sessions map
         int esid = clientJupiterAlg.getEditingSessionId();
         synchronized (locks) {
@@ -71,12 +74,11 @@ public class CommunicationServiceImpl implements CommunicationService {
             locks.get(esid).add(clientJupiterAlg.getSiteId());
             ClientServerCorrespondents.getInstance().setEditingSessions(locks);
         }
-        System.out.println("Create server pair..");
         return ClientServerCorrespondents.getInstance().addServerForClient(clientJupiterAlg);
     }
 
     public void removeServerPairForClient(ClientJupiterAlg clientJupiterAlg) {
-        logger.fine("Removing server pair for client with id: " + clientJupiterAlg.getSiteId());
+        logger.debug("Removing server pair for client with id: " + clientJupiterAlg.getSiteId());
 
         //1. remove it from the editing session id
         int esid = clientJupiterAlg.getEditingSessionId();

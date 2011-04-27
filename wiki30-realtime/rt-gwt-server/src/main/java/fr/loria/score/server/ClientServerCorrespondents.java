@@ -6,13 +6,11 @@ import fr.loria.score.client.ClientJupiterAlg;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Each site has a pair of a client and a server
  */
 public final class ClientServerCorrespondents {
-    private static final Logger log = Logger.getLogger(ClientServerCorrespondents.class.getName());
 
     private final Map<Integer, ServerJupiterAlg> correspondents = new HashMap<Integer, ServerJupiterAlg>();
     private Map<Integer, List<Integer>> editingSessions = new HashMap<Integer, List<Integer>>();
@@ -32,7 +30,6 @@ public final class ClientServerCorrespondents {
      * @return the text on some server in same editing session if any, otherwise the text sent by the client
      */
     public String addServerForClient(ClientJupiterAlg clientJupiterAlg) {
-        log.fine("Add server pair for client: " + clientJupiterAlg);
         int key = clientJupiterAlg.getSiteId();
         // in case a new client joins he receives the content available on an existing 'jupiter server' in same editing session
         String availableContent = clientJupiterAlg.getData();

@@ -4,12 +4,13 @@ import fr.loria.score.jupiter.JupiterAlg;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.model.Operation;
 import fr.loria.score.jupiter.transform.Transformation;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 public class ServerJupiterAlg extends JupiterAlg {
-    private static final Logger logger = Logger.getLogger(ServerJupiterAlg.class.getName());
+    private static final Log logger = LogFactory.getLog(ServerJupiterAlg.class);
 
     private final List<Message> unsentMessages = new ArrayList<Message>();
     private final SortedSet<Message> causalOrderedMessages = new TreeSet<Message>(new Comparator<Message>() {
@@ -37,7 +38,7 @@ public class ServerJupiterAlg extends JupiterAlg {
     private synchronized void doReceive(Message receivedMsg) {
         // Ensure causality processing
         if (receivedMsg.getState().getGeneratedMsgs() > currentState.getReceivedMsgs()) {
-            logger.fine("Adding " + receivedMsg + "to: " + causalOrderedMessages);
+            logger.debug("Adding " + receivedMsg + "to: " + causalOrderedMessages);
             causalOrderedMessages.add(receivedMsg);
         } else {
             super.receive(receivedMsg);
@@ -59,7 +60,7 @@ public class ServerJupiterAlg extends JupiterAlg {
         for (Integer peerId : peersIdList) {
             ServerJupiterAlg peerServer = ClientServerCorrespondents.getInstance().getCorrespondents().get(peerId);
             if (!peerServer.equals(this)) {
-                logger.fine(this + "\tSend message " + m + " to server = " + peerServer);
+                logger.debug(this + "\tSend message " + m + " to server = " + peerServer);
                 peerServer.generate(op);
             }
         }
@@ -67,7 +68,7 @@ public class ServerJupiterAlg extends JupiterAlg {
 
     @Override
     protected void send(Message m) {
-        logger.fine(this + " Adding " + m + "to unsent buffer" + unsentMessages);
+        logger.debug(this + " Adding " + m + "to unsent buffer" + unsentMessages);
         synchronized (unsentMessages) {
             unsentMessages.add(new Message(m));
         }
