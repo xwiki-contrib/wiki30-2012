@@ -5,34 +5,41 @@ Prerequisites: Maven 2.x+, JDK 1.5+, MySQL (If you want to enable the Workspace 
 * Building with the Workspace feature enabled
 
 1) Create an 'xwiki' user on MySQL, grant him all privileges and create an xwiki database (this is required for enabling the Workspace feature!)
-1.1) mysql -u root -p -e "grant all privileges on *.* to xwiki@127.0.0.1 identified by 'xwiki'"
-1.2) mysql -u root -p -e "create database xwiki"
+1.1) Type in the console: mysql -u root -p -e "grant all privileges on *.* to xwiki@127.0.0.1 identified by 'xwiki'"
+1.2) Type in the console: mysql -u root -p -e "create database xwiki"
 
 2) Build the Wiki30 distribution
-2.1) mvn clean install -Pmysql (this is required for enabling the Workspace feature!)
-2.2) Unpack the wiki30-distribution/wiki30-distribution-zip/target/wiki30-distribution-zip-1.0-SNAPSHOT.zip
-2.3) Start XWiki using the start_xwiki.sh (start_xwiki.bat) script
+2.1) Type in the console: mvn clean install -Pmysql
+2.2) Unpack the wiki30-distribution/wiki30-distribution-zip/target/wiki30-distribution-zip-1.0-SNAPSHOT.zip to a directory of your choice referred from now as WIKI30_UNZIPPED_DIR
+2.3) Navigate to WIKI30_UNZIPPED_DIR and start XWiki by executing the script: start_xwiki.sh (start_xwiki.bat for Windows platforms)
+2.4) Proceed with step 3)
 
 * Building with the Workspace feature disabled
 
 1) No MySQL required
-2.1) mvn clean install
-2.2) Unpack the wiki30-distribution/wiki30-distribution-zip/target/wiki30-distribution-zip-1.0-SNAPSHOT.zip
-2.3) Start XWiki using the start_xwiki.sh (start_xwiki.bat) script
+2.1) Type in the console: mvn clean install
+2.2) Unpack the wiki30-distribution/wiki30-distribution-zip/target/wiki30-distribution-zip-1.0-SNAPSHOT.zip to a directory of your choice referred from now as WIKI30_UNZIPPED_DIR
+2.3) Navigate to WIKI30_UNZIPPED_DIR and start XWiki by executing the script: start_xwiki.sh (start_xwiki.bat for Windows platforms)
 
 3) Import the wiki30-distribution-xar.xar file located in wiki30-distribution/wiki30-distribution-xar/target directory
-3.1) Do it from http://localhost:8080/xwiki/bin/import/XWiki/XWikiPreferences?editor=globaladmin&section=Import
+3.1) Point your browser to: http://localhost:8080/xwiki/bin/import/XWiki/XWikiPreferences?editor=globaladmin&section=Import
 3.2) Select the file wiki30-distribution-xar.xar file located in wiki30-distribution/wiki30-distribution-xar/target then click "Upload". 
 3.3) After successful uploading, you'll see the imported package in the "Available packages" section on same page.
 3.4) Select the imported file. The archive's content will be displayed in the upper right part.
 3.5) Accept default settings then click on the "Import" button. You should see an information message like: "Import successful"
 
-4) Go to http://localhost:8080 and login as "Admin/admin" to complete the installation.
+4) Point your browser to: http://localhost:8080/xwiki and login as "Admin/admin" to complete the installation.
 
-5) To edit a document/page using real-time editor, select the option "Real Time" located in the "Edit" menu.
-Lets say you create a new "TestPage" in "Sandbox" space then click on "Edit" and select "Real Time" option.
-Thus the url of the page would be: http://localhost:8080/xwiki/bin/edit/Sandbox/TestPage?&editor=rt.
+5) All participants using real-time editor must have the "Advanced" user type set. For each of them, follow the following steps:
+5.1) Login with user credentials
+5.2) Hover the mouse over the Profile category (upper right) and select the Preferences category
+5.3) In the Preferences form, click on the "Pen" icon to edit user profile
+5.4) Select "Advanced" for User type then click on "Save&View"
 
-6) To collaboratively edit the same page in real-time, point 2 browser instances with the "Real Time" edit mode to the same wiki page.
-In the second browser for instance use the same url (http://localhost:8080/xwiki/bin/edit/Sandbox/TestPage?&editor=rt)
-then click the "Join editing session" and start typing. You should see the changes reflected in the other browser.
+6) To edit a document/page using real-time editor, select the option "Real Time" located in the "Edit" menu.
+Lets say you create a new "TestPage" in "Sandbox" space then select "Real Time" option from the "Edit" menu.
+
+7) To collaboratively edit the same page in real-time, each participant would use the "Real Time" edit mode in the same wiki page.
+Prior to use the real time editor, some participants would be notified that somebody is already modifying the page and would
+then click the "Join editing session" and start typing.
+All remote changes are now reflected and merged in real time into each of the user's editor.
