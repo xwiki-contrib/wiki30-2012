@@ -11,9 +11,9 @@
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
 <creationDate>1303477252000</creationDate>
-<date>1303821994000</date>
-<contentUpdateDate>1303821994000</contentUpdateDate>
-<version>2.144</version>
+<date>1303892649000</date>
+<contentUpdateDate>1303892649000</contentUpdateDate>
+<version>1.1</version>
 <title></title>
 <template></template>
 <defaultTemplate></defaultTemplate>
@@ -117,14 +117,14 @@ XWiki.UserWorkspaceTab = Class.create({
     for (var key in elements) {
       var element = elements[key];
       var workspaceName = element.id;
-      var link = element.down('a');
+      var link = element.down('.workspaceActivity a');
       link.observe('click', this.onWorkspaceClicked);
     }
   },
 
   onWorkspaceClicked : function (event) {
     var element = Event.element(event);
-    var workspaceId = element.up().id;
+    var workspaceId = element.up('li').id;
     new Ajax.Request("$xwiki.getURL('WorkspaceManager.WorkspaceActivityServiceCode')", {
       parameters: {
         'xpage' : 'plain',
@@ -251,7 +251,9 @@ document.observe('xwiki:dom:loaded', function() {
 <cache>long</cache>
 </property>
 <property>
-<code>#workspaceActivityColumn {
+<code>#template("colorThemeInit.vm")
+
+#workspaceActivityColumn {
   margin: 5px 10px 10px;
   padding: 5px 10px 10px;
 }
@@ -259,13 +261,32 @@ document.observe('xwiki:dom:loaded', function() {
 #workspaceActivity .loading {
   padding-left: 20px;
   background-position: 0 0;
+}
+
+.workspaceActivity {
+  float: right;
+  font-size: 0.8em;
+}
+
+#workspaces li:hover {
+  background-color: $theme.highlightColor;
+}
+
+#workspaces li {
+  padding: 2px 20px 2px 2px;
+}
+
+#workspaces {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }</code>
 </property>
 <property>
 <name>woskpaces</name>
 </property>
 <property>
-<parse></parse>
+<parse>1</parse>
 </property>
 <property>
 <use>currentPage</use>
@@ -285,30 +306,33 @@ document.observe('xwiki:dom:loaded', function() {
   #if (!$currentUser.startsWith("${xcontext.mainWikiName}:"))
     #set ($currentUser = "${xcontext.mainWikiName}:${currentUser}")
   #end
-  #set($isMyProfile = ($xcontext.user == $doc.fullName))
-  {{html clean="false" wiki="true"}}
+  #set($documentUser = $doc.prefixedFullName)
+  #set($isMyProfile = ($currentUser == $documentUser))
+  {{html clean="false"}}
   &lt;div class="half column"&gt;
     &lt;div class='profile-section highlighted-profile-section'&gt;
       &lt;h1&gt;Joined workspaces&lt;/h1&gt;
+      #set ($joinedWorkspacesDescriptors = [])
       #set ($workspaces = $services.workspaceManager.getWorkspaces())
-      #if ($workspaces.size() == 0)
-        &lt;span&gt;You are not a member of any workspace yet.&lt;/span&gt;
+      #foreach ($workspace in $workspaces)
+        #set ($groupClassReference = $services.model.createDocumentReference($workspace.wikiDescriptor.wikiName, 'XWiki', 'XWikiGroups'))
+        #set ($groupMembers = $workspace.groupDocument.getObjects($services.model.serialize($groupClassReference)))
+        #foreach ($groupMember in $groupMembers)
+          #if ($groupMember.get('member') == $documentUser)
+            #set($temp = $joinedWorkspacesDescriptors.add($workspace.wikiDescriptor))
+            #break
+          #end
+        #end
+      #end
+      #if ($joinedWorkspacesDescriptors.size() == 0)
+        &lt;span&gt;#if($isMyProfile)You are#{else}The user is#end not a member of any workspace yet.&lt;/span&gt;
       #else
-        &lt;span&gt;Click a workspace to see its activity stream.&lt;/span&gt;
         &lt;ul id='workspaces'&gt;
-        #foreach ($workspace in $workspaces)
-          #set ($groupClassReference = $services.model.createDocumentReference($workspace.wikiDescriptor.wikiName, 'XWiki', 'XWikiGroups'))
-          #set ($groupMembers = $workspace.groupDocument.getObjects($services.model.serialize($groupClassReference)))
-          #set ($found = false)
-          #foreach ($groupMember in $groupMembers)
-            #if ($groupMember.get('member') == $currentUser)
-              #set ($found = true)
-              #break
-            #end
-          #end
-          #if ($found)
-            &lt;li id='$workspace.wikiDescriptor.wikiName'&gt;&lt;a href='javascript:void(0)'&gt;$workspace.wikiDescriptor.getValue('wikiprettyname')&lt;/a&gt;&lt;/li&gt;
-          #end
+        #foreach ($workspaceWikiDescriptor in $joinedWorkspacesDescriptors)
+          &lt;li id='$workspaceWikiDescriptor.wikiName'&gt;
+            &lt;span class='workspaceHomepage'&gt;&lt;a href='$workspaceWikiDescriptor.homePageUrl'&gt;$workspaceWikiDescriptor.getValue('wikiprettyname')&lt;/a&gt;&lt;/span&gt;
+            &lt;span class='workspaceActivity'&gt;&lt;a href='javascript:void(0)'&gt;show activity &amp;#187;&lt;/a&gt;&lt;/span&gt;
+          &lt;/li&gt;
         #end
         &lt;/ul&gt;
       #end
