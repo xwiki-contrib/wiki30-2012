@@ -21,43 +21,17 @@
 
     <dependency>
       <groupId>org.xwiki.contrib.wiki30</groupId>
-      <artifactId>rt-gwt-client</artifactId>
+      <artifactId>${rt.client.artifact.id}</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
 
   <properties>
-    <gwt.style>OBF</gwt.style>
-    <gwt.output.directory>${project.build.directory}/${project.build.finalName}/resources/js/xwiki/rte</gwt.output.directory>
-    <xre.directory>${gwt.output.directory}/xre</xre.directory>
-    <xre.module>fr.loria.score.Rt</xre.module>
+      <rt.client.artifact.id>rt-gwt-client</rt.client.artifact.id>
   </properties>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <configuration>
-          <modules>
-            <module>${xre.module}</module>
-          </modules>
-          <!--where GWT compiler will write output files -->
-          <webappDirectory>${gwt.output.directory}</webappDirectory>
-          <style>${gwt.style}</style>
-          <disableCastChecking>true</disableCastChecking>
-          <disableClassMetadata>true</disableClassMetadata>
-          <soyc>false</soyc>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -93,6 +67,30 @@
         </executions>
       </plugin>
 
+      <!--Copy generated JS files to server-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>../${rt.client.artifact.id}/target/${rt.client.artifact.id}-${project.version}/</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -100,7 +98,6 @@
           <archiveClasses>true</archiveClasses>
           <!--Artifact used for overlaying, not a real web app -->
           <failOnMissingWebXml>false</failOnMissingWebXml>
-
         </configuration>
       </plugin>
     </plugins>

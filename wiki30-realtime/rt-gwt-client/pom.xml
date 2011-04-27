@@ -32,6 +32,13 @@
     </dependency>
   </dependencies>
 
+  <properties>
+    <gwt.style>PRETTY</gwt.style>
+    <gwt.output.directory>${project.build.directory}/${project.build.finalName}/resources/js/xwiki/rte</gwt.output.directory>
+    <xre.directory>${gwt.output.directory}/xre</xre.directory>
+    <xre.module>fr.loria.score.Rt</xre.module>
+  </properties>
+
   <build>
     <resources>
       <resource>
@@ -47,6 +54,30 @@
     </resources>
 
     <plugins>
+        <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <configuration>
+          <modules>
+            <module>${xre.module}</module>
+          </modules>
+          <!--where GWT compiler will write output files -->
+          <webappDirectory>${gwt.output.directory}</webappDirectory>
+          <style>${gwt.style}</style>
+          <disableCastChecking>true</disableCastChecking>
+          <disableClassMetadata>true</disableClassMetadata>
+          <soyc>false</soyc>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+                <goal>generateAsync</goal>
+                <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>

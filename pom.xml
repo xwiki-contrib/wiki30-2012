@@ -69,6 +69,8 @@
 
     <gwt.version>2.1.1</gwt.version>
     <gwt.compiler.version>2.1.0-1</gwt.compiler.version>
+
+    <mvn.resources.plugin.version>2.5</mvn.resources.plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -191,6 +193,12 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>gwt-maven-plugin</artifactId>
           <version>${gwt.compiler.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${mvn.resources.plugin.version}</version>
         </plugin>
 
         <!-- Previous version is bugged when trying to transform the same 
