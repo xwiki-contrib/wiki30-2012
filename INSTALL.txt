@@ -33,7 +33,7 @@ Prerequisites: Maven 2.x+, JDK 1.5+, MySQL (If you want to enable the Workspace 
 5) All participants using real-time editor must have the "Advanced" user type set. For each of them, follow the following steps:
 5.1) Login with user credentials
 5.2) Hover the mouse over the Profile category (upper right) and select the Preferences category
-5.3) In the Preferences form, click on the "Pen" icon to edit user profile
+5.3) In the Preferences form, click on the "Pencil" icon to edit user profile
 5.4) Select "Advanced" for User type then click on "Save&View"
 
 6) To edit a document/page using real-time editor, select the option "Real Time" located in the "Edit" menu.
