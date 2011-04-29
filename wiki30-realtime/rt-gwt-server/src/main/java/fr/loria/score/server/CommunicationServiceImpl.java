@@ -85,6 +85,7 @@ public class CommunicationServiceImpl implements CommunicationService {
         if (locks.containsKey(esid)) {
             synchronized (locks) {
                 locks.get(esid).remove(Integer.valueOf(clientJupiterAlg.getSiteId()));
+                ClientServerCorrespondents.getInstance().setEditingSessions(locks);
             }
         }
         //2. remove it's server correspondent
