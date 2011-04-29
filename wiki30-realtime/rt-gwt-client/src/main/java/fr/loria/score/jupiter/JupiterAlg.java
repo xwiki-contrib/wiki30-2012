@@ -57,7 +57,7 @@ public abstract class JupiterAlg implements Serializable {
         //apply op locally
         data = op.execute(data);
         //todo: clone
-        Message newMsg = new Message(new State(currentState.getGeneratedMsgs(), currentState.getReceivedMsgs()), op);
+        Message newMsg = new Message(new State(currentState), op);
         queue.add(newMsg);
         currentState.incGeneratedMsgs();
         GWT.log(this.toString());

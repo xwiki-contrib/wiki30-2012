@@ -55,7 +55,7 @@ public abstract class Operation implements Serializable {
      * @param data the data that this operation should be applied on
      * @return the modified data, after the operation was executed
      */
-    public abstract String execute(String data); // FIXME: parameter and return value should be of same type
+    public abstract String execute(String data);
 
     /**
      * Updates the UI(the editor in fact) according to the semantics of the operation (<code>this</code>).<br/>
