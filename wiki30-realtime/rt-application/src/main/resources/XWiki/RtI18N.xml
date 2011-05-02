@@ -27,4 +27,9 @@ workspaces.menu.create=Workspace
 workspaces.menu.workspaces=Workspaces
 workspaces.profile.category.workspaces=Workspaces
 doceditedby=Document currently edited by
-joinrtsession=Join the real-time editing session</content></xwikidoc>
+joinrtsession=Join the real-time editing session
+## Group sheet
+xe.admin.groups.comment=About
+xe.admin.groups.tags=Tags
+xe.admin.groups._actions.follow=Follow
+xe.admin.groups._actions.unfollow=Unfollow</content></xwikidoc>
