@@ -30,7 +30,7 @@ Prerequisites: Maven 2.x+, JDK 1.5+, MySQL (If you want to enable the Workspace 
 
 4) Point your browser to: http://localhost:8080/xwiki and login as "Admin/admin" to complete the installation.
 
-5) All participants using real-time editor must have the "Advanced" user type set. For each of them, follow the following steps:
+5) All participants using real-time editor must have the "Advanced" user type set. For each of them, follow the steps:
 5.1) Login with user credentials
 5.2) Hover the mouse over the Profile category (upper right) and select the Preferences category
 5.3) In the Preferences form, click on the "Pencil" icon to edit user profile
