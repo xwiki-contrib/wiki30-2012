@@ -48,10 +48,15 @@ $response.setContentType('application/x-json')
     #set ($unfollowQueryString = "xpage=watch&do=removeuser&xredirect=$escapetool.url($xredirect)")
     #set ($unfollowUrl = "$memberDocument.getURL('view', $unfollowQueryString)")
     #set ($hasFollow = true)
-    #if ($xwiki.watchlist.isUserWatched($m))
+    #if ($xwiki.watchlist.isUserWatched($memberDocument.prefixedFullName))
       #set ($hasFollow = false)
     #end
     #set ($hasUnfollow = !$hasFollow)
+    ## Remove actions for the context user
+    #if($xcontext.user == $m)
+      #set ($hasFollow = false)
+      #set ($hasUnfollow = false)
+    #end
 
     #if( $velocityCount > 1 ) , #end
    {
