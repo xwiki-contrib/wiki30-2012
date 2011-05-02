@@ -2,7 +2,7 @@ INSTALL & USE:
 
 Prerequisites: Maven 2.x+, JDK 1.5+, MySQL (If you want to enable the Workspace feature)
 
-* Building with the Workspace feature enabled
+* Building with the Workspace and Real-Time editor enabled (Requires MySQL)
 
 1) Create an 'xwiki' user on MySQL, grant him all privileges and create an xwiki database (this is required for enabling the Workspace feature!)
 1.1) Type in the console: mysql -u root -p -e "grant all privileges on *.* to xwiki@127.0.0.1 identified by 'xwiki'"
@@ -14,7 +14,7 @@ Prerequisites: Maven 2.x+, JDK 1.5+, MySQL (If you want to enable the Workspace 
 2.3) Navigate to WIKI30_UNZIPPED_DIR and start XWiki by executing the script: start_xwiki.sh (start_xwiki.bat for Windows platforms)
 2.4) Proceed with step 3)
 
-* Building with the Real-Time editor enabled
+* Building only with the Real-Time editor enabled
 
 1) No MySQL required
 2.1) Type in the console: mvn clean install
