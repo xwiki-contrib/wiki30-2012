@@ -27,7 +27,7 @@ public interface CommunicationService extends RemoteService {
     /**
      * Each time a new client joins the editing session, it's corresponding server pair is created
      *
-     * @param clientJupiterAlg the client instance
+     * @param clientJupiterAlg the client instance. It must have the session id set up
      * @return the available content on which other clients are performing real time operations <b>if any</b>
      */
     String createServerPairForClient(ClientJupiterAlg clientJupiterAlg);
