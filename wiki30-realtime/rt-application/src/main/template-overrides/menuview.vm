@@ -49,7 +49,8 @@
   #xwikitopmenuentrystart('' $msg.get('core.menu.create') 'tmCreate' 'hasIcon')
   #set ($hasPreviousMenuSection = false)
   #if ($hasCreateWorkspace)
-    #submenuitem("$xwiki.getURL($services.model.createDocumentReference('xwiki', 'WorkspaceManager', 'CreateNewWorkspace'))" $msg.get('workspaces.menu.create') 'tmCreateWorkspace', '')
+    #set ($createWorkspaceDocumentReference = $services.model.createDocumentReference('xwiki', 'WorkspaceManager', 'CreateNewWorkspace'))
+    #submenuitem("$xwiki.getURL($createWorkspaceDocumentReference)" $msg.get('workspaces.menu.create') 'tmCreateWorkspace', '')
     #set ($hasPreviousMenuSection = true)
   #end
   #if ($hasCreateSpace)
@@ -150,6 +151,16 @@
       #submenuseparator()
     #end
     #submenuitem("$xwiki.getURL('Main.AllDocs')" $msg.get('core.menu.wiki.documentindex') 'tmWikiDocumentIndex' '')
+    #set ($hasPreviousMenuSection = true)
+  #end
+  #if ($isAdminAppInstalled && !$xcontext.isMainWiki() && $services.workspaceManager && $services.workspaceManager.canDeleteWorkspace($xcontext.user, $xcontext.database))
+    #if ($hasPreviousMenuSection)
+      #submenuseparator()
+    #end
+    #set ($deleteWorkspacePageReference = $services.model.createDocumentReference('xwiki', 'WorkspaceManager', 'DeleteWorkspaceCode'))
+    #set ($deleteUrl = $xwiki.getURL($deleteWorkspacePageReference, 'view', "workspaceId=${xcontext.database}&workspaceName=$wikiName"))
+    #submenuitem($deleteUrl $msg.get('workspaces.menu.workspaces.delete') 'tmDeleteWorkspace' '')
+    #set ($hasPreviousMenuSection = true)
   #end
   #xwikitopmenuentryend()
 #end

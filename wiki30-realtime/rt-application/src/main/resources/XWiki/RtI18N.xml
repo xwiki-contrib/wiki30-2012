@@ -5,7 +5,7 @@
 <language></language>
 <defaultLanguage>en</defaultLanguage>
 <translation>0</translation>
-<parent></parent>
+<parent>XWiki.RtSkin</parent>
 <creator>XWiki.Admin</creator>
 <author>XWiki.Admin</author>
 <customClass></customClass>
@@ -25,6 +25,7 @@
 <content>core.menu.edit.rt=Real Time
 workspaces.menu.create=Workspace
 workspaces.menu.workspaces=Workspaces
+workspaces.menu.workspaces.delete=Delete
 workspaces.profile.category.workspaces=Workspaces
 doceditedby=Document currently edited by
 joinrtsession=Join the real-time editing session
