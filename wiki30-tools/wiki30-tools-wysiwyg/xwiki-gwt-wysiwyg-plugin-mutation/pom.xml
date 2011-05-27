@@ -45,7 +45,7 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-web-gwt-wysiwyg-plugin-api</artifactId>
+      <artifactId>xwiki-platform-wysiwyg-plugin-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
