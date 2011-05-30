@@ -602,14 +602,14 @@ Textile.Editor = Textile.Utils.makeClass({
                     for (var i = fl; i <= tl; i++) {
                         if (this.cursor.isLineVisible(i)) {
                             if (i == fl) {
-                                this.ctx.fillRect(this.gutterWidth + this.paddingLeft + fc * this.charWidth, (i - this.first_line) * this.lineHeight + this.paddingTop, (this.lineWidth - fc - 1) * this.charWidth, this.lineHeight);
+                                this.ctx.fillRect(this.gutterWidth + this.paddingLeft + fc * this.charWidth, (i - this.first_line) * this.lineHeight + this.paddingTop, (this.lineWidth - fc) * this.charWidth, this.lineHeight);
                                 continue;
                             }
                             if (i == tl) {
                                 this.ctx.fillRect(this.gutterWidth + this.paddingLeft, (i - this.first_line) * this.lineHeight + this.paddingTop, tc * this.charWidth, this.lineHeight);
                                 continue;
                             }
-                            this.ctx.fillRect(this.gutterWidth + this.paddingLeft, (i - this.first_line) * this.lineHeight + this.paddingTop, (this.lineWidth - 1) * this.charWidth, this.lineHeight);
+                            this.ctx.fillRect(this.gutterWidth + this.paddingLeft, (i - this.first_line) * this.lineHeight + this.paddingTop, this.lineWidth * this.charWidth, this.lineHeight);
                         }
                     }
                 }
