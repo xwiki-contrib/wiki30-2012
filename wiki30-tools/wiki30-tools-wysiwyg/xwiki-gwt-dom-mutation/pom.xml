@@ -26,9 +26,8 @@
   <parent>
     <groupId>org.xwiki.platform</groupId>
     <artifactId>xwiki-web</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.0</version>
   </parent>
-  <groupId>org.xwiki.platform</groupId>
   <artifactId>xwiki-web-gwt-dom-mutation</artifactId>
   <name>XWiki Platform - Web - GWT - DOM Mutations</name>
   <description>An extension of the GWT DOM API, providing support for listening to DOM mutation events</description>
