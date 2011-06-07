@@ -165,6 +165,14 @@
 .actionmenu #tmWiki {
   background-image: url("$xwiki.getSkinFile('icons/silk/chart_organisation.gif')");
 }
+
+.actionmenu #tmMainWiki {
+  background-image: url("$xwiki.getSkinFile('icons/silk/building.gif')");
+}
+
+.actionmenu #tmWorkspaceIndex {
+  background-image: url("$xwiki.getSkinFile('icons/silk/text_list_bullets.gif')");
+}
 #end</style.css>
 </property>
 <property>

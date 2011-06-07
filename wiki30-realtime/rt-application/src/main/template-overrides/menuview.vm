@@ -146,10 +146,18 @@
     #end
     #set ($hasPreviousMenuSection = true)
   #end
-  #if ($xwiki.exists('Main.AllDocs'))
+  #if ($services.workspaceManager.getWorkspace($xcontext.database))
     #if ($hasPreviousMenuSection)
       #submenuseparator()
     #end
+    #set ($mainWikiHomeDocumentReference = $services.model.createDocumentReference($xcontext.mainWikiName, 'Main', 'WebHome'))
+    #submenuitem("$xwiki.getURL($mainWikiHomeDocumentReference)" $msg.get('workspacemanager.menu.workspace.mainWiki') 'tmMainWiki' '')
+    ##
+    #set ($browseWorkspacesDocumentReference = $services.model.createDocumentReference($xcontext.mainWikiName, 'WorkspaceManager', 'WebHome'))
+    #submenuitem("$xwiki.getURL($browseWorkspacesDocumentReference)" $msg.get('workspacemanager.menu.workspace.index') 'tmWorkspaceIndex' '')
+    #set ($hasPreviousMenuSection = true)
+  #end
+  #if ($xwiki.exists('Main.AllDocs'))
     #submenuitem("$xwiki.getURL('Main.AllDocs')" $msg.get('core.menu.wiki.documentindex') 'tmWikiDocumentIndex' '')
     #set ($hasPreviousMenuSection = true)
   #end
