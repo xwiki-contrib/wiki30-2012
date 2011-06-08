@@ -1,7 +1,6 @@
 package fr.loria.score;
 
 import fr.loria.score.jupiter.model.Message;
-import fr.loria.score.jupiter.transform.Transformation;
 import fr.loria.score.server.ServerJupiterAlg;
 
 /**

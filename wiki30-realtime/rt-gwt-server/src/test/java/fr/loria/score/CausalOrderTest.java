@@ -1,27 +1,33 @@
 package fr.loria.score;
 
-import fr.loria.score.jupiter.model.InsertOperation;
-import fr.loria.score.jupiter.model.Message;
-import fr.loria.score.jupiter.model.State;
-import fr.loria.score.server.ServerJupiterAlg;
-import junit.framework.TestCase;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
+
+import fr.loria.score.jupiter.model.InsertOperation;
+import fr.loria.score.jupiter.model.Message;
+import fr.loria.score.jupiter.model.State;
+import fr.loria.score.server.ServerJupiterAlg;
 
 /**
  * Test that messages received by a Jupiter server are causal ordered - that is they hold a specific invariant
  * @author: Bogdan Flueras (email: Bogdan.Flueras@inria.fr)
  */
 public class CausalOrderTest {
+    private static final Log LOG = LogFactory.getLog(CausalOrderTest.class);
+    
     private static final String HELLO = "hello";
     private static final String RIEN_DE_RIEN =
             "Non, rien de rien\n" +
@@ -89,6 +95,12 @@ public class CausalOrderTest {
 
     @Test
     public void testReceive1000Threads() { //really crunch my laptop
+        /* Run the test only if explicitly requested on the command line by passing a system property */
+        if (System.getProperty(TestUtils.RUN_STRESS_TESTS_FLAG) == null) {
+            TestUtils.warnSkipped(LOG, TestUtils.RUN_STRESS_TESTS_FLAG);
+            return;
+        }
+        
         String bis = RIEN_DE_RIEN + RIEN_DE_RIEN;
         int size = bis.length();
         assertTrue("Invalid message size",size > 1000);

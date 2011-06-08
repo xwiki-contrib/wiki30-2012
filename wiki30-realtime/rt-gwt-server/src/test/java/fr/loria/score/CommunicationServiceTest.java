@@ -5,6 +5,9 @@ import fr.loria.score.client.CommunicationService;
 import fr.loria.score.server.ClientServerCorrespondents;
 import fr.loria.score.server.CommunicationServiceImpl;
 import fr.loria.score.server.ServerJupiterAlg;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.*;
 
 import java.util.*;
@@ -13,12 +16,13 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author: Bogdan Flueras (email: Bogdan.Flueras@inria.fr)
  */
 public class CommunicationServiceTest {
+    private static final Log LOG = LogFactory.getLog(CommunicationServiceTest.class);
+    
     private CommunicationService communicationService = new CommunicationServiceImpl();
     public static final int NR_CLIENTS = 6;
     public static final int NR_MESSAGES = 25;
@@ -51,6 +55,12 @@ public class CommunicationServiceTest {
 
     @Test
     public void generateClientIdFromMultipleThreads() {
+        /* Run the test only if explicitly requested on the command line by passing a system property */
+        if (System.getProperty(TestUtils.RUN_STRESS_TESTS_FLAG) == null) {
+            TestUtils.warnSkipped(LOG, TestUtils.RUN_STRESS_TESTS_FLAG);
+            return;
+        }
+        
         final CountDownLatch startSignal = new CountDownLatch(1);
         final CountDownLatch endSignal = new CountDownLatch(NR_CLIENTS);
         Executor executor = Executors.newFixedThreadPool(NR_CLIENTS);
@@ -109,6 +119,12 @@ public class CommunicationServiceTest {
 
     @Test
     public void createServerPairForClientMultipleThreads() {
+        /* Run the test only if explicitly requested on the command line by passing a system property */
+        if (System.getProperty(TestUtils.RUN_STRESS_TESTS_FLAG) == null) {
+            TestUtils.warnSkipped(LOG, TestUtils.RUN_STRESS_TESTS_FLAG);
+            return;
+        }
+        
         //for each client it's corresponding server is created and is correctly mapped to editing session
         TestUtils.createServerPairs(NR_CLIENTS, 1, communicationService);
         Map<Integer, ServerJupiterAlg> correspondents = ClientServerCorrespondents.getInstance().getCorrespondents();
@@ -146,6 +162,12 @@ public class CommunicationServiceTest {
     //Ensures that server correctly receives and handles all client messages
     @Test
     public void serverReceive() {
+        /* Run the test only if explicitly requested on the command line by passing a system property */
+        if (System.getProperty(TestUtils.RUN_STRESS_TESTS_FLAG) == null) {
+            TestUtils.warnSkipped(LOG, TestUtils.RUN_STRESS_TESTS_FLAG);
+            return;
+        }
+        
         //create servers
         TestUtils.createServerPairs(NR_CLIENTS, 1, communicationService);
         TestUtils.sendMessagesToServer(NR_CLIENTS, NR_MESSAGES, NR_SESSIONS, communicationService);

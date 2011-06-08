@@ -5,6 +5,9 @@ import fr.loria.score.client.CommunicationService;
 import fr.loria.score.server.ClientServerCorrespondents;
 import fr.loria.score.server.CommunicationServiceImpl;
 import fr.loria.score.server.ServerJupiterAlg;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +22,8 @@ import static org.junit.Assert.assertTrue;
  * User: Bogdan Flueras (email: Bogdan.Flueras@inria.fr)
  */
 public class MultipleEditingSessionsTest {
+    private static final Log LOG = LogFactory.getLog(MultipleEditingSessionsTest.class);
+    
     private static final int NR_CLIENTS = 14;
     private static final int NR_SESSIONS = 7;
     private static final int NR_MESSAGES = 10;
@@ -46,6 +51,12 @@ public class MultipleEditingSessionsTest {
      */
     @Test
     public void testEditingSessions() throws Exception {
+        /* Run the test only if explicitly requested on the command line by passing a system property */
+        if (System.getProperty(TestUtils.RUN_STRESS_TESTS_FLAG) == null) {
+            TestUtils.warnSkipped(LOG, TestUtils.RUN_STRESS_TESTS_FLAG);
+            return;
+        }
+        
         List<ServerJupiterAlg> serversInDifferentSessions = new ArrayList<ServerJupiterAlg>();
         ServerJupiterAlg previous = null;
 
@@ -86,6 +97,12 @@ public class MultipleEditingSessionsTest {
      */
     @Test
     public void testNewClientJoinsSameEditingSession() throws Exception {
+        /* Run the test only if explicitly requested on the command line by passing a system property */
+        if (System.getProperty(TestUtils.RUN_STRESS_TESTS_FLAG) == null) {
+            TestUtils.warnSkipped(LOG, TestUtils.RUN_STRESS_TESTS_FLAG);
+            return;
+        }
+        
         ClientJupiterAlg client = new ClientJupiterAlg("", NR_CLIENTS + 1);
         int esid = client.getSiteId() % NR_SESSIONS;
         client.setEditingSessionId(esid);
@@ -104,6 +121,12 @@ public class MultipleEditingSessionsTest {
      */
     @Test
     public void testNewClientJoinsInDifferentEditingSession() throws Exception {
+        /* Run the test only if explicitly requested on the command line by passing a system property */
+        if (System.getProperty(TestUtils.RUN_STRESS_TESTS_FLAG) == null) {
+            TestUtils.warnSkipped(LOG, TestUtils.RUN_STRESS_TESTS_FLAG);
+            return;
+        }
+        
         ClientJupiterAlg client = new ClientJupiterAlg("", NR_CLIENTS + 1);
         int esid = Integer.MAX_VALUE;
         client.setEditingSessionId(esid);
