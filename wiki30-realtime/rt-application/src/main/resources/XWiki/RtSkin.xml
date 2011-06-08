@@ -169,11 +169,12 @@
 .actionmenu #tmMainWiki {
   background-image: url("$xwiki.getSkinFile('icons/silk/building.gif')");
 }
+#end
 
 .actionmenu #tmWorkspaceIndex {
   background-image: url("$xwiki.getSkinFile('icons/silk/text_list_bullets.gif')");
 }
-#end</style.css>
+</style.css>
 </property>
 <property>
 <view.vm></view.vm>
