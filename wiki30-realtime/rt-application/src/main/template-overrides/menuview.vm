@@ -154,7 +154,9 @@
     #submenuitem("$xwiki.getURL($mainWikiHomeDocumentReference)" $msg.get('workspaces.menu.workspace.mainWiki') 'tmMainWiki' '')
     #set ($hasPreviousMenuSection = true)
   #else
-    #submenuseparator()
+    #if ($hasPreviousMenuSection)
+      #submenuseparator()
+    #end
   #end
   #set ($browseWorkspacesDocumentReference = $services.model.createDocumentReference($xcontext.mainWikiName, 'WorkspaceManager', 'WebHome'))
   #if ($xwiki.exists($browseWorkspacesDocumentReference))
