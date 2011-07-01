@@ -42,9 +42,10 @@ $response.setContentType('application/x-json')
       #end
     #end
     #set ($xredirect = $doc.getURL($xcontext.action))
-    #set ($followQueryString = "xpage=watch&do=adduser&xredirect=$escapetool.url($xredirect)")
+    #set ($queryStringPrefix = "xpage=watch&xredirect=$escapetool.url($xredirect)")
+    #set ($followQueryString = "$queryStringPrefix&do=adduser")
     #set ($followUrl = "$memberDocument.getURL('view', $followQueryString)")
-    #set ($unfollowQueryString = "xpage=watch&do=removeuser&xredirect=$escapetool.url($xredirect)")
+    #set ($unfollowQueryString = "$queryStringPrefix&do=removeuser")
     #set ($unfollowUrl = "$memberDocument.getURL('view', $unfollowQueryString)")
     #set ($hasFollow = false)
     #set ($hasUnfollow = false)
