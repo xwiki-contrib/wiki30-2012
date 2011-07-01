@@ -41,8 +41,7 @@ $response.setContentType('application/x-json')
         #set($tagsHTMLValue = "$tagsHTMLValue <span class='tag-wrapper'><span class='tag'><a href='$tagUrl'>$!{escapetool.xml($tag)}</a></span></span>")
       #end
     #end
-    #set ($displayDoc = $xwiki.getDocument($request.displayDoc))
-    #set ($xredirect = $displayDoc.getURL($xcontext.action))
+    #set ($xredirect = $doc.getURL($xcontext.action))
     #set ($followQueryString = "xpage=watch&do=adduser&xredirect=$escapetool.url($xredirect)")
     #set ($followUrl = "$memberDocument.getURL('view', $followQueryString)")
     #set ($unfollowQueryString = "xpage=watch&do=removeuser&xredirect=$escapetool.url($xredirect)")
