@@ -23,6 +23,18 @@
         <groupId>org.xwiki.platform.tools</groupId>
         <artifactId>xwiki-xmldoc-update-plugin</artifactId>
         <executions>
+          <!-- rightsUI.vm -->
+          <execution>
+            <phase>process-resources</phase>
+            <id>attach-rightsUI.vm-xar</id>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${basedir}/src/main/template-overrides/rightsUI.vm</file>
+              <sourceDocument>${project.build.outputDirectory}/XWiki/RtSkin.xml</sourceDocument>
+            </configuration>
+          </execution>
           <!-- getgroupmembers.vm -->
           <execution>
             <phase>process-resources</phase>
