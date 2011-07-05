@@ -41,20 +41,18 @@ $response.setContentType('application/x-json')
         #set($tagsHTMLValue = "$tagsHTMLValue <span class='tag-wrapper'><span class='tag'><a href='$tagUrl'>$!{escapetool.xml($tag)}</a></span></span>")
       #end
     #end
-    #set ($xredirect = $doc.getURL($xcontext.action))
-    #set ($queryStringPrefix = "xpage=watch&xredirect=$escapetool.url($xredirect)")
+    #set ($queryStringPrefix = 'xpage=watch')
     #set ($followQueryString = "$queryStringPrefix&do=adduser")
     #set ($followUrl = "$memberDocument.getURL('view', $followQueryString)")
     #set ($unfollowQueryString = "$queryStringPrefix&do=removeuser")
     #set ($unfollowUrl = "$memberDocument.getURL('view', $unfollowQueryString)")
-    #set ($hasFollow = false)
-    #set ($hasUnfollow = false)
+    #set ($followAction = '')
     ## Skip guests or the same user for the follow action.
     #if (!$isGuest && $xcontext.user != $m)
       #if ($xwiki.watchlist.isUserWatched($memberDocument.prefixedFullName))
-        #set ($hasUnfollow = true)
+        #set ($followAction = 'unfollow')
       #else
-        #set ($hasFollow = true)
+        #set ($followAction = 'follow')
       #end
     #end
 
@@ -79,9 +77,10 @@ $response.setContentType('application/x-json')
     'comment'       : "$!{escapetool.javascript($memberDocument.getValue('comment'))}",
     'tags'          : "$!{escapetool.javascript($tagsHTMLValue)}",
     'doc_follow_url'   : "$followUrl",
-    'doc_hasfollow'    : $hasFollow,
+    'doc_hasfollow'    : true,
     'doc_unfollow_url' : "$unfollowUrl",
-    'doc_hasunfollow'  : $hasUnfollow
+    'doc_hasunfollow'  : true, 
+    'doc_followaction' : "$followAction"
    }
 #end
 ]}
