@@ -23,7 +23,7 @@ Prerequisites: Maven 2.x+, JDK 1.5+, MySQL (If you want to enable the Workspace 
 
 3) Import the wiki30-distribution-xar.xar file located in wiki30-distribution/wiki30-distribution-xar/target directory
 3.1) Point your browser to: http://localhost:8080/xwiki/bin/import/XWiki/XWikiPreferences?editor=globaladmin&section=Import
-3.2) Select the file wiki30-distribution-xar.xar file located in wiki30-distribution/wiki30-distribution-xar/target then click "Upload". 
+3.2) Select the file wiki30-distribution-xar.xar file located in wiki30-distribution/wiki30-distribution-xar/target then click "Upload".
 3.3) After successful uploading, you'll see the imported package in the "Available packages" section on same page.
 3.4) Select the imported file. The archive's content will be displayed in the upper right part.
 3.5) Accept default settings then click on the "Import" button. You should see an information message like: "Import successful"
