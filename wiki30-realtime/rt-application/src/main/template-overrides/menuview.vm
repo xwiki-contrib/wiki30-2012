@@ -146,7 +146,7 @@
     #end
     #set ($hasPreviousMenuSection = true)
   #end
-  #if ($services.workspaceManager.getWorkspace($xcontext.database))
+  #if($xwiki.isVirtualMode() && $xcontext.database != $xcontext.mainWikiName)
     #if ($hasPreviousMenuSection)
       #submenuseparator()
     #end
