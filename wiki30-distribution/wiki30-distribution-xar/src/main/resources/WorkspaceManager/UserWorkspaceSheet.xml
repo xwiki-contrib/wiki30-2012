@@ -157,9 +157,14 @@ XWiki.UserWorkspaceTab = Class.create({
   }
 });
 
-document.observe('xwiki:dom:loaded', function() {
+// FIXME: Replace with XWiki.isDomLoaded when upgrading to 3.1.1. http://jira.xwiki.org/jira/browse/XWIKI-6754
+if (XWiki.isInitialized) {
   new XWiki.UserWorkspaceTab();
-});</code>
+} else {
+  document.observe('xwiki:dom:loaded', function() {
+    new XWiki.UserWorkspaceTab();
+  });
+}</code>
 </property>
 <property>
 <name></name>
