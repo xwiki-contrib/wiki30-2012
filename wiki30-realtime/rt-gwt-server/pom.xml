@@ -15,19 +15,39 @@
 
   <dependencies>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.xwiki.contrib.wiki30</groupId>
       <artifactId>${rt.client.artifact.id}</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
+
+    <!-- Adding this to explicitly provided so that it will not be copied 
+      (transitively from the rt-client project?) in the war. -->
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-servlet</artifactId>
+      <version>2.3.0-xwiki-20110506</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Make sure we provide a default implementation of SLF4J for any test 
+      indirectly use it -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <properties>
-      <rt.client.artifact.id>rt-gwt-client</rt.client.artifact.id>
+    <rt.client.artifact.id>rt-gwt-client</rt.client.artifact.id>
   </properties>
 
   <build>
@@ -53,21 +73,13 @@
                   <classifier>shared</classifier>
                   <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/lib</outputDirectory>
                 </artifactItem>
-
-                <artifactItem>
-                  <!-- FIXME: Is this really necesary? -->
-                  <groupId>hsqldb</groupId>
-                  <artifactId>hsqldb</artifactId>
-                  <version>1.8.0.7</version>
-                  <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/lib</outputDirectory>
-                </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
         </executions>
       </plugin>
 
-      <!--Copy generated JS files to server-->
+      <!-- Copy generated JS files to server -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>

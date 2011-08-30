@@ -3,8 +3,8 @@ package fr.loria.score.server;
 
 import fr.loria.score.client.ClientJupiterAlg;
 import fr.loria.score.jupiter.model.Message;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -12,7 +12,6 @@ import java.util.*;
  * Each site has a pair of a client and a server
  */
 public final class ClientServerCorrespondents {
-    private static final Log log = LogFactory.getLog(ClientServerCorrespondents.class);
 
     private final Map<Integer, ServerJupiterAlg> correspondents = new HashMap<Integer, ServerJupiterAlg>();
 
@@ -20,6 +19,9 @@ public final class ClientServerCorrespondents {
     private final Map<Integer, List<Integer>> editingSessions = new HashMap<Integer, List<Integer>>();
 
     private static ClientServerCorrespondents instance = new ClientServerCorrespondents();
+    
+    /* The logger to use for logging. */
+    private Logger log = LoggerFactory.getLogger(ClientServerCorrespondents.class);
 
     private ClientServerCorrespondents() {}
 

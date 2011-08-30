@@ -4,14 +4,16 @@ import fr.loria.score.jupiter.JupiterAlg;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.model.Operation;
 import fr.loria.score.jupiter.transform.Transformation;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class ServerJupiterAlg extends JupiterAlg {
-    private static final Log logger = LogFactory.getLog(ServerJupiterAlg.class);
 
+    /* The logger to use for logging. */
+    private Logger logger = LoggerFactory.getLogger(ServerJupiterAlg.class);
+    
     private final List<Message> unsentMessages = new ArrayList<Message>();
     private final SortedSet<Message> causalOrderedMessages = new TreeSet<Message>(new Comparator<Message>() {
         public int compare(Message m1, Message m2) { //+1  if o1 > o2, 0 if o1 equals o2, -1 if o1 < o2

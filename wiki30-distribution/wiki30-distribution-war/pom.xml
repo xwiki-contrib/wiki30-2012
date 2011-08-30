@@ -21,7 +21,7 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.manager</groupId>
-      <artifactId>xwiki-enterprise-manager-web</artifactId>
+      <artifactId>xwiki-manager-web</artifactId>
       <type>war</type>
     </dependency>
     <dependency>
@@ -57,13 +57,13 @@
         <artifactId>maven-remote-resources-plugin</artifactId>
         <executions>
           <execution>
-            <id>xwiki-configuration-resources</id>
+            <id>xwiki-platform-tool-configuration-resources</id>
             <goals>
               <goal>process</goal>
             </goals>
             <configuration>
               <resourceBundles>
-                <resourceBundle>org.xwiki.platform.tools:xwiki-configuration-resources:${platform.tool.configuration.version}</resourceBundle>
+                <resourceBundle>org.xwiki.platform:xwiki-platform-tool-configuration-resources:${platform.version}</resourceBundle>
               </resourceBundles>
               <properties>
                 <xwikiDbHbmCommonExtraMappings>activitystream.hbm.xml</xwikiDbHbmCommonExtraMappings>
@@ -111,12 +111,6 @@ xwiki.virtual.usepath.servletpath=wiki
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <!-- Package classpath items (dependencies and resources) into the 
-        war. -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
       </plugin>
       <!-- Enable launching this war using the maven jetty plugin. -->
       <plugin>

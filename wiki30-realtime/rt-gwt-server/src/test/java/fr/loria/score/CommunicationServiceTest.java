@@ -6,8 +6,8 @@ import fr.loria.score.server.ClientServerCorrespondents;
 import fr.loria.score.server.CommunicationServiceImpl;
 import fr.loria.score.server.ServerJupiterAlg;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.*;
 
 import java.util.*;
@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
  * @author: Bogdan Flueras (email: Bogdan.Flueras@inria.fr)
  */
 public class CommunicationServiceTest {
-    private static final Log LOG = LogFactory.getLog(CommunicationServiceTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CommunicationServiceTest.class);
     
     private CommunicationService communicationService = new CommunicationServiceImpl();
     public static final int NR_CLIENTS = 6;

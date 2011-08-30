@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- For assistance related to logback-translator or configuration  -->
+<!-- files in general, please contact the logback user mailing list -->
+<!-- at http://www.qos.ch/mailman/listinfo/logback-user             -->
+<!--                                                                -->
+<!-- For professional support please see                            -->
+<!--    http://www.qos.ch/shop/products/professionalSupport         -->
+<!--                                                                -->
+<configuration>
+  <appender name="A1" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <!-- Print the date in ISO 8601 format -->
+      <pattern>%d [%t] %-5p %c - %m%n</pattern>
+    </encoder>
+  </appender>
+  <logger name="fr.loria.score" level="DEBUG"/>
+  <root level="WARN">
+    <appender-ref ref="A1"/>
+  </root>
+</configuration>

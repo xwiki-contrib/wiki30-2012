@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.manager</groupId>
-    <artifactId>xwiki-enterprise-manager-parent</artifactId>
-    <version>3.0</version>
+    <artifactId>xwiki-manager</artifactId>
+    <version>3.2-SNAPSHOT</version>
   </parent>
 
   <groupId>org.xwiki.contrib.wiki30</groupId>
@@ -65,12 +65,20 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <xe.version>3.0</xe.version>
+    
+    <enterprise.version>3.2-SNAPSHOT</enterprise.version>
+    <manager.version>3.2-SNAPSHOT</manager.version>
+    <!-- We have to redefine these properties because ${project.version} 
+      as defined in org.xwiki.commons:xwiki-commons is now resolved to 1.0-SNAPSHOT -->
+    <commons.version>3.2-SNAPSHOT</commons.version>
+    <platform.version>3.2-SNAPSHOT</platform.version>
+    <rendering.version>3.2-SNAPSHOT</rendering.version>
 
-    <gwt.version>2.1.1</gwt.version>
-    <gwt.compiler.version>2.1.0-1</gwt.compiler.version>
+    <!-- We use our custom version of GWT because some dependencies are missing 
+      from the gwt-user 2.3.0 POM. See org.xwiki.platform:xwiki-platform -->
+    <gwt.version>2.3.0-xwiki-20110506</gwt.version>
+    <gwt.maven.plugin.version>2.2.0</gwt.maven.plugin.version>
 
-    <mvn.resources.plugin.version>2.5</mvn.resources.plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -79,96 +87,101 @@
       <dependency>
         <groupId>org.xwiki.enterprise</groupId>
         <artifactId>xwiki-enterprise-wiki</artifactId>
-        <version>${xe.version}</version>
+        <version>${enterprise.version}</version>
         <type>xar</type>
       </dependency>
       <dependency>
         <groupId>org.xwiki.manager</groupId>
-        <artifactId>xwiki-enterprise-manager-wiki-administrator</artifactId>
-        <version>${xe.version}</version>
+        <artifactId>xwiki-manager-wiki-administrator</artifactId>
+        <version>${manager.version}</version>
         <type>xar</type>
       </dependency>
 
       <!-- XWiki Plugins -->
       <dependency>
-        <groupId>com.xpn.xwiki.platform.plugins</groupId>
-        <artifactId>xwiki-plugin-wiki-manager</artifactId>
-        <version>${platform.plugin.wikimanager.version}</version>
+        <groupId>org.xwiki.platform</groupId>
+        <artifactId>xwiki-platform-wiki-manager-api</artifactId>
+        <version>${platform.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.xpn.xwiki.platform.plugins</groupId>
-        <artifactId>xwiki-plugin-application-manager</artifactId>
-        <version>${platform.plugin.applicationmanager.version}</version>
+        <groupId>org.xwiki.platform</groupId>
+        <artifactId>xwiki-platform-wiki-manager-ui</artifactId>
+        <version>${platform.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.xwiki.platform.applications</groupId>
-        <artifactId>xwiki-application-application-manager</artifactId>
-        <version>${platform.plugin.applicationmanager.version}</version>
+        <groupId>org.xwiki.platform</groupId>
+        <artifactId>xwiki-platform-application-manager-api</artifactId>
+        <version>${platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xwiki.platform</groupId>
+        <artifactId>xwiki-platform-application-manager-ui</artifactId>
+        <version>${platform.version}</version>
         <type>xar</type>
       </dependency>
 
       <!-- XWiki Core -->
       <dependency>
-        <groupId>com.xpn.xwiki.platform</groupId>
-        <artifactId>xwiki-core</artifactId>
-        <version>${xe.version}</version>
+        <groupId>org.xwiki.platform</groupId>
+        <artifactId>xwiki-platform-oldcore</artifactId>
+        <version>${platform.version}</version>
       </dependency>
       <dependency>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-component-api</artifactId>
-        <version>${xe.version}</version>
+        <version>${commons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-component-default</artifactId>
-        <version>${xe.version}</version>
+        <version>${commons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-script</artifactId>
-        <version>${xe.version}</version>
+        <version>${commons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-test</artifactId>
-        <version>${xe.version}</version>
+        <version>${commons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.xwiki.enterprise</groupId>
         <artifactId>xwiki-enterprise-web</artifactId>
-        <version>${xe.version}</version>
+        <version>${enterprise.version}</version>
         <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.xwiki.manager</groupId>
-        <artifactId>xwiki-enterprise-manager-web</artifactId>
-        <version>${xe.version}</version>
+        <artifactId>xwiki-manager-web</artifactId>
+        <version>${manager.version}</version>
         <type>war</type>
       </dependency>
 
       <!-- XWiki GWT modules -->
       <dependency>
         <groupId>org.xwiki.platform</groupId>
-        <artifactId>xwiki-web-gwt-user</artifactId>
-        <version>${xe.version}</version>
+        <artifactId>xwiki-platform-gwt-user</artifactId>
+        <version>${platform.version}</version>
       </dependency>
       <dependency>
         <groupId>org.xwiki.platform</groupId>
-        <artifactId>xwiki-web-gwt-dom</artifactId>
-        <version>${xe.version}</version>
+        <artifactId>xwiki-platform-gwt-dom</artifactId>
+        <version>${platform.version}</version>
       </dependency>
 
       <!-- Tools -->
       <dependency>
-        <groupId>org.xwiki.platform.tools</groupId>
-        <artifactId>xwiki-rootwebapp</artifactId>
-        <version>${platform.tool.rootwebapp.version}</version>
+        <groupId>org.xwiki.platform</groupId>
+        <artifactId>xwiki-platform-tool-rootwebapp</artifactId>
+        <version>${platform.version}</version>
         <type>war</type>
       </dependency>
       <dependency>
-        <groupId>org.xwiki.platform.tools</groupId>
-        <artifactId>xwiki-jetty-resources</artifactId>
-        <version>${platform.tool.jetty.version}</version>
+        <groupId>org.xwiki.platform</groupId>
+        <artifactId>xwiki-platform-tool-jetty-resources</artifactId>
+        <version>${platform.version}</version>
         <type>zip</type>
       </dependency>
     </dependencies>
@@ -178,37 +191,21 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.xwiki.platform.tools</groupId>
-          <artifactId>xwiki-xmldoc-update-plugin</artifactId>
-          <version>${platform.tool.xmldoc.version}</version>
+          <groupId>org.xwiki.platform</groupId>
+          <artifactId>xwiki-platform-tool-xmldoc-update-plugin</artifactId>
+          <version>${platform.version}</version>
         </plugin>
 
         <plugin>
-          <groupId>org.xwiki.platform.tools</groupId>
-          <artifactId>xwiki-xar-plugin</artifactId>
-          <version>${platform.tool.xar-plugin.version}</version>
+          <groupId>org.xwiki.commons</groupId>
+          <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
+          <version>${commons.version}</version>
         </plugin>
 
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>gwt-maven-plugin</artifactId>
-          <version>${gwt.compiler.version}</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>${mvn.resources.plugin.version}</version>
-        </plugin>
-
-        <!-- Previous version is bugged when trying to transform the same 
-          file (source == destination). See if XWiki>3.0 has already updated this plugin 
-          dependency. See http://jira.codehaus.org/browse/MOJO-1447 for more details 
-          on issue. -->
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>xml-maven-plugin</artifactId>
-          <version>1.0</version>
+          <version>${gwt.maven.plugin.version}</version>
         </plugin>
 
         <!-- 6.1.1 Seems to have some problems throwing a weird exception. 
@@ -225,11 +222,36 @@
     <!-- XAR packaging support. -->
     <extensions>
       <extension>
-        <groupId>org.xwiki.platform.tools</groupId>
-        <artifactId>xwiki-xar-handlers</artifactId>
-        <version>${platform.tool.xar-handler.version}</version>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
+        <version>${commons.version}</version>
       </extension>
     </extensions>
+
+    <plugins>
+
+      <!-- Bugfix for the fact that ${project.version} as defined in org.xwiki.commons:xwiki-commons 
+        is now resolved to 1.0-SNAPSHOT -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>xwiki-license-resources</id>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <resourceBundles>
+                <resourceBundle>org.xwiki.commons:xwiki-commons-tool-license-resources:${commons.version}</resourceBundle>
+              </resourceBundles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+
   </build>
 
   <repositories>

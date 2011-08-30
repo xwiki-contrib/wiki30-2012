@@ -20,8 +20,8 @@
     <plugins>
       <!-- Attach template overrides to the RtSkin page -->
       <plugin>
-        <groupId>org.xwiki.platform.tools</groupId>
-        <artifactId>xwiki-xmldoc-update-plugin</artifactId>
+        <groupId>org.xwiki.platform</groupId>
+        <artifactId>xwiki-platform-tool-xmldoc-update-plugin</artifactId>
         <executions>
           <!-- rightsUI.vm -->
           <execution>

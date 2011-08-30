@@ -6,8 +6,8 @@ import fr.loria.score.server.ClientServerCorrespondents;
 import fr.loria.score.server.CommunicationServiceImpl;
 import fr.loria.score.server.ServerJupiterAlg;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
  * User: Bogdan Flueras (email: Bogdan.Flueras@inria.fr)
  */
 public class MultipleEditingSessionsTest {
-    private static final Log LOG = LogFactory.getLog(MultipleEditingSessionsTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MultipleEditingSessionsTest.class);
     
     private static final int NR_CLIENTS = 14;
     private static final int NR_SESSIONS = 7;

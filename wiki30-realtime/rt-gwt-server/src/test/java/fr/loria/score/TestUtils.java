@@ -12,8 +12,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
 import org.junit.Assert;
+import org.slf4j.Logger;
 
 import fr.loria.score.client.ClientJupiterAlg;
 import fr.loria.score.client.CommunicationService;
@@ -140,7 +140,7 @@ public class TestUtils
      * @param log The logger to be used to output the warning.
      * @param flag The flag that should be specified on the command line to activate the test.
      */
-    public static void warnSkipped(Log log, String flag)
+    public static void warnSkipped(Logger log, String flag)
     {
         StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[2];
         log.warn(String.format(

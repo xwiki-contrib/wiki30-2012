@@ -23,12 +23,12 @@
 
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-web-gwt-user</artifactId>
+      <artifactId>xwiki-platform-gwt-user</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-web-gwt-dom</artifactId>
+      <artifactId>xwiki-platform-gwt-dom</artifactId>
     </dependency>
   </dependencies>
 

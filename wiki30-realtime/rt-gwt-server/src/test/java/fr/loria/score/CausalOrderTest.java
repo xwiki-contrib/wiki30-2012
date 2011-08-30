@@ -11,10 +11,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.loria.score.jupiter.model.InsertOperation;
 import fr.loria.score.jupiter.model.Message;
@@ -26,7 +27,7 @@ import fr.loria.score.server.ServerJupiterAlg;
  * @author: Bogdan Flueras (email: Bogdan.Flueras@inria.fr)
  */
 public class CausalOrderTest {
-    private static final Log LOG = LogFactory.getLog(CausalOrderTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CausalOrderTest.class);
     
     private static final String HELLO = "hello";
     private static final String RIEN_DE_RIEN =
