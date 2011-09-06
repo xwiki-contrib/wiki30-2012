@@ -167,6 +167,9 @@ aqJnTa4EE0Iwwsohli6MYFH6sl+ylT6JYKxQ5hlIH4f/BgD7inc8EZgGUgAAAABJRU5ErkJggg==
 
     init : function() {
       this.tabsContainer = $('vertical-tabs');
+      if (!this.tabsContainer) {
+        return;
+      }
       this.tabsContainer.select('.vertical-tab').each(function (tabElement) {
         if (!tabElement.__name) {
           tabElement.__name = tabElement.id.replace(/Tab$/, '');
@@ -218,7 +221,8 @@ aqJnTa4EE0Iwwsohli6MYFH6sl+ylT6JYKxQ5hlIH4f/BgD7inc8EZgGUgAAAABJRU5ErkJggg==
   }
 });
 
-Event.observe(window, 'load', function() { XWiki.userprofile.init() });</code>
+Event.observe(window, 'load', function() { XWiki.userprofile.init() });
+document.observe('lightbox:userprofile:loaded', function() { XWiki.userprofile.init() });</code>
 </property>
 <property>
 <name>userprofile</name>
@@ -360,13 +364,14 @@ td.recentChangesRight {
 }
 
 div.profile-section,
-div.userInfo, div.userRecentChanges, div.userPreferences, div.passwordManagement, div.watchlistManagement, div.watchlistRss, div.watchlistElements {
+div.userInfo, div.userRecentChanges, div.userPreferences, div.passwordManagement, div.watchlistManagement, div.watchlistRss, div.watchlistElements, 
+div.userDashboard, #dashboardPane .dashboard {
   margin: 5px 10px 10px;
   padding: 5px 10px 10px;
 }
 
 div.highlighted-profile-section,
-div.userInfo, div.userPreferences, div.watchlistManagement {
+div.userInfo, div.userPreferences, div.watchlistManagement, div.userDashboard {
   background-color: $theme.backgroundSecondaryColor;
 }
 
@@ -470,7 +475,7 @@ span#avatarUpload {
 }
 
 #vertical-tabs ul li a {
-  padding: 3px 0px 3px 10px;
+  padding: 3px 0px 3px 4px;
   text-decoration: none;
   display:block;
   color:$theme.menuBackgroundColor;
@@ -482,7 +487,7 @@ span#avatarUpload {
   left:1px;
   background:$theme.pageContentBackgroundColor;
   color: $theme.textColor;
-  padding-left: 9px;
+  padding-left: 3px;
 }
 
 .vertical-pane {
@@ -555,6 +560,13 @@ span#avatarUpload {
   top: 0;
   width: 18px !important;
   z-index: 1;
+}
+
+## --------------------------------------
+## Dashboard
+/* prevent the clearfloats between buttons &amp; dashboard gadgets from clearing the tabs as well, only the buttons float */
+.dashboard .clearfloats {
+  clear: right;
 }</code>
 </property>
 <property>
@@ -591,6 +603,9 @@ $xwiki.jsx.use("XWiki.XWikiUserSheet")##
   #set ($discard = $categories.add(['network', $msg.get('platform.core.profile.category.network'), 'XWiki.XWikiUserNetworkSheet', 'icons/silk/group.gif']))
 #end
 #set ($discard = $categories.add(['workspaces', $msg.get('workspaces.profile.category.workspaces'), 'WorkspaceManager.UserWorkspaceSheet', 'icons/silk/chart_organisation.gif']))
+#if ($isMyProfile)
+  #set ($discard = $categories.add(['dashboard', $msg.get('platform.core.profile.category.dashboard'), 'XWiki.XWikiUserDashboardSheet', 'icons/silk/application_view_tile.gif']))
+#end
 ##
 ## Current category
 ##
@@ -641,5 +656,11 @@ $xwiki.jsx.use("XWiki.XWikiUserSheet")##
     #end
     &lt;div class="clearfloats"&gt;&amp;nbsp;&lt;/div&gt;
   &lt;/div&gt;
+  #if ($request.get('xpage'))
+    &lt;script type="text/javascript"&gt;
+    document.fire('lightbox:userprofile:loaded');
+    &lt;/script&gt;
+  #end
 {{/html}}
-{{/velocity}}</content></xwikidoc>
+{{/velocity}}</content>
+</xwikidoc>

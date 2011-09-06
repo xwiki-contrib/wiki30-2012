@@ -11,8 +11,8 @@
   #if($isAdvancedUser)
     #xwikitopmenuentrystart($doc.getURL($editaction, $!languageparams) $msg.get('core.menu.edit') 'tmEdit' 'hasIcon')
     #submenuitem($doc.getURL('edit', "$!{languageparams}&amp;editor=wiki") $msg.get('core.menu.edit.wiki') 'tmEditWiki', '')
-    #submenuitem($doc.getURL('edit', "$!languageparams&amp;editor=wysiwyg") $msg.get('core.menu.edit.wysiwyg') 'tmEditWysiwyg', '')
     #submenuitem($doc.getURL('edit', "$!languageparams&amp;editor=rt") $msg.get('core.menu.edit.rt') 'tmEditRt', '')
+    #submenuitem($doc.getURL('edit', "$!languageparams&amp;editor=wysiwyg") $msg.get('core.menu.edit.wysiwyg') 'tmEditWysiwyg', '')
     #submenuitem($doc.getURL('inline', $!languageparams) $msg.get('core.menu.edit.inline') 'tmEditInline', '')
     #submenuseparator()
     #submenuitem($doc.getURL('edit', 'editor=rights') $msg.get('core.menu.edit.rights') 'tmEditRights', '')
@@ -27,14 +27,18 @@
   #if($keyboardShortcutsEnabled)
     <script type="text/javascript">
     //<![CDATA[
-      shortcut.add("$msg.get('core.shortcuts.view.edit')",function() { location.href="$doc.getURL($editaction, $!languageparams)"; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
-      shortcut.add("$msg.get('core.shortcuts.view.wiki')",function() { location.href="$doc.getURL('edit', "$!{languageparams}&editor=wiki")"; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
-      shortcut.add("$msg.get('core.shortcuts.view.wysiwyg')",function() { location.href="$doc.getURL('edit', "$!{languageparams}&editor=wysiwyg")"; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
-      shortcut.add("$msg.get('core.shortcuts.view.rt')",function() { location.href="$doc.getURL('edit', "$!{languageparams}&editor=rt")"; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
-      shortcut.add("$msg.get('core.shortcuts.view.inline')",function() { location.href="$doc.getURL('inline', $!languageparams)"; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
-      shortcut.add("$msg.get('core.shortcuts.view.rights')",function() { location.href="$doc.getURL('edit', 'editor=rights')"; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
-      shortcut.add("$msg.get('core.shortcuts.view.objects')",function() { location.href="$doc.getURL('edit', 'editor=object')"; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
-      shortcut.add("$msg.get('core.shortcuts.view.class')",function() { location.href="$doc.getURL('edit', 'editor=class')"; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
+      shortcut.add("$msg.get('core.shortcuts.view.edit')",function() { location.href=$('tmEdit').down('a').href; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
+      #if($isAdvancedUser)
+        shortcut.add("$msg.get('core.shortcuts.view.wiki')",function() { location.href=$('tmEditWiki').href; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
+        shortcut.add("$msg.get('core.shortcuts.view.rt')",function() { location.href=$('tmEditRt').href; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
+        shortcut.add("$msg.get('core.shortcuts.view.wysiwyg')",function() { location.href=$('tmEditWysiwyg').href; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
+        shortcut.add("$msg.get('core.shortcuts.view.inline')",function() { location.href=$('tmEditInline').href; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
+        shortcut.add("$msg.get('core.shortcuts.view.rights')",function() { location.href=$('tmEditRights').href; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
+        shortcut.add("$msg.get('core.shortcuts.view.objects')",function() { location.href=$('tmEditObject').href; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
+        #if($hasAdmin)
+          shortcut.add("$msg.get('core.shortcuts.view.class')",function() { location.href=$('tmEditClass').href; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
+        #end
+      #end
     //]]>
     </script>
   #end
@@ -44,7 +48,10 @@
 ##
 #if(!$doc.isNew())
   #xwikitopmenuentrystart('' $msg.get('core.menu.export') 'tmExport' '')
-  #submenuitem($doc.getURL('export', "format=pdf&amp;$!docvariant") $msg.get('core.menu.export.pdf') 'tmExportPdf', '')
+  #submenuitem($doc.getURL('view', "xpage=pdfoptions&amp;$!docvariant") $msg.get('core.menu.export.pdf') 'tmExportPdf', '')
+  #if("$!{oomanager.serverState}" == "Connected")
+    #submenuitem($doc.getURL('export', "format=odt&amp;$!docvariant") $msg.get('core.menu.export.odt') 'tmExportOdt', '')
+  #end
   #submenuitem($doc.getURL('export', "format=rtf&amp;$!docvariant") $msg.get('core.menu.export.rtf') 'tmExportRtf', '')
   #submenuitem($doc.getURL('export', "format=html&amp;$!docvariant") $msg.get('core.menu.export.html') 'tmExportHtml', '')
   #if($hasAdmin)
