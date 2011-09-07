@@ -65,7 +65,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    
+
     <enterprise.version>3.2-SNAPSHOT</enterprise.version>
     <manager.version>3.2-SNAPSHOT</manager.version>
     <!-- We have to redefine these properties because ${project.version} 
@@ -200,6 +200,13 @@
           <groupId>org.xwiki.commons</groupId>
           <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
           <version>${commons.version}</version>
+          <configuration>
+            <excludes>
+              <!-- Exclude license stuff or any other META-INF items from 
+                xars. -->
+              <exclude>**/META-INF/**</exclude>
+            </excludes>
+          </configuration>
         </plugin>
 
         <plugin>
@@ -215,6 +222,17 @@
           <groupId>org.mortbay.jetty</groupId>
           <artifactId>maven-jetty-plugin</artifactId>
           <version>6.1.26</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <configuration>
+            <!-- It seems that, once we upgraded to 3.2-SNAPSHOT, we have 
+              to explicitly overwrite existing resources thant might already exist in the 
+              destination folder when being copied with the resources-plugin. -->
+            <overwrite>true</overwrite>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
