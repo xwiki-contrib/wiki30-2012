@@ -18,32 +18,5 @@
     <module>wiki30-distribution-zip</module>
     <module>wiki30-distribution-xar</module>
   </modules>
-
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-war-plugin</artifactId>
-          <configuration>
-            <dependentWarExcludes />
-            <webResources>
-              <!-- Include Configuration resources that have been re-configured, 
-                based on the active profile. They will override the ones already existing 
-                in the XEM war. -->
-              <resource>
-                <directory>${project.build.directory}/maven-shared-archive-resources</directory>
-                <targetPath>WEB-INF</targetPath>
-                <includes>
-                  <include>hibernate.cfg.xml</include>
-                  <include>xwiki.cfg</include>
-                  <include>xwiki.properties</include>
-                </includes>
-              </resource>
-            </webResources>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+  
 </project>

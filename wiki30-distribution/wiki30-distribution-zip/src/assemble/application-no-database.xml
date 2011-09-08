@@ -33,12 +33,6 @@
       </includes>
       <outputDirectory>webapps/xwiki</outputDirectory>
       <unpack>true</unpack>
-      <unpackOptions>
-        <excludes>
-          <!-- Exclude hibernate config since it needs to be reconfigured for the current build's active profile. -->
-          <exclude>**/hibernate.cfg.xml</exclude>
-        </excludes>
-      </unpackOptions>
     </dependencySet>
     <!-- ROOT webapp, redirecting to /xwiki/ when no application is specified. -->
     <dependencySet>
@@ -56,22 +50,7 @@
       <outputDirectory>/</outputDirectory>
       <unpack>true</unpack>
     </dependencySet>
-    <!-- Add JDBC driver for the database to use. -->
-    <dependencySet>
-      <includes>
-        <include>${xwiki.db.jdbc.groupId}:${xwiki.db.jdbc.artifactId}</include>
-      </includes>
-      <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
-      <unpack>false</unpack>
-    </dependencySet>
   </dependencySets>
-  <files>
-    <!-- Add newly reconfigured hibernate configuration. -->
-  	<file>
-      <source>${basedir}/target/maven-shared-archive-resources/hibernate.cfg.xml</source>
-      <outputDirectory>webapps/xwiki/WEB-INF</outputDirectory>
-    </file>
-  </files>
   <fileSets>
     <!-- Add License/Notice files -->
     <fileSet>

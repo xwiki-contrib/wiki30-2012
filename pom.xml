@@ -234,6 +234,27 @@
             <overwrite>true</overwrite>
           </configuration>
         </plugin>
+
+        <!-- Bugfix for the fact that ${project.version} as defined in org.xwiki.commons:xwiki-commons 
+          is now resolved to 1.0-SNAPSHOT -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>xwiki-license-resources</id>
+              <goals>
+                <goal>process</goal>
+              </goals>
+              <configuration>
+                <resourceBundles>
+                  <resourceBundle>org.xwiki.commons:xwiki-commons-tool-license-resources:${commons.version}</resourceBundle>
+                </resourceBundles>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+
       </plugins>
     </pluginManagement>
 
@@ -245,30 +266,6 @@
         <version>${commons.version}</version>
       </extension>
     </extensions>
-
-    <plugins>
-
-      <!-- Bugfix for the fact that ${project.version} as defined in org.xwiki.commons:xwiki-commons 
-        is now resolved to 1.0-SNAPSHOT -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-remote-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>xwiki-license-resources</id>
-            <goals>
-              <goal>process</goal>
-            </goals>
-            <configuration>
-              <resourceBundles>
-                <resourceBundle>org.xwiki.commons:xwiki-commons-tool-license-resources:${commons.version}</resourceBundle>
-              </resourceBundles>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-    </plugins>
 
   </build>
 

@@ -46,76 +46,7 @@
 
   <build>
     <plugins>
-      <!-- Inject Hibernate's configuration for the specified database -->
-      <!-- Put Hibernate.cfg.xml, xwiki.cfg and xwiki.properties configuration 
-        files in the classpath. -->
-      <!-- Hibernate.cfg.xml is already configured, based on the active profile, 
-        inherited from XE parent pom. -->
-      <!-- xwiki.cfg is already configured, inherited from XE parent pom, 
-        but we need to reconfigure it since this is producing a XEM output. The XEM 
-        configuration could not be inheritable since it is defined in a distribution 
-        project and contained unwanted dependencies. -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-remote-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>xwiki-platform-tool-configuration-resources</id>
-            <goals>
-              <goal>process</goal>
-            </goals>
-            <configuration>
-              <resourceBundles>
-                <resourceBundle>org.xwiki.platform:xwiki-platform-tool-configuration-resources:${platform.version}</resourceBundle>
-              </resourceBundles>
-              <properties>
-                <xwikiDbHbmCommonExtraMappings>activitystream.hbm.xml</xwikiDbHbmCommonExtraMappings>
-                <xwikiCfgPlugins>\
-                  com.xpn.xwiki.monitor.api.MonitorPlugin,\
-                  com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
-                  com.xpn.xwiki.plugin.skinx.JsSkinFileExtensionPlugin,\
-                  com.xpn.xwiki.plugin.skinx.CssSkinExtensionPlugin,\
-                  com.xpn.xwiki.plugin.skinx.CssSkinFileExtensionPlugin,\
-                  com.xpn.xwiki.plugin.skinx.LinkExtensionPlugin,\
-                  com.xpn.xwiki.plugin.feed.FeedPlugin,\
-                  com.xpn.xwiki.plugin.ldap.LDAPPlugin,\
-                  com.xpn.xwiki.plugin.google.GooglePlugin,\
-                  com.xpn.xwiki.plugin.mail.MailPlugin,\
-                  com.xpn.xwiki.plugin.packaging.PackagePlugin,\
-                  com.xpn.xwiki.plugin.query.QueryPlugin,\
-                  com.xpn.xwiki.plugin.svg.SVGPlugin,\
-                  com.xpn.xwiki.plugin.charts.ChartingPlugin,\
-                  com.xpn.xwiki.plugin.fileupload.FileUploadPlugin,\
-                  com.xpn.xwiki.plugin.image.ImagePlugin,\
-                  com.xpn.xwiki.plugin.userdirectory.UserDirectoryPlugin,\
-                  com.xpn.xwiki.plugin.usertools.XWikiUserManagementToolsImpl,\
-                  com.xpn.xwiki.plugin.zipexplorer.ZipExplorerPlugin,\
-                  com.xpn.xwiki.plugin.autotag.AutoTagPlugin,\
-                  com.xpn.xwiki.plugin.lucene.LucenePlugin,\
-                  com.xpn.xwiki.plugin.diff.DiffPlugin,\
-                  com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin,\
-                  com.xpn.xwiki.plugin.jodatime.JodaTimePlugin,\
-                  com.xpn.xwiki.plugin.scheduler.SchedulerPlugin,\
-                  com.xpn.xwiki.plugin.mailsender.MailSenderPlugin,\
-                  com.xpn.xwiki.plugin.activitystream.plugin.ActivityStreamPlugin,\
-                  com.xpn.xwiki.plugin.watchlist.WatchListPlugin, \
-                  com.xpn.xwiki.plugin.tag.TagPlugin,\
-                  com.xpn.xwiki.plugin.wikimanager.WikiManagerPlugin,\
-                  com.xpn.xwiki.plugin.applicationmanager.ApplicationManagerPlugin
-                </xwikiCfgPlugins>
-                <xwikiCfgVirtual>1</xwikiCfgVirtual>
-                <xwikiCfgAdditionalProperties>
-xwiki.work.dir=work
-
-xwiki.virtual.usepath=1
-xwiki.virtual.usepath.servletpath=wiki
-                </xwikiCfgAdditionalProperties>
-              </properties>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- Build the zip packagin. -->
+      <!-- Build the zip packaging. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
