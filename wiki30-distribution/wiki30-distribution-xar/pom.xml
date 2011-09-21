@@ -97,35 +97,13 @@
                   <parameters>
                     <parameter>
                       <name>translations</name>
-                      <value>WorkspaceManager.Translations, XWiki.RtI18N</value>
+                      <value>XWiki.RtI18N</value>
                     </parameter>
                     <parameter>
                       <name>skin</name>
                       <value>XWiki.RtSkin</value>
                     </parameter>
                   </parameters>
-                </transformationSet>
-              </transformationSets>
-            </configuration>
-          </execution>
-          <!-- Extend XWiki.SearchSuggestConfig to show Workspaces as search 
-            suggestions. -->
-          <execution>
-            <id>register-workspace-search-extension</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>transform</goal>
-            </goals>
-            <configuration>
-              <transformationSets>
-                <transformationSet>
-                  <dir>${project.build.outputDirectory}</dir>
-                  <outputDir>${project.build.outputDirectory}</outputDir>
-                  <includes>
-                    <include>XWiki/SearchSuggestConfig.xml</include>
-                  </includes>
-                  <stylesheet>src/main/build/transformation/register-workspace-search.xsl
-              </stylesheet>
                 </transformationSet>
               </transformationSets>
             </configuration>

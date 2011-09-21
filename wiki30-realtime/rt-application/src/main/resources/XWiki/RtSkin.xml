@@ -143,36 +143,13 @@
 <name>RtSkin</name>
 </property>
 <property>
-<style.css>@import "colibri.css";
+<style.css>@import "$xwiki.getSkinFile('css/microformats.css')";
+@import "$xwiki.getSkinFile('colibri.css', true)#if ("$!{request.colorTheme}" != '')?colorTheme=${request.colorTheme}#end";
+#set ($workspaceManagerStyleDocumentReference = $services.model.createDocumentReference($xcontext.mainWikiName, 'WorkspaceManager', 'Style'))
+@import "$xwiki.getURL($workspaceManagerStyleDocumentReference, 'ssx', '')";
 
 .actionmenu .tmEditRt {
   background-image: url("$xwiki.getSkinFile('icons/silk/page_white_gear.gif')");
-}
-
-.actionmenu #tmCreateWorkspace {
-  background-image: url("$xwiki.getSkinFile('icons/silk/chart_organisation_add.gif')");
-}
-
-.actionmenu #tmDeleteWorkspace {
-  background-image: url("$xwiki.getSkinFile('icons/silk/cross.gif')");
-}
-
-.actionmenu #tmUserWorkspaces {
-  background-image: url("$xwiki.getSkinFile('icons/silk/chart_organisation.gif')");
-}
-
-#if (!$xcontext.isMainWiki())
-.actionmenu #tmWiki {
-  background-image: url("$xwiki.getSkinFile('icons/silk/chart_organisation.gif')");
-}
-
-.actionmenu #tmMainWiki {
-  background-image: url("$xwiki.getSkinFile('icons/silk/building.gif')");
-}
-#end
-
-.actionmenu #tmWorkspaceIndex {
-  background-image: url("$xwiki.getSkinFile('icons/silk/text_list_bullets.gif')");
 }
 </style.css>
 </property>

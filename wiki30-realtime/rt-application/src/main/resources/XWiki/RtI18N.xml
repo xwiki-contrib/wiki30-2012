@@ -23,16 +23,6 @@
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
 <content>core.menu.edit.rt=Real Time
-workspaces.menu.create=Workspace
-workspaces.menu.workspaces=Workspaces
-workspaces.menu.workspaces.delete=Delete
-workspaces.profile.category.workspaces=Workspaces
-workspaces.menu.workspace.mainWiki=Main Wiki
-workspaces.menu.workspace.index=Workspace Directory
 doceditedby=Document currently edited by
 joinrtsession=Join the real-time editing session
-## Group sheet
-xe.admin.groups.comment=About
-xe.admin.groups.tags=Tags
-xe.admin.groups._actions.follow=Follow
-xe.admin.groups._actions.unfollow=Unfollow</content></xwikidoc>
+</content></xwikidoc>
