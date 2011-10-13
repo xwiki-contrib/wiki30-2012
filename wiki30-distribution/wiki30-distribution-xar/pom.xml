@@ -16,15 +16,14 @@
   <dependencies>
     <!-- Package all xars into one. -->
     <dependency>
-      <groupId>org.xwiki.contrib.wiki30</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>rt-application</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.contrib.wiki30</groupId>
-      <artifactId>wiki30-applications-workspace-manager</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-workspace-ui</artifactId>
       <type>xar</type>
     </dependency>
     <dependency>
@@ -35,16 +34,15 @@
 
     <!-- Runtime dependencies, just for the record. -->
     <dependency>
-      <groupId>org.xwiki.contrib.wiki30</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>rt-gwt-server</artifactId>
       <version>${project.version}</version>
       <type>war</type>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.contrib.wiki30</groupId>
-      <artifactId>wiki30-components-workspace-manager</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-workspace-api</artifactId>
       <scope>runtime</scope>
     </dependency>
   </dependencies>

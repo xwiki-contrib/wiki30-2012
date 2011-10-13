@@ -15,9 +15,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.xwiki.contrib.wiki30</groupId>
-      <artifactId>wiki30-components-workspace-manager</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-workspace-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.xwiki.manager</groupId>
@@ -25,7 +24,7 @@
       <type>war</type>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.contrib.wiki30</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>rt-gwt-server</artifactId>
       <version>${project.version}</version>
       <type>war</type>
