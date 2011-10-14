@@ -50,11 +50,11 @@
   <build>
     <plugins>
 
-      <!-- Unpack XEM xar so that we can transform XWiki.XWikiPreferences -->
       <plugin>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
         <executions>
+          <!-- Unpack XEM xar so that we can transform XWiki.XWikiPreferences -->
           <execution>
             <id>unxar-xwiki-manager-wiki-administrator</id>
             <phase>generate-resources</phase>
@@ -65,6 +65,17 @@
               <artifactId>xwiki-manager-wiki-administrator</artifactId>
               <groupId>org.xwiki.manager</groupId>
               <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+            </configuration>
+          </execution>
+          <!-- Package everything as a XAR -->
+          <execution>
+            <id>package-xar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>xar</goal>
+            </goals>
+            <configuration>
+              <includeDependencies>true</includeDependencies>
             </configuration>
           </execution>
         </executions>
