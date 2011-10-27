@@ -1,0 +1,3 @@
+[submodule "xwiki-platform-wiki30"]
+	path = xwiki-platform-wiki30
+	url = https://github.com/xwiki-contrib/xwiki-platform-wiki30.git
