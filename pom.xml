@@ -61,6 +61,7 @@
 
   <modules>
     <module>wiki30-realtime</module>
+    <module>wiki30-realtime-wysiwyg</module>
     <!-- Note: Using xwiki-platform-workspace that is included in xwiki-platform 
       instead of wiki30-social. -->
     <!-- <module>wiki30-social</module> -->
