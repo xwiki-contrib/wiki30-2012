@@ -56,6 +56,50 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
       </plugin>
+        <plugin>
+          <!-- Default configuration for the GWT maven plugin -->
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>gwt-maven-plugin</artifactId>
+          <version>${gwt.maven.plugin.version}</version>
+          <!-- We need to declare these dependencies because we use a newer version of GWT.
+            See http://mojo.codehaus.org/gwt-maven-plugin/user-guide/using-different-gwt-sdk-version.html -->
+          <dependencies>
+            <dependency>
+              <groupId>com.google.gwt</groupId>
+              <artifactId>gwt-user</artifactId>
+              <version>${gwt.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>com.google.gwt</groupId>
+              <artifactId>gwt-dev</artifactId>
+              <version>${gwt.version}</version>
+            </dependency>
+          </dependencies>
+          <configuration>
+            <mode>htmlunit</mode>
+            <testTimeOut>600</testTimeOut>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>test</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <!--
+              We exclude the GWT client tests because of http://jira.codehaus.org/browse/SUREFIRE-508 (Cannot run
+              GWTTestCases with Surefire). GWT client tests are currently run by gwt-maven-plugin.
+            -->
+            <excludes>
+              <exclude>**/gwt/**/client/**/*.java</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
     </plugins>
   </build>
 </project>
