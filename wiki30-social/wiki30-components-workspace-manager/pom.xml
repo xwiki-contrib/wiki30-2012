@@ -4,12 +4,12 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.xwiki.contrib.wiki30</groupId>
+    <groupId>org.xwiki.contrib</groupId>
     <artifactId>wiki30-social</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.xwiki.contrib.wiki30</groupId>
+  <groupId>org.xwiki.contrib</groupId>
   <artifactId>wiki30-components-workspace-manager</artifactId>
 
   <name>Wiki3.0 - Workspaces - Component</name>
