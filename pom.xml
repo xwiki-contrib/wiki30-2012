@@ -66,6 +66,7 @@
       instead of wiki30-social. -->
     <!-- <module>wiki30-social</module> -->
     <module>wiki30-distribution</module>
+    <!-- We rebuild the whole WYSIWYG module. Depending of what modules we put here we need to exclude duplicated JARs in wiki30-distribution-war -->
     <module>xwiki-platform-wiki30/xwiki-platform-core/xwiki-platform-wysiwyg</module>
   </modules>
 

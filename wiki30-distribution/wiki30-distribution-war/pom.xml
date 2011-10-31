@@ -72,6 +72,23 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <dependentWarExcludes />
+          <overlays>
+            <overlay>
+              <groupId>org.xwiki.manager</groupId>
+              <artifactId>xwiki-manager-web</artifactId>
+              <type>war</type>
+              <excludes>
+                <!-- Exclude the generated GWT wysiwyg files coming from the original platform wysiwyg.
+                     This is necessary because GWT compilation generates file names with hash codes depending on the build.
+                     If we don't exclude what is in the original XWiki Manager Web WAR will cohexist with what comes from the Wiki30 wysiwyg.
+                -->
+                <exclude>resources/js/xwiki/wysiwyg/xwe/*</exclude>
+                <!-- Remove duplicated JARs coming from the original WAR.
+                     This is necessary because Wiki30 JARs have the wiki30 classifiers. -->
+                <exclude>WEB-INF/lib/xwiki-platform-wysiwyg-*</exclude>
+              </excludes>
+            </overlay>
+          </overlays>
           <webResources>
             <!-- Include Configuration resources that have been re-configured, 
               based on the active profile. They will override the ones already existing 
