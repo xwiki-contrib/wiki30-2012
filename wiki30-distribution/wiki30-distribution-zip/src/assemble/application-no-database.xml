@@ -29,7 +29,7 @@
   <dependencySets>
     <dependencySet>
       <includes>
-        <include>org.xwiki.contrib.wiki30:wiki30-distribution-war</include>
+        <include>org.xwiki.contrib:wiki30-distribution-war</include>
       </includes>
       <outputDirectory>webapps/xwiki</outputDirectory>
       <unpack>true</unpack>
