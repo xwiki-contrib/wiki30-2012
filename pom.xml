@@ -66,6 +66,7 @@
       instead of wiki30-social. -->
     <!-- <module>wiki30-social</module> -->
     <module>wiki30-distribution</module>
+    <module>xwiki-platform-wiki30</module>
   </modules>
 
   <properties>

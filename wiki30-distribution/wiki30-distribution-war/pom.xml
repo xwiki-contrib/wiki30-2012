@@ -38,6 +38,13 @@
       <version>${xwiki.db.jdbc.version}</version>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-wysiwyg-war</artifactId>
+      <version>${platform.version}</version>
+      <classifier>wiki30</classifier>
+      <type>war</type>
+    </dependency>
   </dependencies>
 
   <properties>
