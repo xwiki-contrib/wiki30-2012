@@ -1,6 +1,6 @@
 ## Insert JS and CSS needed for the fullscreen edit feature
 $xwiki.jsfx.use('uicomponents/widgets/fullScreen.js', {'forceSkinAction': true, 'language': ${context.language}})
-$xwiki.ssfx.use('uicomponents/widgets/fullScreenEdit.css', true)
+$xwiki.ssfx.use('uicomponents/widgets/fullScreen.css', true)
 
 #set($formname = "edit")
 #set($saveaction = "save")
