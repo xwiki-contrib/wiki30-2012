@@ -93,8 +93,8 @@
         <type>xar</type>
       </dependency>
       <dependency>
-        <groupId>org.xwiki.manager</groupId>
-        <artifactId>xwiki-manager-wiki-ui</artifactId>
+        <groupId>org.xwiki.platform</groupId>
+        <artifactId>xwiki-platform-wiki-manager-ui</artifactId>
         <version>${manager.version}</version>
         <type>xar</type>
       </dependency>

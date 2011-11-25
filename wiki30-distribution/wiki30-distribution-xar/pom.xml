@@ -27,8 +27,8 @@
       <type>xar</type>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.manager</groupId>
-      <artifactId>xwiki-manager-wiki-ui</artifactId>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-wiki-manager-ui</artifactId>
       <type>xar</type>
     </dependency>
 
@@ -56,14 +56,14 @@
         <executions>
           <!-- Unpack XEM xar so that we can transform XWiki.XWikiPreferences -->
           <execution>
-            <id>unxar-xwiki-manager-wiki-ui</id>
+            <id>unxar-xwiki-platform-manager-wiki-ui</id>
             <phase>generate-resources</phase>
             <goals>
               <goal>unxar</goal>
             </goals>
             <configuration>
-              <artifactId>xwiki-manager-wiki-ui</artifactId>
-              <groupId>org.xwiki.manager</groupId>
+              <groupId>org.xwiki.platform</groupId>
+              <artifactId>xwiki-platform-wiki-manager-ui</artifactId>
               <outputDirectory>${project.build.outputDirectory}</outputDirectory>
             </configuration>
           </execution>
