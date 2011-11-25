@@ -113,7 +113,7 @@
       </dependency>
       <dependency>
         <groupId>org.xwiki.manager</groupId>
-        <artifactId>xwiki-manager-ui</artifactId>
+        <artifactId>xwiki-manager-ui-all</artifactId>
         <version>${platform.version}</version>
         <type>xar</type>
       </dependency>
