@@ -94,7 +94,7 @@
       </dependency>
       <dependency>
         <groupId>org.xwiki.manager</groupId>
-        <artifactId>xwiki-manager-wiki-administrator</artifactId>
+        <artifactId>xwiki-manager-wiki-ui</artifactId>
         <version>${manager.version}</version>
         <type>xar</type>
       </dependency>
