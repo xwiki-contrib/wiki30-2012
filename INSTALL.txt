@@ -1,6 +1,12 @@
 INSTALL & USE:
 
-* Important: This project contains a Git submodule (i.e., xwiki-platform-wiki30). Once you cloned the project, please do a "git submodule init" followed by a "git submodule update" in order to clone the actual code.
+* Important: This project contains a Git submodule (i.e., xwiki-platform-wiki30).
+Once you cloned the project, please do a "git submodule init" followed by a "git submodule update" in order to clone the actual submodule code.
+As this module is forked from the xwiki-platform project, you might also want to have it synched with the main repository.
+To do so you have to type in console (from the wiki30 directory):
+cd xwiki-platform-wiki30
+git remote add upstream https://github.com/xwiki/xwiki-platform.git
+git pull upstream master
 
 Prerequisites: Maven 2.x+, JDK 1.5+, MySQL (If you want to enable the Workspace feature)
 
