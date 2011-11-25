@@ -112,9 +112,10 @@
         <version>${platform.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.xwiki.platform</groupId>
-        <artifactId>xwiki-platform-wiki-manager-ui</artifactId>
+        <groupId>org.xwiki.manager</groupId>
+        <artifactId>xwiki-manager-ui</artifactId>
         <version>${platform.version}</version>
+        <type>xar</type>
       </dependency>
       <dependency>
         <groupId>org.xwiki.platform</groupId>
