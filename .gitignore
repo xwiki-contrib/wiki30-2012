@@ -1,2 +1,7 @@
 target
 *~
+*.ipr
+*.iws
+*.iml
+overlays
+
