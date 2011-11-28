@@ -1,13 +1,12 @@
 package fr.loria.score.server;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
+import fr.loria.score.client.ClientDTO;
+import fr.loria.score.client.CommunicationService;
+import fr.loria.score.jupiter.model.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.loria.score.client.ClientJupiterAlg;
-import fr.loria.score.client.CommunicationService;
-import fr.loria.score.jupiter.model.Message;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CommunicationServiceImpl implements CommunicationService
 {
@@ -49,15 +48,22 @@ public class CommunicationServiceImpl implements CommunicationService
     /**
      * {@inheritDoc}
      */
-    public String createServerPairForClient(ClientJupiterAlg clientJupiterAlg)
+    public String createServerPairForClient(ClientDTO clientJupiterAlg)
     {
         logger.debug("Create server pair for client with id: " + clientJupiterAlg.getSiteId());
         return ClientServerCorrespondents.getInstance().addServerForClient(clientJupiterAlg);
     }
 
-    public void removeServerPairForClient(ClientJupiterAlg clientJupiterAlg)
+    public void removeServerPairForClient(ClientDTO clientJupiterAlg)
     {
         logger.debug("Remove server pair for client with id: " + clientJupiterAlg.getSiteId());
         ClientServerCorrespondents.getInstance().removeServerForClient(clientJupiterAlg);
+    }
+
+    @Override
+    public ClientDTO initClient(ClientDTO client) {
+        client.setSiteId(generateClientId());
+        createServerPairForClient(client);
+        return client;
     }
 }

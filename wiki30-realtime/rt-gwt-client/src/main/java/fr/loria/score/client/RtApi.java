@@ -5,18 +5,23 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ScriptElement;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.TextResource;
-import com.google.gwt.user.client.*;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Random;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TextArea;
-import fr.loria.score.jupiter.model.DeleteOperation;
-import fr.loria.score.jupiter.model.InsertOperation;
 import fr.loria.score.jupiter.model.Message;
-import fr.loria.score.jupiter.model.Operation;
+import fr.loria.score.jupiter.plain.PlainDocument;
+import fr.loria.score.jupiter.plain.operation.DeleteOperation;
+import fr.loria.score.jupiter.plain.operation.InsertOperation;
+import fr.loria.score.jupiter.plain.operation.Operation;
 import org.xwiki.gwt.dom.client.JavaScriptObject;
 import org.xwiki.gwt.user.client.Config;
 import org.xwiki.gwt.user.client.internal.DefaultConfig;
 
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 public class RtApi {
     private static final int REFRESH_INTERVAL = 2000;
@@ -26,8 +31,9 @@ public class RtApi {
     private JsBundle bundle = GWT.create(JsBundle.class);
 
     private CommunicationServiceAsync comService = CommunicationService.ServiceHelper.getCommunicationService();
-    private ClientJupiterAlg clientJupiter = new ClientJupiterAlg("", Random.nextInt(100));
+    private ClientJupiterAlg clientJupiter = new ClientJupiterAlg(new PlainDocument(""), Random.nextInt(100));
 
+    private static final Logger logger = Logger.getLogger(RtApi.class.getName());
 
     /**
      * Publishes the RT editor API.
@@ -68,7 +74,7 @@ public class RtApi {
             parentElem.removeChild(htmlTextAreaElement);
 
             injectJSFilesForRTEditor(parentElem);
-            clientJupiter.setData(tArea.getText());
+            clientJupiter.setDocument(new PlainDocument(tArea.getText()));
             clientJupiter.setEditingSessionId(Integer.valueOf(config.getParameter(DOCUMENT_ID)));
             initClient();
         }
@@ -137,11 +143,11 @@ public class RtApi {
         comService.generateClientId(new AsyncCallback<Integer>() {
             public void onFailure(Throwable throwable) {
                 //recover somehow, either throw e
-                GWT.log("Failed to generate siteId, using local generated id. " + throwable);
+                logger.severe("Failed to generate siteId, using local generated id. " + throwable);
             }
 
             public void onSuccess(Integer id) {
-                GWT.log("Generated site id: " + id);
+                logger.finest("Generated site id: " + id);
                 clientJupiter.setSiteId(id);
 
                 createServerPairForClient();
@@ -154,15 +160,15 @@ public class RtApi {
      * Create the corresponding server component for this client on the server side AND update the text area with the available content
      */
     private void createServerPairForClient() {
-        comService.createServerPairForClient(clientJupiter, new AsyncCallback<String>() {
+        comService.createServerPairForClient(new ClientDTO(clientJupiter), new AsyncCallback<String>() {
             public void onFailure(Throwable caught) {
-                GWT.log("Fail to create server pair. Error: " + caught);
+                logger.severe("Fail to create server pair. Error: " + caught);
             }
 
             public void onSuccess(String result) {
-                GWT.log("Created the server pair for this client");
+                logger.finest("Created the server pair for this client");
                 if (result != null) {
-                    clientJupiter.setData(result);
+                    clientJupiter.setDocument(new PlainDocument(result));
                     //update UI
                     editor = Editor.getEditor();
                     clientJupiter.setEditor(editor);
@@ -183,14 +189,14 @@ public class RtApi {
         final Timer timer = new Timer() {
             @Override
             public void run() {
-                System.out.println(">> Server push for client: clientId = " + clientJupiter.getSiteId());
+                logger.fine(">> Server push for client: clientId = " + clientJupiter.getSiteId());
                 comService.clientReceive(clientJupiter.getSiteId(), new AsyncCallback<Message[]>() {
                     public void onFailure(Throwable caught) {
-                        GWT.log("Error: " + caught);
+                        logger.severe("Error: " + caught);
                     }
 
                     public void onSuccess(Message[] messages) {
-                        GWT.log("Receive server sent messages: " + Arrays.asList(messages));
+                        logger.finest("Receive server sent messages: " + Arrays.asList(messages));
                         if (messages.length > 0) {
                             for (int i = 0; i < messages.length; i++) {
                                 Message message = messages[i];
@@ -223,12 +229,12 @@ public class RtApi {
         }
 
         public void clientInsert(char c, int position) {
-            Operation op = new InsertOperation(position, c, clientJupiter.getSiteId());
+            Operation op = new InsertOperation(clientJupiter.getSiteId(), position, c);
             clientJupiter.generate(op);
         }
 
         public void clientDelete(int pos) {
-            Operation op = new DeleteOperation(pos, clientJupiter.getSiteId());
+            Operation op = new DeleteOperation(clientJupiter.getSiteId(), pos);
             clientJupiter.generate(op);
         }
 

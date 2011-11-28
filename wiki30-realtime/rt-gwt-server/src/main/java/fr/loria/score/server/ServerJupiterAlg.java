@@ -1,8 +1,9 @@
 package fr.loria.score.server;
 
 import fr.loria.score.jupiter.JupiterAlg;
+import fr.loria.score.jupiter.model.AbstractOperation;
+import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
-import fr.loria.score.jupiter.model.Operation;
 import fr.loria.score.jupiter.transform.Transformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +25,12 @@ public class ServerJupiterAlg extends JupiterAlg {
     public ServerJupiterAlg() {
     }
 
-    public ServerJupiterAlg(String initialData, int siteId) {
-        super(initialData, siteId);
+    public ServerJupiterAlg(Document document, int siteId) {
+        super(siteId, document);
     }
 
-    public ServerJupiterAlg(String initialData, int siteId, Transformation transform) {
-        super(initialData, siteId, transform);
+    public ServerJupiterAlg(Document initialData, int siteId, Transformation transform) {
+        super(siteId, initialData, transform);
     }
 
     @Override
@@ -44,9 +45,9 @@ public class ServerJupiterAlg extends JupiterAlg {
             causalOrderedMessages.add(receivedMsg);
         } else {
             super.receive(receivedMsg);
-                for (Iterator<Message> it = causalOrderedMessages.iterator(); it.hasNext();) {
+            for (Iterator<Message> it = causalOrderedMessages.iterator(); it.hasNext();) {
                 Message m = it.next();
-                if (m.getState().getGeneratedMsgs() == currentState.getReceivedMsgs()) { // or use a copy on write list
+                if (m.getState().getGeneratedMsgs() == currentState.getReceivedMsgs()) {
                     super.receive(m);
                     it.remove();
                 }
@@ -57,7 +58,7 @@ public class ServerJupiterAlg extends JupiterAlg {
     @Override
     protected void execute(Message m) {
         //Broadcasting to peers in the same editing session
-        Operation op = m.getOperation();
+        AbstractOperation op = m.getOperation();
         List<Integer> peersIdList = ClientServerCorrespondents.getInstance().getEditingSessions().get(m.getEditingSessionId());
         for (Integer peerId : peersIdList) {
             ServerJupiterAlg peerServer = ClientServerCorrespondents.getInstance().getCorrespondents().get(peerId);

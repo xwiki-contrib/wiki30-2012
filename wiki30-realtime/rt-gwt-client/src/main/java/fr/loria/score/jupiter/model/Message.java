@@ -7,18 +7,18 @@ import java.io.Serializable;
  */
 public class Message implements Serializable {
     private State state;
-    private Operation operation;
-    private int editingSessionId;
+    private AbstractOperation operation;
+    private int editingSessionId; // TODO: not sure esid is necessary here.
 
     public Message() {
     }
     
-    public Message(State state, Operation operation, int sessionId) {
+    public Message(State state, AbstractOperation operation, int sessionId) {
         this(state, operation);
         this.editingSessionId = sessionId;
     }
 
-    public Message(State state, Operation operation) {
+    public Message(State state, AbstractOperation operation) {
         this.state = state;
         this.operation = operation;
     }
@@ -27,11 +27,11 @@ public class Message implements Serializable {
         this(new State(m.getState()), m.getOperation());
     }
 
-    public Operation getOperation() {
+    public AbstractOperation getOperation() {
         return operation;
     }
 
-    public void setOperation(Operation operation) {
+    public void setOperation(AbstractOperation operation) {
         this.operation = operation;
     }
 

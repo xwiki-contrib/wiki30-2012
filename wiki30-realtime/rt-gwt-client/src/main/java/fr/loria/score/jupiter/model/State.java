@@ -17,7 +17,6 @@ public class State implements Serializable {
     public State() {
     }
 
-    //todo:clone instead of copy constr
     public State(State s) {
         this(s.generatedMsgs, s.receivedMsgs);
     }

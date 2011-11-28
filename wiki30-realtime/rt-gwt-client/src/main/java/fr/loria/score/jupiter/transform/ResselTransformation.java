@@ -1,9 +1,10 @@
 package fr.loria.score.jupiter.transform;
 
-import fr.loria.score.jupiter.model.DeleteOperation;
-import fr.loria.score.jupiter.model.NoOperation;
-import fr.loria.score.jupiter.model.InsertOperation;
-import fr.loria.score.jupiter.model.Operation;
+import fr.loria.score.jupiter.model.AbstractOperation;
+import fr.loria.score.jupiter.plain.operation.DeleteOperation;
+import fr.loria.score.jupiter.plain.operation.InsertOperation;
+import fr.loria.score.jupiter.plain.operation.Operation;
+import fr.loria.score.jupiter.plain.operation.NoOperation;
 
 /**
  * Ressel transformation implementation
@@ -11,63 +12,81 @@ import fr.loria.score.jupiter.model.Operation;
 // TODO: it is not mandatory to create new operation, shifting parameters is enough
 public class ResselTransformation extends Transformation {
 
-    @Override
-    protected Operation handleInsertInsert(Operation m1, Operation m2) {
-        int p1 = m1.getPosition();
-        int p2 = m2.getPosition();
+     public AbstractOperation transform(AbstractOperation op1, AbstractOperation op2) {
+      if (op1 instanceof InsertOperation) {
+            if (op2 instanceof InsertOperation) {
+                return handleInsertInsert((InsertOperation)op1, (InsertOperation)op2);
+            } else if (op2 instanceof DeleteOperation) {
+                return handleInsertDelete((InsertOperation)op1, (DeleteOperation)op2);
+            } else { // op2 is NoOp
+                return op1;
+            }
+        } else if (op1 instanceof DeleteOperation) {
+            if (op2 instanceof InsertOperation) {
+                return handleDeleteInsert((DeleteOperation)op1, (InsertOperation)op2);
+            } else if (op2 instanceof DeleteOperation) {
+                return handleDeleteDelete((DeleteOperation)op1, (DeleteOperation)op2);
+            } else { // op2 is NoOp
+                return op1;
+            }
+        } else { 
+            // op1 is NoOp
+            return op1;
+        }
+    }
 
-        int siteId1 = m1.getSiteId();
-        int siteId2 = m2.getSiteId();
+    protected Operation handleInsertInsert(Operation op1, Operation op2) {
+        int p1 = op1.getPosition();
+        int p2 = op2.getPosition();
 
-        InsertOperation i1 = (InsertOperation) m1;
+        int siteId1 = op1.getSiteId();
+        int siteId2 = op2.getSiteId();
+
+        InsertOperation i1 = (InsertOperation) op1;
 
         if ((p1 < p2) || ((p1 == p2) && (siteId1 < siteId2))) {
-            return new InsertOperation(p1, i1.getChr(), siteId1);
+            return new InsertOperation(siteId1, p1, i1.getChr());
         } else {
-            return new InsertOperation(p1 + 1, i1.getChr(), siteId1);
+            return new InsertOperation(siteId1, p1 + 1, i1.getChr());
         }
     }
 
-    @Override
-    protected Operation handleInsertDelete(Operation m1, Operation m2) {
-        InsertOperation i1 = (InsertOperation) m1;
+    protected Operation handleInsertDelete(Operation op1, Operation op2) {
+        InsertOperation i1 = (InsertOperation) op1;
 
-        int p1 = m1.getPosition();
-        int p2 = m2.getPosition();
-        int siteId1 = m1.getSiteId();
+        int p1 = op1.getPosition();
+        int p2 = op2.getPosition();
+        int siteId1 = op1.getSiteId();
 
         if (p1 <= p2) {
-            return new InsertOperation(p1, i1.getChr(), siteId1);
+            return new InsertOperation(siteId1, p1, i1.getChr());
         } else {
-            return new InsertOperation(p1 - 1, i1.getChr(), siteId1);
+            return new InsertOperation(siteId1, p1 - 1, i1.getChr());
         }
     }
 
-    @Override
-    protected Operation handleDeleteInsert(Operation m1, Operation m2) {
-        int p1 = m1.getPosition();
-        int p2 = m2.getPosition();
-        int siteId1 = m1.getSiteId();
-
+    protected Operation handleDeleteInsert(Operation op1, Operation op2) {
+        int p1 = op1.getPosition();
+        int p2 = op2.getPosition();
+        int siteId1 = op1.getSiteId();
         if (p1 < p2) {
-            return new DeleteOperation(p1, siteId1);
+            return new DeleteOperation(siteId1, p1);
         } else {
-            return new DeleteOperation(p1 + 1, siteId1);
+            return new DeleteOperation(siteId1, p1 + 1);
         }
     }
 
-    @Override
-    protected Operation handleDeleteDelete(Operation m1, Operation m2) {
-        int p1 = m1.getPosition();
-        int p2 = m2.getPosition();
-        int siteId1 = m1.getSiteId();
+    protected Operation handleDeleteDelete(Operation op1, Operation op2) {
+        int p1 = op1.getPosition();
+        int p2 = op2.getPosition();
+        int siteId1 = op1.getSiteId();
 
         if (p1 < p2) {
-            return new DeleteOperation(p1, siteId1);
+            return new DeleteOperation(siteId1, p1);
         } else if (p1 > p2) {
-            return new DeleteOperation(p1 - 1, siteId1);
+            return new DeleteOperation(siteId1, p1 - 1);
         } else {
-            return new NoOperation(p1, siteId1);
+            return new NoOperation(siteId1, p1);
         }
     }
 }

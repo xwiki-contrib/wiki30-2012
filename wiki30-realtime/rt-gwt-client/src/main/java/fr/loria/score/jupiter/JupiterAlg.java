@@ -1,8 +1,8 @@
 package fr.loria.score.jupiter;
 
-import com.google.gwt.core.client.GWT;
+import fr.loria.score.jupiter.model.AbstractOperation;
+import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
-import fr.loria.score.jupiter.model.Operation;
 import fr.loria.score.jupiter.model.State;
 import fr.loria.score.jupiter.transform.Transformation;
 import fr.loria.score.jupiter.transform.TransformationFactory;
@@ -11,12 +11,17 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
- * Base class which uses the Jupiter algorithm for achieving convergence across divergent copies of data.
+ * Base class which uses the Jupiter algorithm for achieving convergence across divergent copies of document.
+ * It uses a pluggable Document and transformation functions
+ *
  * <b>Note: it only requires that TP1 is satisfied by transformation functions.</b>
  */
 public abstract class JupiterAlg implements Serializable {
+
+    private static final transient Logger logger = Logger.getLogger(JupiterAlg.class.getName());
 
     // Identifies a client to the server.
     // If 2 operations are simultaneously received by the server, it will sequentially apply them in an ascending order
@@ -28,23 +33,19 @@ public abstract class JupiterAlg implements Serializable {
     protected transient List<Message> queue = new LinkedList<Message>();
     protected transient Transformation xform;
 
-    protected volatile String data;
+    protected Document document;
 
     public JupiterAlg() {
     }
 
-    public JupiterAlg(String initialData, int siteId, Transformation transformation) {
+    public JupiterAlg(int siteId, Document document, Transformation transformation) {
+        this.document = document;
         this.siteId = siteId;
-        this.data = initialData;
         xform = transformation;
     }
 
-    public JupiterAlg(String initalData, int siteId) {
-        this(initalData, siteId, TransformationFactory.createResselTransformation());
-    }
-
-    public JupiterAlg(String initalData) {
-        this.data = initalData;
+    public JupiterAlg(int siteId, Document initalDocument) {
+        this(siteId, initalDocument, TransformationFactory.createResselTransformation());
     }
 
     /**
@@ -52,15 +53,15 @@ public abstract class JupiterAlg implements Serializable {
      *
      * @param op the operation to be applied and sent
      */
-    public void generate(Operation op) {
-        GWT.log(this + "\t Generate: " + op);
+    public void generate(AbstractOperation op) {
+        logger.info(this + "\t Generate: " + op);
         //apply op locally
-        data = op.execute(data);
-        //todo: clone
+        document.apply(op);
+
         Message newMsg = new Message(new State(currentState), op);
         queue.add(newMsg);
         currentState.incGeneratedMsgs();
-        GWT.log(this.toString());
+        logger.fine(this.toString());
         send(newMsg);
     }
 
@@ -70,46 +71,48 @@ public abstract class JupiterAlg implements Serializable {
      * @param receivedMsg the received message
      */
     public void receive(Message receivedMsg) {
-        GWT.log(this + "\tReceive: " + receivedMsg);
+        logger.info(this + "\tReceive: " + receivedMsg);
         // Discard acknowledged messages
         for (Iterator<Message> it = queue.iterator(); it.hasNext();) {
             Message m = it.next();
             if (m.getState().getGeneratedMsgs() < receivedMsg.getState().getReceivedMsgs()) {
-                GWT.log(this + "\tRemove " + m);
+                logger.fine(this + "\tRemove " + m);
                 it.remove();
             }
         }
         assert (receivedMsg.getState().getGeneratedMsgs() == currentState.getReceivedMsgs());
 
         // Transform received message and the ones in the queue
-        Operation opr = receivedMsg.getOperation();
+        AbstractOperation receivedOperation = receivedMsg.getOperation();
         for (Message m : queue) {
-            Operation tmp = opr;
+            AbstractOperation originallyReceivedOperation = receivedOperation;
 
-            opr = xform.transform(opr, m.getOperation());
-            GWT.log(this + "\tTransformed op1 = " + opr);
+            AbstractOperation localOperation = m.getOperation();
+            receivedOperation = xform.transform(receivedOperation, localOperation);
+            logger.fine(this + "\tTransformed op1 = " + receivedOperation);
 
-            Operation op2 = xform.transform(m.getOperation(), tmp);
-            GWT.log(this + "\tTransformed op2 = " + op2);
+            AbstractOperation op2 = xform.transform(localOperation, originallyReceivedOperation);
+            logger.fine(this + "\tTransformed op2 = " + op2);
 
             m.setOperation(op2);
         }
         //apply transformed receivedMsg
-        data = opr.execute(data);
-        //todo: clone instead of copy constructor
-        Message newMsg = new Message(new State(currentState.getGeneratedMsgs(), currentState.getReceivedMsgs()), opr);
-		newMsg.setEditingSessionId(receivedMsg.getEditingSessionId());
+        document.apply(receivedOperation);
+
+        Message newMsg = new Message(new State(currentState), receivedOperation); // TODO: not sure about this. I though receivedMsg.setOperation(opr) would be sufficient
+        newMsg.setEditingSessionId(receivedMsg.getEditingSessionId());
+
         currentState.incReceivedMsgs();
         execute(newMsg);
-        GWT.log(this.toString());
+        logger.fine(this.toString());
     }
 
-    public void setData(String data) {
-        this.data = data;
+    public void setDocument(Document document) {
+        this.document = document;
     }
 
-    public String getData() {
-        return data;
+    public Document getDocument() {
+        return document;
     }
 
     public void setSiteId(int siteId) {
@@ -155,6 +158,6 @@ public abstract class JupiterAlg implements Serializable {
 
     @Override
     public String toString() {
-        return getClass().getName() + "@" + siteId + "#" + data + ", " + currentState + "#";
+        return getClass().getName() + "@" + siteId + "#" + document + ", " + currentState + "#";
     }
 }

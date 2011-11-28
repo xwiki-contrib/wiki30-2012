@@ -1,8 +1,13 @@
 package fr.loria.score;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import fr.loria.score.jupiter.model.Message;
+import fr.loria.score.jupiter.model.State;
+import fr.loria.score.jupiter.plain.operation.InsertOperation;
+import fr.loria.score.server.ServerJupiterAlg;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,20 +16,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import fr.loria.score.jupiter.model.InsertOperation;
-import fr.loria.score.jupiter.model.Message;
-import fr.loria.score.jupiter.model.State;
-import fr.loria.score.server.ServerJupiterAlg;
+import static org.junit.Assert.*;
 
 /**
  * Test that messages received by a Jupiter server are causal ordered - that is they hold a specific invariant
- * @author: Bogdan Flueras (email: Bogdan.Flueras@inria.fr)
+ * @author Bogdan Flueras (email: Bogdan.Flueras@inria.fr)
  */
 public class CausalOrderTest {
     private static final Logger LOG = LoggerFactory.getLogger(CausalOrderTest.class);
@@ -75,7 +71,7 @@ public class CausalOrderTest {
             }
             assertEquals(received, server.getCausalOrderedMessages().size());
         }
-        assertEquals(HELLO, server.getData());
+        assertEquals(HELLO, server.getDocument().getContent());
     }
 
     @Test
@@ -116,7 +112,7 @@ public class CausalOrderTest {
      * This is how actually the web server works. <br>
      * To be called by test methods
      * @param messages the messages to be received
-     * @param finalOutcome the data that the server produced
+     * @param finalOutcome the document that the server produced
      */
     private void receiveByThreads(List<Message> messages, String finalOutcome) {
         final CountDownLatch startSignal = new CountDownLatch(1);
@@ -142,7 +138,7 @@ public class CausalOrderTest {
         startSignal.countDown();
         try {
             endSignal.await();
-            assertEquals(finalOutcome, server.getData());
+            assertEquals(finalOutcome, server.getDocument().getContent());
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
@@ -152,7 +148,7 @@ public class CausalOrderTest {
         int dummySiteId = 42;
         List<Message> messages = new ArrayList<Message>();
         for (int i = 0; i < result.length(); i++) {
-            Message msg = new Message(new State(i, 0), new InsertOperation(i, result.charAt(i), dummySiteId));
+            Message msg = new Message(new State(i, 0), new InsertOperation(dummySiteId, i, result.charAt(i)));
             msg.setEditingSessionId(ESID);
             messages.add(msg);
         }

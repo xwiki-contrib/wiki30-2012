@@ -1,16 +1,20 @@
 package fr.loria.score.client;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import fr.loria.score.jupiter.JupiterAlg;
+import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
-import fr.loria.score.jupiter.model.Operation;
+import fr.loria.score.jupiter.plain.operation.Operation; //todo: AbstractOp
 import fr.loria.score.jupiter.transform.Transformation;
+
+import java.util.logging.Logger;
 
 /**
  * Client side implementation for Jupiter Algorithm
  */
 public class ClientJupiterAlg extends JupiterAlg {
+    private final static transient Logger logger = Logger.getLogger(ClientJupiterAlg.class.getName());
+
     private int editingSessionId;
 
     protected transient Editor editor;
@@ -18,12 +22,17 @@ public class ClientJupiterAlg extends JupiterAlg {
     public ClientJupiterAlg() {
     }
 
-    public ClientJupiterAlg(String initialData, int siteId) {
-        super(initialData, siteId);
+    public ClientJupiterAlg(Document initialDocument, int siteId) {
+        super(siteId, initialDocument);
     }
 
-    public ClientJupiterAlg(String initialData, int siteId, Transformation transform) {
-        super(initialData, siteId, transform);
+    public ClientJupiterAlg(Document initialDocument, int siteId, int editingSessionId) {
+        this(initialDocument, siteId);
+        this.editingSessionId = editingSessionId;
+    }
+
+    public ClientJupiterAlg(Document initialData, int siteId, Transformation transform) {
+        super(siteId, initialData, transform);
     }
 
     public void setEditingSessionId(int editingSessionId) {
@@ -43,25 +52,27 @@ public class ClientJupiterAlg extends JupiterAlg {
     }
 
     public void quitEditingSession() {
-        CommunicationService.ServiceHelper.getCommunicationService().removeServerPairForClient(this, new AsyncCallback<Void>() {
+        ClientDTO dto = new ClientDTO(this);
+        CommunicationService.ServiceHelper.getCommunicationService().removeServerPairForClient(dto, new AsyncCallback<Void>() {
             public void onFailure(Throwable throwable) {
-                GWT.log("Could not remove server pair for client. Error: " + throwable.getMessage());
+                logger.severe("Could not remove server pair for client. Error: " + throwable.getMessage());
             }
 
             public void onSuccess(Void aVoid) {
-                GWT.log("Successfully removed server pair for client");
+                logger.finest("Successfully removed server pair for client");
             }
         });
     }
 
     @Override
     protected void execute(Message receivedMsg) {
-        int oldCaretPos = editor.getCaretPosition(); // the caret position in the editor's old data model
+        //todo: this works only for plain messages for now
+        int oldCaretPos = editor.getCaretPosition(); // the caret position in the editor's old document model
         editor.setOldCaretPos(oldCaretPos);
 
-        editor.setContent(getData()); // sets the WHOLE text
+        editor.setContent(getDocument().getContent()); // sets the WHOLE text
 
-        Operation operation = receivedMsg.getOperation();
+        Operation operation = (Operation)receivedMsg.getOperation();
         if (this.siteId != operation.getSiteId()) { // remote operation
             //shift left/right the caret
             if (operation.getPosition() < oldCaretPos) {
@@ -74,17 +85,15 @@ public class ClientJupiterAlg extends JupiterAlg {
 
     protected void send(Message m) {
         m.setEditingSessionId(this.editingSessionId);
-        GWT.log(this + "\t Client sends to server: " + m);
-        AsyncCallback<Void> callback = new AsyncCallback<Void>() {
+        logger.info(this + "\t Client sends to server: " + m);
+        CommunicationService.ServiceHelper.getCommunicationService().serverReceive(m, new AsyncCallback<Void>() {
             public void onFailure(Throwable caught) {
-                GWT.log("Error sending message to server: " + caught);
+                logger.severe("Error sending message to server: " + caught);
             }
 
             public void onSuccess(Void result) {
-                GWT.log("Got OK from server");
+                logger.finest("Got OK from server");
             }
-        };
-
-        CommunicationService.ServiceHelper.getCommunicationService().serverReceive(m, callback);
+        });
     }
 }
