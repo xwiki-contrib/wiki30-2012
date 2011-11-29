@@ -33,7 +33,7 @@ public abstract class TreeOperation extends AbstractOperation {
     public abstract void execute(Tree root);
 
     public AbstractOperation transform(AbstractOperation op1) {
-        log.fine("Transforming this operation: " + this +" according to: " + op1);
+        log.fine("Transforming:" + op1 + " according to this operation: " + this);
         TreeOperation transformed = null;
         if (op1 instanceof TreeInsertText) {
             transformed = handleTreeInsertText((TreeInsertText) op1);

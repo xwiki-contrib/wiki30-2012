@@ -24,7 +24,7 @@ public class TreeInsertText extends TreeOperation {
     }
 
     public String toString() {
-        String pathString = Arrays.asList(path).toString();
+        String pathString = Arrays.toString(path);
         return "InsertText(" + super.toString() + "," + pathString + "," + text + ")";
     }
 

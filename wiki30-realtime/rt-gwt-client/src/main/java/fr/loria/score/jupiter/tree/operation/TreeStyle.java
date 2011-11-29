@@ -139,10 +139,10 @@ public class TreeStyle extends TreeOperation {
 
     }
 
-    public String toString(boolean withTicket) {
+    public String toString() {
         StringBuffer tab = new StringBuffer();
         for (int i = 0; i < path.length; i++) {
-            tab.append("/" + path[i]);
+            tab.append("/").append(path[i]);
         }
         return "Style(" + super.toString()+ " path: " + tab + ", start: " + start + ", end: " + end + ", param: " + param + ", value:" + value + ")";
     }

@@ -19,8 +19,8 @@ public class TreeDeleteText extends TreeOperation {
         tree.deleteChar(position);
     }
 
-    public String toString(boolean withTicket) {
-        String tab = Arrays.asList(path).toString().replace(',', '/');
+    public String toString() {
+        String tab = Arrays.toString(path);
         return "DeleteText(" + super.toString() + "," + tab + ")";
     }
 

@@ -77,9 +77,9 @@ public class TreeInsertParagraph extends TreeOperation {
         root.addChild(pTree, path[0] + d);
     }
 
-    public String toString(boolean withTicket) {
-        String pathString = Arrays.asList(path).toString();
-        return super.toString() + "InsertP(" +  super.toString() + "," + pathString + ")";
+    public String toString() {
+        String pathString = Arrays.toString(path);
+        return "InsertP(" +  super.toString() + "," + pathString + ")";
     }
 
     //OT pour InsertP
