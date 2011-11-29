@@ -16,32 +16,39 @@ public class DeleteOperation extends Operation {
         super(siteId, startPos);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void updateUI(Editor editor) {
-        editor.shiftCaret(editor.getOldCaretPos() - 1);
-//        else  {
-//            if (editor.getOldCaretPos() <= endPos) {
-//               editor.shiftCaret(position);
-//            } else {
-//                editor.shiftCaret(editor.getOldCaretPos() - (endPos - position));
-//            }
-//        }
-//        editor.removeHighlighting(operation.getSiteId(), position);
+    public void beforeUpdateUI(Editor editor) {
+        logger.info("Highlighting: Removing: " + siteId + " at position: " + position);
+        editor.prepareUI(position, siteId, true);
+    }
+
+    @Override
+    public void afterUpdateUI(Editor editor) {
+        logger.info("Update UI for Delete operation...");
+        if (position < editor.getCaretPosition()) {
+            editor.shiftCaret(editor.getOldCaretPos() - 1);
+        }
     }
 
     @Override
     public String toString() {
         return "DeleteOperation(" + position + ")" + super.toString();
     }
-
+    //todo: are they used?
     public Operation handleInsert(InsertOperation op1) {
-        return null;  //Todo
+        return null;
     }
 
     public Operation handleDelete(DeleteOperation op1) {
-        return null;  //Todo
+        return null;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof DeleteOperation) {
+            DeleteOperation other = (DeleteOperation) obj;
+            return this.siteId == other.siteId && this.position == other.position;
+        }
+        return false;
     }
 }

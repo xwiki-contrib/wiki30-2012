@@ -7,18 +7,25 @@ import fr.loria.score.client.Editor;
  */
 public class NoOperation extends Operation {
 
+    public NoOperation(){}
+
     public NoOperation(int siteId, int position) {
         super(siteId, position);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void updateUI(Editor editor) {}
+    public void beforeUpdateUI(Editor editor) {}
+
+    @Override
+    public void afterUpdateUI(Editor editor) {}
 
     @Override
     public String toString() {
         return "NoOperation()" + super.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof NoOperation;
     }
 }

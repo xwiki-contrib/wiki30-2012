@@ -20,18 +20,16 @@ public class InsertOperation extends Operation {
         this.chr = c;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void updateUI(Editor editor) {
-        editor.shiftCaret(editor.getOldCaretPos() + 1);
+    public void beforeUpdateUI(Editor editor) {
+        logger.info("Highlighting: Inserting: " + siteId + " at position: " + position);
+        editor.prepareUI(position, siteId, false);
+    }
 
-//      editor.insert(position, chr);
-        if ('\n' == chr) {
-//            editor.onRemoteEnterHighlighting(position);
-        } else {
-//            editor.insertHighlighting(getSiteId(), position);
+    @Override
+    public void afterUpdateUI(Editor editor) {
+        if (position < editor.getCaretPosition()) {
+            editor.shiftCaret(editor.getOldCaretPos() + 1);
         }
     }
 
