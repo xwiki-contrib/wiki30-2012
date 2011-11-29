@@ -9,11 +9,10 @@ import fr.loria.score.jupiter.plain.operation.NoOperation;
 /**
  * Ressel transformation implementation
  */
-// TODO: it is not mandatory to create new operation, shifting parameters is enough
 public class ResselTransformation extends Transformation {
 
      public AbstractOperation transform(AbstractOperation op1, AbstractOperation op2) {
-      if (op1 instanceof InsertOperation) {
+        if (op1 instanceof InsertOperation) {
             if (op2 instanceof InsertOperation) {
                 return handleInsertInsert((InsertOperation)op1, (InsertOperation)op2);
             } else if (op2 instanceof DeleteOperation) {
@@ -86,7 +85,7 @@ public class ResselTransformation extends Transformation {
         } else if (p1 > p2) {
             return new DeleteOperation(siteId1, p1 - 1);
         } else {
-            return new NoOperation(siteId1, p1);
+            return new NoOperation();
         }
     }
 }

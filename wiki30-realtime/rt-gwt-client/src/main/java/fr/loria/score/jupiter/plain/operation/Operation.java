@@ -20,10 +20,20 @@ public abstract class Operation extends AbstractOperation {
     }
 
     /**
-     * Updates the UI(the editor in fact) according to the semantics of the operation (<code>this</code>).<br/>
-     * <strong>Nb:</strong>This could be embedded in <code>execute()</code> method, but I choose to follow the OC principle.
+     * Prepares the UI (the editor) <strong>before</strong> this operation is executed
+     * according to the semantics of <code>this</code> operation.<br/>
+     * Eg: Update the telepointers which have to be modified before applying the operation.
+     * @param editor the editor
      */
-    public abstract void updateUI(Editor editor);
+    public abstract void beforeUpdateUI(Editor editor);
+
+    /**
+     * Updates the UI(the editor) <strong>after</strong> this operation has been executed,
+     * according to the semantics of <code>this</code> operation.<br/>
+     * <strong>Nb:</strong>This could be embedded in <code>execute()</code> method, but I choose to follow the OC principle.
+     * @param editor the editor
+     */
+    public abstract void afterUpdateUI(Editor editor);
 
     public String toString() {
         return " siteId: " + siteId;
@@ -31,36 +41,6 @@ public abstract class Operation extends AbstractOperation {
 
     @Override
     public AbstractOperation transform(AbstractOperation op1) {
-//        if (op1 instanceof InsertOperation) {
-//            //todo: refactor this too   .. delegate to operation
-//            // op2 is this
-////            if (this instanceof InsertOperation) {
-//                return handleInsert((InsertOperation)op1); // 1 insert, 2 insert
-////            } else if (this instanceof DeleteOperation) {
-////                return handleInsert((InsertOperation)op1); // 1 insert, 2 delete
-////            }
-////
-// //op2 is NoOp
-////                return op1;       // 1 insert, 2 NoOp
-////            }
-//
-//        } else if (op1 instanceof DeleteOperation) {
-//            DeleteOperation deleteOp1 = (DeleteOperation) op1;
-////            if (op2 instanceof InsertOperation) { // 1 delete 2 insert
-//                return handleDelete(deleteOp1);
-////            } else if (op2 instanceof DeleteOperation) { // 1 delete 2 delete
-////                return handleDelete(deleteOp1);
-//            } else { //op2  is NoOp
-//                return op1;
-//            }
-//        } else {
-//            // op1 is NoOp
-//            return op1;
-//        }
-        return null;
+        return new NoOperation();
     }
-
-//    public abstract Operation handleInsert(InsertOperation op1);
-//    public abstract Operation handleDelete(DeleteOperation op1);
-    // handleNoOp
 }

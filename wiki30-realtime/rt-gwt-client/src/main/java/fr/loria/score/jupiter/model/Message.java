@@ -19,12 +19,12 @@ public class Message implements Serializable {
     }
 
     public Message(State state, AbstractOperation operation) {
-        this.state = state;
-        this.operation = operation;
+        this.state = new State(state);
+        this.operation = operation;  // todo: clone operation
     }
 
     public Message(Message m) {
-        this(new State(m.getState()), m.getOperation());
+        this(new State(m.getState()), m.getOperation(), m.getEditingSessionId());
     }
 
     public AbstractOperation getOperation() {

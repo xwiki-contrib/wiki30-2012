@@ -3,7 +3,7 @@ package fr.loria.score.jupiter.transform;
 import fr.loria.score.jupiter.model.AbstractOperation;
 
 /**
- * The operational transformation that should be applied on divergent copies of generic data types (normally <em>String</em>s) to achieve convergence
+ * The operational transformation that should be applied on divergent copies of document to achieve convergence
  */
 public abstract class Transformation {
 
