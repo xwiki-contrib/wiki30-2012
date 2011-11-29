@@ -94,7 +94,7 @@ public final class Editor extends JavaScriptObject {
     }-*/;
 
     public native void prepareUI(int pos, int siteId, boolean remove) /*-{
-       $wnd.editor.updateHighlighter(pos, siteId, remove);
+       //$wnd.editor.updateHighlighter(pos, siteId, remove);//todo-bf: uncomment when js code is synched
     }-*/;
 
     public native void toggleHighlighting(boolean checked) /*-{
