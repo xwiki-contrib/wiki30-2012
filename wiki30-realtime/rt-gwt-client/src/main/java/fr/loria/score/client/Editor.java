@@ -2,11 +2,13 @@ package fr.loria.score.client;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
+import java.util.logging.Logger;
+
 public final class Editor extends JavaScriptObject {
+    private static final Logger logger = Logger.getLogger(Editor.class.getName());
     private static int oldCaretPos;
 
-    protected Editor() {
-    }
+    protected Editor() {}
 
     public static native Editor getEditor() /*-{
         return $wnd.editor;
@@ -54,7 +56,6 @@ public final class Editor extends JavaScriptObject {
         }
     }-*/;
 
-
     public native void setContent(String content) /*-{
         $wnd.editor.setContent(content);
     }-*/;
@@ -63,24 +64,9 @@ public final class Editor extends JavaScriptObject {
         $wnd.editor.paint();
     }-*/;
 
-
-    public native void insertHighlighting(int siteId, int colNr, int lineNr) /*-{
-        $wnd.editor.insertHighlighting(siteId, colNr, lineNr);
-
-    }-*/;
-
-    public native void removeHighlighting(int siteId, int colNr, int lineNr) /*-{
-        $wnd.editor.removeHighlighting(siteId, colNr, lineNr);
-    }-*/;
-
-    public native void onRemoteEnterHighlighting(int colNr, int lineNr) /*-{
-        $wnd.editor.onEnterHighlight(colNr + 1, lineNr);
-    }-*/;
-
     /**
      * Local caret consistency with respect to remote operations
      */
-    
     public native int getCaretPosition()/*-{
         return $wnd.editor.cursor.getPosition();
     }-*/;
@@ -93,6 +79,10 @@ public final class Editor extends JavaScriptObject {
         this.oldCaretPos = oldCaretPos;
     }
 
+    public native void setSiteId(int siteId)/*-{
+        $wnd.editor.siteId = siteId;
+    }-*/;
+
     /**
      * Shifts left/right the UI caret.
      * N.B. the new content was setup before calling this method
@@ -101,5 +91,13 @@ public final class Editor extends JavaScriptObject {
     public native void shiftCaret(int position) /*-{
         var caret = $wnd.editor.cursor;
         caret.toPosition(position);
+    }-*/;
+
+    public native void prepareUI(int pos, int siteId, boolean remove) /*-{
+       $wnd.editor.updateHighlighter(pos, siteId, remove);
+    }-*/;
+
+    public native void toggleHighlighting(boolean checked) /*-{
+        $wnd.editor.showHighlighting = checked;
     }-*/;
 }
