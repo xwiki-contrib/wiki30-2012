@@ -17,6 +17,7 @@ public class ServerJupiterAlg extends JupiterAlg {
     
     private final List<Message> unsentMessages = new ArrayList<Message>();
     private final SortedSet<Message> causalOrderedMessages = new TreeSet<Message>(new Comparator<Message>() {
+        @Override
         public int compare(Message m1, Message m2) { //+1  if o1 > o2, 0 if o1 equals o2, -1 if o1 < o2
             return m1.getState().getGeneratedMsgs() - m2.getState().getGeneratedMsgs();
         }
@@ -41,7 +42,7 @@ public class ServerJupiterAlg extends JupiterAlg {
     private synchronized void doReceive(Message receivedMsg) {
         // Ensure causality processing
         if (receivedMsg.getState().getGeneratedMsgs() > currentState.getReceivedMsgs()) {
-            logger.debug("Adding " + receivedMsg + "to: " + causalOrderedMessages);
+            logger.debug(this + "\tEnsuring causal receival. Add " + receivedMsg + " to: " + causalOrderedMessages);
             causalOrderedMessages.add(receivedMsg);
         } else {
             super.receive(receivedMsg);
