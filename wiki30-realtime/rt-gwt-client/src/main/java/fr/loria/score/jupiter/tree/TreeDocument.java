@@ -12,13 +12,17 @@ import java.util.logging.Logger;
  */
 public class TreeDocument implements Document {
     private transient static final Logger log = Logger.getLogger(TreeDocument.class.getName());
-    private transient Tree root;
+    private Tree root;
 
     public TreeDocument() {
     }
 
     public TreeDocument(Tree root) {
         this.root = root;
+    }
+
+    public TreeDocument(String text) {
+        this(new Tree(text));
     }
 
     @Override
