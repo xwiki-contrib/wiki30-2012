@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 
 public class RtApi {
     private static final int REFRESH_INTERVAL = 2000;
-    private static final String DOCUMENT_ID = "documentId";
+    public static final String DOCUMENT_ID = "documentId";
 
     private Editor editor;
     private JsBundle bundle = GWT.create(JsBundle.class);
@@ -77,6 +77,7 @@ public class RtApi {
             clientJupiter.setCommunicationService(comService);
             clientJupiter.setDocument(new PlainDocument(tArea.getText()));
             clientJupiter.setEditingSessionId(Integer.valueOf(config.getParameter(DOCUMENT_ID)));
+            clientJupiter.setCallback(clientJupiter.new PlainClientCallback());
             initClient();
         }
     }

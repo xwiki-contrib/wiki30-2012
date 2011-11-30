@@ -26,6 +26,8 @@ import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import fr.loria.score.client.ClientJupiterAlg;
+import fr.loria.score.client.CommunicationService;
+import fr.loria.score.jupiter.tree.TreeDocument;
 import org.xwiki.gwt.dom.client.DOMUtils;
 import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.dom.client.Selection;
@@ -39,6 +41,7 @@ import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractPlugin;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Logs DOM mutations generated inside the rich text area.
@@ -47,7 +50,9 @@ import java.util.List;
  */
 public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, CommandListener
 {
+    private static Logger log = Logger.getLogger(RealTimePlugin.class.getName());
     private ClientJupiterAlg clientJupiter;
+
     /**
      * The list of command that shouldn't be broadcasted.
      */
@@ -74,8 +79,17 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, C
         saveRegistration(textArea.addKeyPressHandler(this));
         getTextArea().getCommandManager().addCommandListener(this);
 
-        Console.getInstance().log("I am the RT plugin");
-        //todo: init client
+        Console.getInstance().log("I am the RT plugin: "+ config.getParameterNames());
+
+        clientJupiter = new ClientJupiterAlg();
+        clientJupiter.setDocument(new TreeDocument(textArea.getText()));
+        //todo: I don't like this, move constants separate
+//        clientJupiter.setEditingSessionId(Integer.parseInt(config.getParameter(RtApi.DOCUMENT_ID)));
+        clientJupiter.setEditingSessionId(1); // dummy, get the real docId
+        clientJupiter.setCommunicationService(CommunicationService.ServiceHelper.getCommunicationService());
+        clientJupiter.setCallback(clientJupiter.new DefaultClientCallback());
+        Console.getInstance().log(clientJupiter.toString());
+        clientJupiter.connect();
     }
 
     /**

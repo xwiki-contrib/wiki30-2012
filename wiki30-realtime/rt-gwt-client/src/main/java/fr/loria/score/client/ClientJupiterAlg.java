@@ -76,14 +76,11 @@ public class ClientJupiterAlg extends JupiterAlg {
 
             @Override
             public void onSuccess(ClientDTO clientDTO) {
+                logger.fine("Successfully connected to server. DTO is: " + clientDTO);
                 siteId = clientDTO.getSiteId();
                 document = clientDTO.getDocument();
-                callback.onConnected();
 
-                //update UI
-                editor.setContent(document.getContent());
-                editor.setSiteId(siteId);
-                editor.paint();
+                callback.onConnected();
 
                 serverPushForClient();
             }
@@ -101,7 +98,7 @@ public class ClientJupiterAlg extends JupiterAlg {
                 logger.finest("Successfully removed server pair for client");
             }
         });
-        callback.onDisconnected();
+        callback.onDisconnected();   // todo: fix NPE
     }
 
     @Override
@@ -169,5 +166,35 @@ public class ClientJupiterAlg extends JupiterAlg {
             }
         };
         timer.scheduleRepeating(REFRESH_INTERVAL);
+    }
+
+    //todo: think at other solutions
+    public interface ClientCallback {
+        void onConnected();
+        void onDisconnected();
+    }
+
+    public class PlainClientCallback implements ClientCallback {
+        @Override
+        public void onConnected() {
+                //update UI
+                editor.setContent(document.getContent());
+                editor.setSiteId(siteId);
+                editor.paint();
+        }
+
+        @Override
+        public void onDisconnected() {
+        }
+    }
+
+    public class DefaultClientCallback implements ClientCallback {
+        @Override
+        public void onConnected() {
+        }
+
+        @Override
+        public void onDisconnected() {
+        }
     }
 }
