@@ -43,6 +43,11 @@
       <artifactId>xwiki-platform-wysiwyg-plugin-api</artifactId>
       <version>${platform.version}</version>
     </dependency>
+    <dependency>
+        <groupId>org.xwiki.contrib</groupId>
+        <artifactId>rt-gwt-client</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <build>
     <resources>

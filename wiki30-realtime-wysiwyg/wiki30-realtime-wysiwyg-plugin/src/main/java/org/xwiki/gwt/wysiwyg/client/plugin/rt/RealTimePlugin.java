@@ -19,9 +19,13 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
-import java.util.Arrays;
-import java.util.List;
-
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.json.client.JSONNumber;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
+import fr.loria.score.client.ClientJupiterAlg;
 import org.xwiki.gwt.dom.client.DOMUtils;
 import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.dom.client.Selection;
@@ -33,12 +37,8 @@ import org.xwiki.gwt.user.client.ui.rta.cmd.CommandListener;
 import org.xwiki.gwt.user.client.ui.rta.cmd.CommandManager;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractPlugin;
 
-import com.google.gwt.dom.client.Node;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.json.client.JSONNumber;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONString;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Logs DOM mutations generated inside the rich text area.
@@ -47,6 +47,7 @@ import com.google.gwt.json.client.JSONString;
  */
 public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, CommandListener
 {
+    private ClientJupiterAlg clientJupiter;
     /**
      * The list of command that shouldn't be broadcasted.
      */
@@ -74,6 +75,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, C
         getTextArea().getCommandManager().addCommandListener(this);
 
         Console.getInstance().log("I am the RT plugin");
+        //todo: init client
     }
 
     /**

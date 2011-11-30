@@ -23,4 +23,5 @@
   <inherits name='org.xwiki.gwt.user.User' />
   <inherits name='org.xwiki.gwt.dom.DOM' />
   <inherits name='org.xwiki.gwt.wysiwyg.Plugin' />
+  <inherits name='fr.loria.score.Rt' />
 </module>
