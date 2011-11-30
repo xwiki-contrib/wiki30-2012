@@ -12,27 +12,27 @@ import java.io.Serializable;
 public class ClientDTO implements Serializable {
     private int siteId;
     private int esid;
-    private Document data;
+    private Document document;
 
     public ClientDTO() {
     }
 
-    public ClientDTO(Document data, int siteId, int esid) {
+    public ClientDTO(Document document, int siteId, int esid) {
         this.siteId = siteId;
         this.esid = esid;
-        this.data = data;
+        this.document = document;
     }
 
-    public ClientDTO(String data, int siteId, int esid) {
+    public ClientDTO(String document, int siteId, int esid) {
         this.siteId = siteId;
         this.esid = esid;
-        this.data = new PlainDocument(data);
+        this.document = new PlainDocument(document);
     }
 
     public ClientDTO(ClientJupiterAlg cja) {
         this.siteId = cja.getSiteId();
         this.esid = cja.getEditingSessionId();
-        this.data = cja.getDocument();
+        this.document = cja.getDocument();
     }
 
     public int getSiteId() {
@@ -54,11 +54,11 @@ public class ClientDTO implements Serializable {
     }
 
     public Document getDocument() {
-        return data;
+        return document;
     }
 
     public ClientDTO setDocument(Document data) {
-        this.data = data;
+        this.document = data;
         return this;
     }
 }
