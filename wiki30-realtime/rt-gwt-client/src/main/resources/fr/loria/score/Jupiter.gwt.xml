@@ -5,6 +5,7 @@
     <inherits name='org.xwiki.gwt.user.User'/>
     
     <source path="jupiter"/>
+    <source path="client"/> <!--either refactor code in client package-->
 
     <!--Development options-->
     <set-property name="user.agent" value="safari, gecko1_8"/>  <!--Chrome and FF-->
