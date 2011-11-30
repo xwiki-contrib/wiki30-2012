@@ -74,6 +74,7 @@ public class RtApi {
             parentElem.removeChild(htmlTextAreaElement);
 
             injectJSFilesForRTEditor(parentElem);
+            clientJupiter.setCommunicationService(comService);
             clientJupiter.setDocument(new PlainDocument(tArea.getText()));
             clientJupiter.setEditingSessionId(Integer.valueOf(config.getParameter(DOCUMENT_ID)));
             initClient();
@@ -245,7 +246,7 @@ public class RtApi {
         }
 
         public void clientQuitsEditingSession() {
-            clientJupiter.quitEditingSession();
+            clientJupiter.disconnect();
         }
     }
 
