@@ -1,8 +1,9 @@
 package fr.loria.score.jupiter.tree;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Tree { // todo: has it to be serializable
+public class Tree implements Serializable {
 
     protected String value; //todo: where it is used?
     protected Map<String, String> attributes;
@@ -10,7 +11,9 @@ public class Tree { // todo: has it to be serializable
     protected boolean invisible;
     protected Tree parent;
 
-    public Tree(String s) {
+    public Tree() {}
+
+    public Tree(String s) {  // todo: parse s into a hierachical structure on client or Server !
         this.value = s;
         attributes = new HashMap<String, String>();
         children = new ArrayList<Tree>();
