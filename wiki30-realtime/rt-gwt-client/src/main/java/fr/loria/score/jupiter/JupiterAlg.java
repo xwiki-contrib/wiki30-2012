@@ -7,7 +7,6 @@ import fr.loria.score.jupiter.model.State;
 import fr.loria.score.jupiter.transform.Transformation;
 import fr.loria.score.jupiter.transform.TransformationFactory;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,13 +14,12 @@ import java.util.logging.Logger;
 
 /**
  * Base class which uses the Jupiter algorithm for achieving convergence across divergent copies of document.
- * It uses a pluggable Document and transformation functions
+ * It uses a plug-able Document and transformation functions
  *
  * <b>Note: it only requires that TP1 is satisfied by transformation functions.</b>
  */
-public abstract class JupiterAlg implements Serializable {
-
-    private static final transient Logger logger = Logger.getLogger(JupiterAlg.class.getName());
+public abstract class JupiterAlg {
+    private static final Logger logger = Logger.getLogger(JupiterAlg.class.getName());
 
     // Identifies a client to the server.
     // If 2 operations are simultaneously received by the server, it will sequentially apply them in an ascending order
@@ -30,10 +28,10 @@ public abstract class JupiterAlg implements Serializable {
     protected State currentState = new State();
 
     //the outgoing list of processed operations used to transform the received operations
-    protected transient List<Message> queue = new LinkedList<Message>();
-    protected transient Transformation xform;
+    protected List<Message> queue = new LinkedList<Message>();
+    protected Transformation xform;
 
-    protected Document document;
+    protected volatile Document document;
 
     public JupiterAlg() {
     }
