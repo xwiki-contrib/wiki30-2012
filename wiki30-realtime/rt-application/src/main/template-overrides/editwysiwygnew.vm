@@ -48,7 +48,7 @@ $xwiki.getTextArea($tdoc.content)
   *#
 #macro(wysiwyg_createEditor $parameters)
 ## Add the document id needed for RT
-$parameters.put("documentId", $tdoc.id)
+#set($ok = $parameters.put('documentId', $tdoc.id))
 #set($jsVarName = "wysiwygConfig${util.generateRandomString(4)}")
 #wysiwyg_writeConfig($jsVarName $parameters)
 <script type="text/javascript">
@@ -58,7 +58,5 @@ Wysiwyg.onModuleLoad(function() {
   $jsVarName = undefined;
 });
 //]]>
-console.log($jsVarName);
-console.log($parameters)
 </script>
 #end
