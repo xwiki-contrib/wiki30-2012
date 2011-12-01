@@ -27,6 +27,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import fr.loria.score.client.ClientJupiterAlg;
 import fr.loria.score.client.CommunicationService;
+import fr.loria.score.client.RtApi;
 import fr.loria.score.jupiter.tree.TreeDocument;
 import org.xwiki.gwt.dom.client.DOMUtils;
 import org.xwiki.gwt.dom.client.Range;
@@ -84,8 +85,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, C
         clientJupiter = new ClientJupiterAlg();
         clientJupiter.setDocument(new TreeDocument(textArea.getText()));
         //todo: I don't like this, move constants separate
-//        clientJupiter.setEditingSessionId(Integer.parseInt(config.getParameter(RtApi.DOCUMENT_ID)));
-        clientJupiter.setEditingSessionId(1); // dummy, get the real docId
+        clientJupiter.setEditingSessionId(Integer.parseInt(config.getParameter(RtApi.DOCUMENT_ID)));
         clientJupiter.setCommunicationService(CommunicationService.ServiceHelper.getCommunicationService());
         clientJupiter.setCallback(clientJupiter.new DefaultClientCallback());
         Console.getInstance().log(clientJupiter.toString());
