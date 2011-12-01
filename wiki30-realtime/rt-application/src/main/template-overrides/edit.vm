@@ -18,6 +18,7 @@
     #set($forceEditURL = $doc.getURL($xcontext.getAction(), ${newquerystring}))
     #if ($editor == 'rt')
       #xwikimessageboxstart($msg.get('notice') "$msg.get('doclockedby') $xwiki.getUserName($doc.getLockingUser())")
+        //todo:@Eduard: please fix it with the original message
         <a href="$forceEditURL">$msg.get('joinrtsession/home/Enygma/Work/Wiki3.0/wiki30/wiki30-realtime/rt-application/src/main/template-overrides/edit.vm')</a>
       #xwikimessageboxend()
     #else
