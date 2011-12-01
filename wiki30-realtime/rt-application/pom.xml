@@ -95,6 +95,18 @@
               <sourceDocument>${project.build.outputDirectory}/XWiki/RtSkin.xml</sourceDocument>
             </configuration>
           </execution>
+          <!-- editwysiwygnew.vm -->
+          <execution>
+            <phase>process-resources</phase>
+            <id>attach-editwysiwygnew.vm-xar</id>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${basedir}/src/main/template-overrides/editwysiwygnew.vm</file>
+              <sourceDocument>${project.build.outputDirectory}/XWiki/RtSkin.xml</sourceDocument>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>
