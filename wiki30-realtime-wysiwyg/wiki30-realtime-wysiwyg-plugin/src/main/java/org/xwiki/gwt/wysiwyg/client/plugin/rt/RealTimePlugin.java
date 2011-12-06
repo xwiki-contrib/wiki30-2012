@@ -20,6 +20,8 @@
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.json.client.JSONNumber;
@@ -29,6 +31,7 @@ import fr.loria.score.client.ClientJupiterAlg;
 import fr.loria.score.client.CommunicationService;
 import fr.loria.score.client.RtApi;
 import fr.loria.score.jupiter.tree.TreeDocument;
+import fr.loria.score.jupiter.tree.operation.TreeInsertText;
 import org.xwiki.gwt.dom.client.DOMUtils;
 import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.dom.client.Selection;
@@ -40,6 +43,7 @@ import org.xwiki.gwt.user.client.ui.rta.cmd.CommandListener;
 import org.xwiki.gwt.user.client.ui.rta.cmd.CommandManager;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractPlugin;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -49,7 +53,7 @@ import java.util.logging.Logger;
  * 
  * @version $Id: 4e19fb82c1f5869f4850b80c3b5f5d3b3d319483 $
  */
-public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, CommandListener
+public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, KeyDownHandler, CommandListener
 {
     private static Logger log = Logger.getLogger(RealTimePlugin.class.getName());
     private ClientJupiterAlg clientJupiter;
@@ -80,15 +84,15 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, C
         saveRegistration(textArea.addKeyPressHandler(this));
         getTextArea().getCommandManager().addCommandListener(this);
 
-        Console.getInstance().log("I am the RT plugin: "+ config.getParameterNames());
-
         clientJupiter = new ClientJupiterAlg();
-        clientJupiter.setDocument(new TreeDocument(textArea.getText()));
+
+//        Document jsoupDoc = Jsoup.parseBodyFragment(textArea.getHTML());
+        clientJupiter.setDocument(new TreeDocument());   // todo: inject the xwiki DOM document
+
         //todo: I don't like this, move constants separate
         clientJupiter.setEditingSessionId(Integer.parseInt(config.getParameter(RtApi.DOCUMENT_ID)));
         clientJupiter.setCommunicationService(CommunicationService.ServiceHelper.getCommunicationService());
         clientJupiter.setCallback(clientJupiter.new DefaultClientCallback());
-        Console.getInstance().log(clientJupiter.toString());
         clientJupiter.connect();
     }
 
@@ -142,14 +146,20 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, C
      */
     public void onKeyPress(KeyPressEvent event)
     {
+        log.info("onKeyPress: " + getTextArea().getHTML());
         boolean isAltControlOrMetaDown = event.isAltKeyDown() || event.isControlKeyDown() || event.isMetaKeyDown();
         if (getTextArea().isAttached() && getTextArea().isEnabled() && !isAltControlOrMetaDown) {
             Selection selection = getTextArea().getDocument().getSelection();
             if (selection.getRangeCount() > 0) {
                 Range range = selection.getRangeAt(0);
-                broadcast(new OperationCall("KeyPress", String.valueOf(event.getUnicodeCharCode()), getTarget(range)));
+                broadcast(new OperationCall("KeyPress", new String(new int[] {event.getUnicodeCharCode()}, 0, 1), getTarget(range)));
             }
         }
+    }
+
+    @Override
+    public void onKeyDown(KeyDownEvent event) {
+        log.info("onKeyDown: " );  //todo: handle event.getNativeKeyCode()
     }
 
     /**
@@ -170,20 +180,17 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, C
 
     /**
      * @param node a DOM node
-     * @return a string locator for the given node relative to the {@code BODY} element of the edited HTML document
+     * @return a list of locator for the given node relative to the {@code BODY} element of the edited HTML document
      */
-    private String getLocator(Node node)
+    private List<Integer> getLocator(Node node)
     {
-        StringBuffer locator = new StringBuffer();
+        List<Integer> locator = new ArrayList<Integer>();
         Node ancestor = node;
         while (ancestor != null && ancestor != getTextArea().getDocument().getBody()) {
-            if (locator.length() > 0) {
-                locator.insert(0, '/');
-            }
-            locator.insert(0, DOMUtils.getInstance().getNodeIndex(ancestor));
+            locator.add(0, DOMUtils.getInstance().getNodeIndex(ancestor));
             ancestor = ancestor.getParentNode();
         }
-        return locator.toString();
+        return locator;
     }
 
     /**
@@ -194,9 +201,9 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, C
     private void broadcast(OperationCall operationCall)
     {
         JSONObject jsonTarget = new JSONObject();
-        jsonTarget.put("startContainer", new JSONString(operationCall.getTarget().getStartContainer()));
+        jsonTarget.put("startContainer", new JSONString(operationCall.getTarget().getStartContainer().toString()));
         jsonTarget.put("startOffset", new JSONNumber(operationCall.getTarget().getStartOffset()));
-        jsonTarget.put("endContainer", new JSONString(operationCall.getTarget().getEndContainer()));
+        jsonTarget.put("endContainer", new JSONString(operationCall.getTarget().getEndContainer().toString()));
         jsonTarget.put("endoffset", new JSONNumber(operationCall.getTarget().getEndOffset()));
 
         JSONObject jsonOperationCall = new JSONObject();
@@ -205,7 +212,15 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, C
             jsonOperationCall.put("value", new JSONString(operationCall.getValue()));
         }
         jsonOperationCall.put("target", jsonTarget);
-
         Console.getInstance().log(jsonOperationCall.toString());
+
+        OperationTarget target = operationCall.getTarget();
+        List<Integer> spath = target.getStartContainer();
+        int[] path = new int[spath.size()];
+        for (int i = 0; i < spath.size(); i++) {
+            path[i] = spath.get(i);
+        }
+
+        clientJupiter.generate(new TreeInsertText(clientJupiter.getSiteId(), target.getStartOffset(), path, operationCall.getValue().charAt(0)));
     }
 }
