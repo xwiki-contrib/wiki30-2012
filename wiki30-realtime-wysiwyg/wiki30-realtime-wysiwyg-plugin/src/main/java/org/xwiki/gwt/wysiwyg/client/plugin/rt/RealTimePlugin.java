@@ -87,7 +87,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, K
         clientJupiter = new ClientJupiterAlg();
 
 //        Document jsoupDoc = Jsoup.parseBodyFragment(textArea.getHTML());
-        clientJupiter.setDocument(new TreeDocument());   // todo: inject the xwiki DOM document
+        clientJupiter.setDocument(new TreeDocument(textArea.getHTML()));   // todo: inject the xwiki DOM document
 
         //todo: I don't like this, move constants separate
         clientJupiter.setEditingSessionId(Integer.parseInt(config.getParameter(RtApi.DOCUMENT_ID)));
