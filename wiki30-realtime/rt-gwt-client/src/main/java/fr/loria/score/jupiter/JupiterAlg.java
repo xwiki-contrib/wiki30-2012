@@ -97,7 +97,7 @@ public abstract class JupiterAlg {
         //apply transformed receivedMsg
         document.apply(receivedOperation);
 
-        Message newMsg = new Message(new State(currentState), receivedOperation); // TODO: not sure about this. I though receivedMsg.setOperation(opr) would be sufficient
+        Message newMsg = new Message(new State(currentState), receivedOperation);
         newMsg.setEditingSessionId(receivedMsg.getEditingSessionId());
 
         currentState.incReceivedMsgs();
