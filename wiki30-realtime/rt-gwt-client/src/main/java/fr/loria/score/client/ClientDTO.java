@@ -61,4 +61,9 @@ public class ClientDTO implements Serializable {
         this.document = data;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "ClientDTO: siteId: " + siteId + ", esid: " + esid + ", document: " + document;
+    }
 }
