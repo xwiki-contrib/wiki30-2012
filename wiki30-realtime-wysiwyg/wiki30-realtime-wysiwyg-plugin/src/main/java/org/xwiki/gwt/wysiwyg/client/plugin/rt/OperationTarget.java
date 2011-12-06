@@ -21,6 +21,8 @@ package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import java.util.List;
+
 /**
  * Represents the target of an operation, which is in fact a DOM range. Instances of this class are in fact range
  * serializations. We need this class because we can't send DOM ranges over the network.
@@ -32,7 +34,7 @@ public class OperationTarget implements IsSerializable
     /**
      * The locator for the DOM node where the range starts.
      */
-    private String startContainer;
+    private List<Integer> startContainer;
 
     /**
      * The offset within the start container.
@@ -42,7 +44,7 @@ public class OperationTarget implements IsSerializable
     /**
      * The locator for the DOM node where the range ends.
      */
-    private String endContainer;
+    private List<Integer> endContainer;
 
     /**
      * The offset within the end container.
@@ -64,7 +66,7 @@ public class OperationTarget implements IsSerializable
      * @param endContainer the locator for the DOM node where the range ends
      * @param endOffset the offset within the end container
      */
-    public OperationTarget(String startContainer, int startOffset, String endContainer, int endOffset)
+    public OperationTarget(List<Integer> startContainer, int startOffset, List<Integer> endContainer, int endOffset)
     {
         this.startContainer = startContainer;
         this.startOffset = startOffset;
@@ -75,7 +77,7 @@ public class OperationTarget implements IsSerializable
     /**
      * @return the locator for the DOM node where the range starts
      */
-    public String getStartContainer()
+    public List<Integer> getStartContainer()
     {
         return startContainer;
     }
@@ -85,7 +87,7 @@ public class OperationTarget implements IsSerializable
      * 
      * @param startContainer the locator for the start node
      */
-    public void setStartContainer(String startContainer)
+    public void setStartContainer(List<Integer> startContainer)
     {
         this.startContainer = startContainer;
     }
@@ -111,7 +113,7 @@ public class OperationTarget implements IsSerializable
     /**
      * @return the locator for the DOM node where the range ends
      */
-    public String getEndContainer()
+    public List<Integer> getEndContainer()
     {
         return endContainer;
     }
@@ -121,7 +123,7 @@ public class OperationTarget implements IsSerializable
      * 
      * @param endContainer the locator of the end node
      */
-    public void setEndContainer(String endContainer)
+    public void setEndContainer(List<Integer> endContainer)
     {
         this.endContainer = endContainer;
     }
