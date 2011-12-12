@@ -41,7 +41,7 @@ public class TreeInsertParagraph extends TreeOperation {
     public void execute(Tree root) {
         int d = 1;//décalage
         Tree tree = root;
-        Tree pTree = new Tree("p");
+        Tree pTree = new Tree("p", null);
         Tree tTree = pTree;
         tree = tree.getChild(path[0]);
         Tree r;
@@ -70,7 +70,7 @@ public class TreeInsertParagraph extends TreeOperation {
                     tree = tree.getChild(path[i + 1]);
                     String str = tree.split(position);
 
-                    tTree.addChild(new Tree(str), 0);
+                    tTree.addChild(new Tree("#text",str), 0);
                 }
             }
         }

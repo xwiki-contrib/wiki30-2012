@@ -13,8 +13,8 @@ public class TreeNewParagraph extends TreeOperation {
     }
 
     public void execute(Tree root) {
-        Tree paragraph = new Tree("p");
-        Tree t3 = new Tree("");
+        Tree paragraph = new Tree("p", null);
+        Tree t3 = new Tree("#text", "");     // todo: avoid harcoding textNode names
 
         paragraph.addChild(t3);
 

@@ -21,10 +21,6 @@ public class TreeDocument implements Document {
         this.root = root;
     }
 
-    public TreeDocument(String text) {
-        this(new Tree(text));
-    }
-
     @Override
     public String getContent() {
         return root.toString();
@@ -32,7 +28,7 @@ public class TreeDocument implements Document {
 
     @Override
     public void setContent(String content) {
-        root.setValue(content);
+        root.setValue(content);// todo: review
     }
 
     @Override

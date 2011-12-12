@@ -5,18 +5,26 @@ import java.util.*;
 
 public class Tree implements Serializable {
 
-    protected String value; //todo: where it is used?
-    protected Map<String, String> attributes;
-    protected List<Tree> children;
+    public static final String NODE_NAME = "nodeName"; // for Text nodes is "#text", for Elements is tagName
+    public static final String NODE_VALUE = "nodeValue"; // for Text nodes it is the actual text, for Elements is null
+
+    protected Map<String, String> attributes = new HashMap<String, String>();
+    protected List<Tree> children = new ArrayList<Tree>();
     protected boolean invisible;
     protected Tree parent;
 
     public Tree() {}
 
-    public Tree(String s) {  // todo: parse s into a hierachical structure on client or Server !
-        this.value = s;
-        attributes = new HashMap<String, String>();
-        children = new ArrayList<Tree>();
+    public Tree(String nodeName, String nodeValue) {
+        if (nodeName != null)
+            attributes.put(NODE_NAME, nodeName);
+
+        if (nodeValue != null)
+            attributes.put(NODE_VALUE, nodeValue);
+    }
+
+    public void setNodeName(String nodeName) {
+        attributes.put(NODE_NAME, nodeName);
     }
 
     public void setParent(Tree t) {
@@ -35,11 +43,11 @@ public class Tree implements Serializable {
     }
 
     public String getValue() {
-        return value;
+        return attributes.get(NODE_VALUE);
     }
 
     public void setValue(String value) {
-        this.value = value;
+        attributes.put(NODE_VALUE, value);
     }
 
     public void setAttribute(String key, String value) {
@@ -47,6 +55,10 @@ public class Tree implements Serializable {
             attributes.remove(key);
         }
         attributes.put(key, value);
+    }
+
+    public void setAttributes( Map<String, String> attributes) {
+        this.attributes.putAll(attributes);
     }
 
     public void hide() {
@@ -69,7 +81,7 @@ public class Tree implements Serializable {
     }
 
     public void deleteChar(int pos) {
-        //value.deleteChar(pos);
+        String value = attributes.get(NODE_VALUE);
         if (pos == 0) {
             value = value.substring(1);
         } else {
@@ -79,11 +91,13 @@ public class Tree implements Serializable {
                 value = value.substring(0, pos) + value.substring(pos + 1);
             }
         }
+        setValue(value);
     }
 
     public void addChar(char c, int pos) {
-        //value.addChar(c,pos);
+        String value = attributes.get(NODE_VALUE);
         value = value.substring(0, pos) + c + value.substring(pos);
+        setValue(value);
     }
 
     public void addChild(Tree t) {
@@ -108,7 +122,7 @@ public class Tree implements Serializable {
     }
 
     public Tree cloneNode() {
-        Tree newTree = new Tree(value);
+        Tree newTree = new Tree();
         for (Iterator<Map.Entry<String, String>> it = attributes.entrySet().iterator(); it.hasNext();) {
             Map.Entry<String, String> entry = it.next();
             newTree.setAttribute(entry.getKey(), entry.getValue());
@@ -117,37 +131,35 @@ public class Tree implements Serializable {
     }
 
     public String split(int p) {//new value of the String value : subString from 0 to position-1. Returns new String : from position to end.
-        String s1 = value.substring(0, p);
-        String s2 = value.substring(p);
-        value = s1;
-        return s2;
+        String value = attributes.get(NODE_VALUE);
+        if (value != null) {
+            String s1 = value.substring(0, p);
+            String s2 = value.substring(p);
+            value = s1;
+            return s2;
+        } else {
+            return ""; // todo: this is not good.
+        }
     }
 
     public String toString() {
-        return toString(0);
-    }
-
-    private String toString(int i) {
         if (invisible) {
             return "";
         }
-        String ta = "";
-        for (int t = 0; t < i; t++) {
-            ta = ta + "  ";
-        }
-        if (children.size() == 0) {
-            return ta + value;
-        }
-        String s = ta + "<" + value;
+
+        String s;
+        s = "<" + (attributes.get(NODE_VALUE) != null ? attributes.get(NODE_VALUE) : attributes.get(NODE_NAME) ) + ": ";
+
         for (Iterator<Map.Entry<String, String>> it = attributes.entrySet().iterator(); it.hasNext();) {
             Map.Entry<String, String> entry = it.next();
             s = s + " " + entry.getKey() + "=" + entry.getValue() + ",";
         }
         s = s + ">";
+
         for (int j = 0; j < children.size(); j++) {
-            s = s + children.get(j).toString(i + 1);
+            s = s + children.get(j).toString();
         }
-        s = s + ta + "</" + value + ">";
+        s = s + "</" + attributes.get(NODE_NAME) + ">";
         return s;
     }
 

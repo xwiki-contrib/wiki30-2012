@@ -43,7 +43,7 @@ public class TreeStyle extends TreeOperation {
                 } else {
                     //addStyle=true;
                     Tree tc = tree.removeChild(path[path.length - 1]);
-                    Tree ts = new Tree("style");
+                    Tree ts = new Tree("style", null);
                     ts.setAttribute(param, value);
                     ts.addChild(tc);
                     tree.addChild(ts, path[path.length - 1]);
@@ -53,7 +53,7 @@ public class TreeStyle extends TreeOperation {
                 }
             } else {//Style applied to the left side
                 if/*(tree.getValue().toString().equals("style"))*/ (!addStyle) {//suppose one child
-                    Tree tc = new Tree(tree.getChild(path[path.length - 1]).split(end));
+                    Tree tc = new Tree("#text", tree.getChild(path[path.length - 1]).split(end));
                     Tree ts = tree.cloneNode();
                     tree.setAttribute(param, value);
                     ts.addChild(tc);
@@ -65,8 +65,8 @@ public class TreeStyle extends TreeOperation {
                 } else {
                     //addStyle=true;
                     Tree t = tree.getChild(path[path.length - 1]);
-                    Tree tc = new Tree(t.split(end));
-                    Tree ts = new Tree("style");
+                    Tree tc = new Tree("#text", t.split(end));
+                    Tree ts = new Tree("style", null);
                     ts.setAttribute(param, value);
                     ts.addChild(tree.removeChild(path[path.length - 1]));
                     tree.addChild(tc, path[path.length - 1]);
@@ -80,7 +80,7 @@ public class TreeStyle extends TreeOperation {
         } else {
             if/*(end==last)*/ (!sr) {//Style applied to the right side
                 if/*(tree.getValue().toString().equals("style"))*/ (!addStyle) {//suppose one child
-                    Tree tc = new Tree(tree.getChild(path[path.length - 1]).split(start));
+                    Tree tc = new Tree("#text", tree.getChild(path[path.length - 1]).split(start));
                     Tree ts = tree.cloneNode();
                     ts.setAttribute(param, value);
                     ts.addChild(tc);
@@ -92,8 +92,8 @@ public class TreeStyle extends TreeOperation {
                 } else {
                     //addStyle=true;
                     Tree t = tree.getChild(path[path.length - 1]);
-                    Tree tc = new Tree(t.split(start));
-                    Tree ts = new Tree("style");
+                    Tree tc = new Tree("#text", t.split(start));
+                    Tree ts = new Tree("style", null);
                     ts.setAttribute(param, value);
                     ts.addChild(tc);
                     tree.addChild(ts, path[path.length - 1] + 1);
@@ -104,8 +104,8 @@ public class TreeStyle extends TreeOperation {
                 }
             } else {//Style applied to the middle
                 if/*(tree.getValue().toString().equals("style"))*/ (!addStyle) {//suppose one child
-                    Tree tc = new Tree(tree.getChild(path[path.length - 1]).split(start));
-                    Tree tc2 = new Tree(tc.split(end - start));
+                    Tree tc = new Tree("#text", tree.getChild(path[path.length - 1]).split(start));
+                    Tree tc2 = new Tree("#text", tc.split(end - start));
                     Tree ts = tree.cloneNode();
                     Tree ts2 = tree.cloneNode();
                     ts.setAttribute(param, value);
@@ -121,9 +121,9 @@ public class TreeStyle extends TreeOperation {
                 } else {
                     //addStyle=true;
                     Tree t = tree.getChild(path[path.length - 1]);
-                    Tree tc = new Tree(t.split(start));
-                    Tree tc2 = new Tree(tc.split(end - start));
-                    Tree ts = new Tree("style");
+                    Tree tc = new Tree("#text",t.split(start));
+                    Tree tc2 = new Tree("#text",tc.split(end - start));
+                    Tree ts = new Tree("style", null);
                     ts.setAttribute(param, value);
                     ts.addChild(tc);
                     tree.addChild(ts, path[path.length - 1] + 1);
