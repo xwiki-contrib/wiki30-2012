@@ -29,7 +29,9 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import fr.loria.score.client.ClientJupiterAlg;
 import fr.loria.score.client.CommunicationService;
+import fr.loria.score.client.Converter;
 import fr.loria.score.client.RtApi;
+import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
 import org.xwiki.gwt.dom.client.DOMUtils;
@@ -86,13 +88,14 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, K
 
         clientJupiter = new ClientJupiterAlg();
 
-//        Document jsoupDoc = Jsoup.parseBodyFragment(textArea.getHTML());
-        clientJupiter.setDocument(new TreeDocument(textArea.getHTML()));   // todo: inject the xwiki DOM document
+        Converter converter = new Converter();
+        Tree t = converter.fromNativeToCustom(textArea.getDocument().getBody());
 
         //todo: I don't like this, move constants separate
         clientJupiter.setEditingSessionId(Integer.parseInt(config.getParameter(RtApi.DOCUMENT_ID)));
         clientJupiter.setCommunicationService(CommunicationService.ServiceHelper.getCommunicationService());
         clientJupiter.setCallback(clientJupiter.new DefaultClientCallback());
+        clientJupiter.setDocument(new TreeDocument(t));
         clientJupiter.connect();
     }
 
