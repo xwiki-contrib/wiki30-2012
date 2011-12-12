@@ -98,11 +98,6 @@ public abstract class TreeOperation extends AbstractOperation {
     }
 
     public String toString() {
-        String str = "";
-//        if (path != null) {
-//            str = Arrays.asList(path).toString();
-//        }
-//        return super.toString() + ", path: " + str;
         return "siteId: " + siteId + " position: " + position;
     }
 
