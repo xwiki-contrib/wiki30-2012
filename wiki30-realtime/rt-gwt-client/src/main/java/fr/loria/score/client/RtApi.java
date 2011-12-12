@@ -162,21 +162,22 @@ public class RtApi {
      * Create the corresponding server component for this client on the server side AND update the text area with the available content
      */
     private void createServerPairForClient() {
-        comService.createServerPairForClient(new ClientDTO(clientJupiter), new AsyncCallback<String>() {
+        comService.createServerPairForClient(new ClientDTO(clientJupiter), new AsyncCallback<fr.loria.score.jupiter.model.Document>() {
             public void onFailure(Throwable caught) {
                 logger.severe("Fail to create server pair. Error: " + caught);
             }
 
-            public void onSuccess(String result) {
+            public void onSuccess(fr.loria.score.jupiter.model.Document doc) {
                 logger.finest("Created the server pair for this client");
-                if (result != null) {
-                    clientJupiter.setDocument(new PlainDocument(result));
+                if (doc != null) {
+                    clientJupiter.setDocument(doc);
                     //update UI
                     editor = Editor.getEditor();
                     clientJupiter.setEditor(editor);
 
+                    // todo: extract this in a callback
                     editor.addHooksToEventListeners(new EditorApi());
-                    editor.setContent(result);
+                    editor.setContent(doc.getContent());
                     editor.paint();
                 }
             }
