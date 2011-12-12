@@ -1,0 +1,150 @@
+package fr.loria.score.client;
+
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.Text;
+import fr.loria.score.jupiter.tree.Tree;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.logging.Logger;
+
+/**
+ * Utility class to convert back and forth from a GWT DOM to a custom tree like object model.
+ * Adapting XWiki's DepthFirstPreOrderIterator to create the custom tree like model
+ *
+ * @author Bogdan.Flueras@inria.fr
+ */
+public class Converter {
+    public static final Logger log = Logger.getLogger(Converter.class.getName());
+
+    public static final String NODE_VALUE = "nodeValue";
+    public static final String NODE_TYPE = "nodeType";
+
+    public Tree fromNativeToCustom(Element nativeElement) {
+        log.finest("Original native element: " + nativeElement.toString());
+        Tree root = new Tree();
+        DepthFirstPreOrderIterator dfs = new DepthFirstPreOrderIterator(nativeElement, root);
+        while (dfs.hasNext()) {
+            Node n = dfs.next();
+            log.finest("Node: " + n.toString());
+        }
+        log.fine("Returning tree: " + root.toString());
+        return root;
+    }
+
+
+    private class DepthFirstPreOrderIterator {
+        /**
+         * The current position of the iterator.
+         */
+        private Node currentNode;
+
+        /**
+         * The node where the iteration has started (the root of the subtree which we're iterating).
+         */
+        private Node startNode;
+
+        /**
+         * The node which is to be filled in from the currentNode
+         */
+        private Tree currentTree;
+
+        /**
+         * Creates an iterator for the subtree rooted in startNode.
+         *
+         * @param startNode root of the subtree to iterate through.
+         */
+        DepthFirstPreOrderIterator(Node startNode, Tree startTree) {
+            this.startNode = startNode;
+            this.currentNode = startNode;
+
+            this.currentTree = startTree;
+            copyAttributes(currentNode, startTree);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public boolean hasNext() {
+            return this.currentNode != null;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public Node next() {
+            // return the currentNode
+            Node nodeToReturn = this.currentNode;
+            log.fine("current node:" + currentNode);
+
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            // compute the next node
+            // try to go down
+            if (currentNode.getFirstChild() != null) {
+                this.currentNode = currentNode.getFirstChild();
+
+                Tree child = new Tree();
+                child.setParent(currentTree);
+                currentTree.addChild(child);
+                copyAttributes(currentNode, child);
+
+                currentTree = child;
+            } else {
+                // try to go right: from this node or any of its ancestors, until we haven't reached the startNode
+                Node ancestor = currentNode;
+                while (ancestor != startNode) {
+                    if (ancestor.getNextSibling() != null) {
+                        this.currentNode = ancestor.getNextSibling();
+
+                        Tree parent = currentTree.getParent();
+
+                        Tree child = new Tree();
+
+                        child.setParent(parent);
+                        parent.addChild(child);
+                        copyAttributes(currentNode, child);
+
+                        currentTree = child;
+
+                        break;
+                    }
+                    ancestor = ancestor.getParentNode();
+                    currentTree = currentTree.getParent();
+                }
+                // if we got back to the root searching up, then we have no more options
+                if (ancestor == startNode) {
+                    this.currentNode = null;
+                }
+            }
+            return nodeToReturn;
+        }
+    }
+
+    private void copyAttributes(Node currentNode, Tree treeNode) {
+        Map<String, String> attributes = new HashMap<String, String>();
+        attributes.put(Tree.NODE_NAME, currentNode.getNodeName());
+        attributes.put(NODE_VALUE, currentNode.getNodeValue());
+
+        int type = currentNode.getNodeType();
+        attributes.put(NODE_TYPE, String.valueOf(type));
+
+        if (type == Node.ELEMENT_NODE) {
+            Element element = (Element) currentNode;
+            attributes.put("className", element.getClassName());
+//            attributes.put("innerText", element.getInnerText());
+//            attributes.put("innerHtml", element.getInnerHTML());
+            attributes.put("id", element.getId());
+            attributes.put("style", element.getStyle().toString());
+            attributes.put("tagName", element.getTagName());
+            attributes.put("title", element.getTitle());
+        } else if (type == Node.TEXT_NODE) {
+            Text textElement = (Text) currentNode;
+            treeNode.setValue(textElement.getData());
+        }
+        treeNode.setAttributes(attributes);
+    }
+}
