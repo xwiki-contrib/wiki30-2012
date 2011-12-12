@@ -43,7 +43,7 @@ public abstract class JupiterAlg {
     }
 
     public JupiterAlg(int siteId, Document initalDocument) {
-        this(siteId, initalDocument, TransformationFactory.createResselTransformation());
+        this(siteId, initalDocument, TransformationFactory.createTransformation(initalDocument));
     }
 
     /**
