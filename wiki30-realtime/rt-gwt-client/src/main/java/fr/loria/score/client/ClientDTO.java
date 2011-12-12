@@ -23,10 +23,8 @@ public class ClientDTO implements Serializable {
         this.document = document;
     }
 
-    public ClientDTO(String document, int siteId, int esid) {
-        this.siteId = siteId;
-        this.esid = esid;
-        this.document = new PlainDocument(document);
+    public ClientDTO(String content, int siteId, int esid) {
+        this(new PlainDocument(content), siteId, esid);
     }
 
     public ClientDTO(ClientJupiterAlg cja) {
