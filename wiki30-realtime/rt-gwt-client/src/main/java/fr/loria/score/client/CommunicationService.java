@@ -1,10 +1,11 @@
 package fr.loria.score.client;
 
-import org.xwiki.component.annotation.ComponentRole;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
+import org.xwiki.component.annotation.ComponentRole;
 
 @ComponentRole
 @RemoteServiceRelativePath("CommunicationService.gwtrpc")
@@ -22,7 +23,7 @@ public interface CommunicationService extends RemoteService {
      * @param clientDTO@return the available content on which other clients are performing real time operations <b>if any</b>
      * @deprecated Use initClient() instead
      */
-    String createServerPairForClient(ClientDTO clientDTO);
+    Document createServerPairForClient(ClientDTO clientDTO);
 
     /**
      * Initializes on server side the client and then piggybacks it:<br/>

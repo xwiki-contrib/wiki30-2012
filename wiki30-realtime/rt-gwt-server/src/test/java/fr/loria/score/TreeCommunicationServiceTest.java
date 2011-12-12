@@ -98,7 +98,7 @@ public class TreeCommunicationServiceTest extends CommunicationServiceTest {
 
         //a new client joins and should receive the existing content
         ClientDTO client = new ClientDTO();
-        client.setDocument(new TreeDocument(new Tree("")));
+        client.setDocument(new TreeDocument(new Tree("", null)));
         client.setSiteId(nrClients + 1);
         client = communicationService.initClient(client);
         Integer id = client.getSiteId();

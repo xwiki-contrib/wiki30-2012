@@ -3,9 +3,6 @@ package fr.loria.score.server;
 import fr.loria.score.client.ClientDTO;
 import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
-import fr.loria.score.jupiter.plain.PlainDocument;
-import fr.loria.score.jupiter.transform.TreeTransformation;
-import fr.loria.score.jupiter.tree.TreeDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +33,9 @@ public final class ClientServerCorrespondents {
      * Creates a new server correspondent for the given client
      *
      * @param clientJupiterAlg the client for which to create a server correspondent
-     * @return the text on some server in same editing session if any, otherwise the text sent by the client
+     * @return the document on some server in same editing session if any, otherwise the document sent by the client
      */
-    public String addServerForClient(ClientDTO clientJupiterAlg) {
+    public Document addServerForClient(ClientDTO clientJupiterAlg) {
         //Based on it's editing session id the client's id is added to the sessions map
         int editingSessionId = clientJupiterAlg.getEditingSessionId();
         synchronized (editingSessions) {
@@ -50,26 +47,23 @@ public final class ClientServerCorrespondents {
 
         // the client receives the content available on an existing 'jupiter server' in same editing session (if any)
         int siteId = clientJupiterAlg.getSiteId();
+
         Document document = clientJupiterAlg.getDocument();
-        String availableContent = document.getContent();
+
         List<Integer> serverIds = editingSessions.get(editingSessionId);
         if (serverIds.size() > 0) {
             ServerJupiterAlg serverPair = correspondents.get(serverIds.get(0));
             if (serverPair != null) {
-                availableContent = serverPair.getDocument().getContent();
+                document = serverPair.getDocument();
             }
         }
-        document.setContent(availableContent);
-        ServerJupiterAlg serverJupiter = null;
-        if (document instanceof PlainDocument) { //todo: review this
-            serverJupiter = new ServerJupiterAlg(document, siteId);
-        } else if (document instanceof TreeDocument) {
-            serverJupiter = new ServerJupiterAlg(document, siteId, new TreeTransformation());
-        }
+
+        ServerJupiterAlg serverJupiter = new ServerJupiterAlg(document, siteId);
+
         synchronized (correspondents) {
             correspondents.put(siteId, serverJupiter);
         }
-        return availableContent;
+        return document;
     }
 
     public void removeServerForClient(ClientDTO clientJupiterAlg) {

@@ -106,7 +106,7 @@ public class MultipleEditingSessionsTest {
         ClientDTO client = new ClientDTO("", NR_CLIENTS + 1, NR_CLIENTS +1 % NR_SESSIONS);
         int esid = client.getSiteId() % NR_SESSIONS;
         client.setEditingSessionId(esid);
-        String content = commService.createServerPairForClient(client);
+        String content = commService.createServerPairForClient(client).getContent();
 
         String expected = ClientServerCorrespondents.getInstance().getCorrespondents().get(
                         ClientServerCorrespondents.getInstance().getEditingSessions().get(esid).get(0)

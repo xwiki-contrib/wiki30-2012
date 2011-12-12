@@ -2,12 +2,15 @@ package fr.loria.score.server;
 
 import fr.loria.score.client.ClientDTO;
 import fr.loria.score.client.CommunicationService;
+import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xwiki.component.annotation.Component;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Component
 public class CommunicationServiceImpl implements CommunicationService
 {
 
@@ -48,7 +51,7 @@ public class CommunicationServiceImpl implements CommunicationService
     /**
      * {@inheritDoc}
      */
-    public String createServerPairForClient(ClientDTO clientJupiterAlg)
+    public Document createServerPairForClient(ClientDTO clientJupiterAlg)
     {
         logger.debug("Create server pair for client with id: " + clientJupiterAlg.getSiteId());
         return ClientServerCorrespondents.getInstance().addServerForClient(clientJupiterAlg);
@@ -63,7 +66,7 @@ public class CommunicationServiceImpl implements CommunicationService
     @Override
     public ClientDTO initClient(ClientDTO client) {
         client.setSiteId(generateClientId());
-        createServerPairForClient(client);
+        client.setDocument(createServerPairForClient(client));
         return client;
     }
 }

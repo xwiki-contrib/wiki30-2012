@@ -107,7 +107,7 @@ public class CommunicationServiceTest {
         ClientJupiterAlg client = new ClientJupiterAlg(new PlainDocument("foo"), siteId);
         client.setEditingSessionId(sessionId);
 
-        String actualData = communicationService.createServerPairForClient(new ClientDTO(client));
+        String actualData = communicationService.createServerPairForClient(new ClientDTO(client)).getContent();
         assertEquals("Wrong data received when creating server pair for client", "foo", actualData);
 
         Map<Integer, ServerJupiterAlg> correspondents = ClientServerCorrespondents.getInstance().getCorrespondents();
@@ -207,7 +207,7 @@ public class CommunicationServiceTest {
 
         //a new client joins and should receive the existing content
         Integer id = communicationService.generateClientId();
-        String clientContent = communicationService.createServerPairForClient(new ClientDTO("", id, 0));
+        String clientContent = communicationService.createServerPairForClient(new ClientDTO("", id, 0)).getContent();
         String serverContent = ClientServerCorrespondents.getInstance().getCorrespondents().get(id).getDocument().getContent();
         assertEquals("Invalid client content joining an editing session", previous.getDocument().getContent(), clientContent);
         assertEquals("Invalid server content joining an editing session", previous.getDocument().getContent(), serverContent);
