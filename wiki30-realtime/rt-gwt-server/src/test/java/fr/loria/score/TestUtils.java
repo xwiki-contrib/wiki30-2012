@@ -58,7 +58,7 @@ public class TestUtils
                         if (docType == 0) {
                             dto.setDocument(new PlainDocument("")).setSiteId(counter).setEditingSessionId(counter % nrSessions); // uniformly distribute clients for sessions
                         } else if (docType == 1){
-                            dto.setDocument(new TreeDocument(new Tree(""))).setSiteId(counter).setEditingSessionId(counter % nrSessions); // uniformly distribute clients for sessions
+                            dto.setDocument(new TreeDocument(new Tree("", null))).setSiteId(counter).setEditingSessionId(counter % nrSessions); // uniformly distribute clients for sessions
                         }
                         commService.createServerPairForClient(dto);
                     } catch (InterruptedException e) {
