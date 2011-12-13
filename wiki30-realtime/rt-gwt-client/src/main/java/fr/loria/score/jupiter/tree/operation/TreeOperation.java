@@ -5,6 +5,7 @@ import fr.loria.score.jupiter.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
 public abstract class TreeOperation extends AbstractOperation {
@@ -24,13 +25,18 @@ public abstract class TreeOperation extends AbstractOperation {
 
     public TreeOperation() {}
 
-    public TreeOperation(int[] path) {
+    public TreeOperation(List<Integer> path) {
         this.path = path;
     }
 
-    protected int[] path; //path node
+    protected List<Integer> path; //path node
 
     public abstract void execute(Tree root);
+
+    /**
+     * Updates the UI
+     */
+    public abstract void updateUI();
 
     public AbstractOperation transform(AbstractOperation op1) {
         log.fine("Transforming:" + op1 + " according to this operation: " + this);
@@ -101,11 +107,11 @@ public abstract class TreeOperation extends AbstractOperation {
         return "siteId: " + siteId + " position: " + position;
     }
 
-    public int[] getPath() {
+    public List<Integer> getPath() {
         return path;
     }
 
-    public void setPath(int[] path) {
+    public void setPath(List<Integer> path) {
         this.path = path;
     }
 }

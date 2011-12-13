@@ -21,8 +21,8 @@ public class TreeCommunicationServiceTest extends CommunicationServiceTest {
         int nrSessions = 1;
         TestUtils.createServerPairs(nrClients, nrSessions, communicationService, 1);
 
-        int[] t1 = {0, 0};
-        int[] t2 = {1, 0};
+        List<Integer> t1 = Arrays.asList(0, 0);
+        List<Integer> t2 = Arrays.asList(1, 0);
         int siteId1 = 0;
         int siteId2 = 1;
 
@@ -57,8 +57,8 @@ public class TreeCommunicationServiceTest extends CommunicationServiceTest {
         int nrClients = 3;
         TestUtils.createServerPairs(nrClients, 1, communicationService, 1);
 
-        int[] t1 = {0, 0};
-        int[] t2 = {1, 0};
+        List<Integer> t1 = Arrays.asList(0, 0);
+        List<Integer> t2 = Arrays.asList(1, 0);
         int siteId1 = 0;
         int siteId2 = 1;
         int siteId3 = 2;
@@ -119,15 +119,15 @@ public class TreeCommunicationServiceTest extends CommunicationServiceTest {
         int site2 = 1;
 
         TreeOperation paragraph1 = new TreeNewParagraph(site1, 0);
-        TreeOperation insertText10 = new TreeInsertText(site1, 0, new int[] {0, 0}, 'a');
-        TreeOperation insertText11 = new TreeInsertText(site1, 1, new int[] {0, 0}, 'b');
-        TreeOperation insertText12 = new TreeInsertText(site1, 2, new int[] {0, 0}, 'c');
-        TreeOperation style1 = new TreeStyle(site1, new int[] {0, 0}, 1, 2, "foo", "bar", true, true, true);
+        TreeOperation insertText10 = new TreeInsertText(site1, 0, Arrays.asList(0, 0), 'a');
+        TreeOperation insertText11 = new TreeInsertText(site1, 1, Arrays.asList (0, 0), 'b');
+        TreeOperation insertText12 = new TreeInsertText(site1, 2, Arrays.asList (0, 0), 'c');
+        TreeOperation style1 = new TreeStyle(site1, Arrays.asList(0, 0), 1, 2, "foo", "bar", true, true, true);
 
         TreeOperation paragraph2 = new TreeNewParagraph(site2, 0);
-        TreeOperation insertText2 = new TreeInsertText(site2, 0, new int[]{0, 0}, 'x');
+        TreeOperation insertText2 = new TreeInsertText(site2, 0, Arrays.asList(0, 0), 'x');
         TreeOperation paragraph21 = new TreeNewParagraph(site2, 1);
-        TreeOperation insertText22 = new TreeInsertText(site2, 0, new int[]{1, 0}, 'y');
+        TreeOperation insertText22 = new TreeInsertText(site2, 0, Arrays.asList(1, 0), 'y');
 
         int esid = 0;
         Map<Integer, List<Message>> messages = new HashMap<Integer, List<Message>>();
@@ -150,13 +150,13 @@ public class TreeCommunicationServiceTest extends CommunicationServiceTest {
         int site2 = 1;
 
 		TreeOperation paragraph1=new TreeNewParagraph(site1, 0);
-		TreeOperation insertText1=new TreeInsertText(site1, 0, new int[]{0,0},'x');
+		TreeOperation insertText1=new TreeInsertText(site1, 0, Arrays.asList(0,0),'x');
 		TreeOperation paragraph11=new TreeNewParagraph(site1, 1);
-		TreeOperation insertText11=new TreeInsertText(site1, 0, new int[]{1,0},'y');
+		TreeOperation insertText11=new TreeInsertText(site1, 0, Arrays.asList(1,0),'y');
         TreeOperation move1=new TreeMoveParagraph(site1, 0, 1);
 
         TreeOperation paragraph2=new TreeNewParagraph(site2, 0);
-        TreeOperation insertText2=new TreeInsertText(site2, 0,new int[]{0,0},'z');
+        TreeOperation insertText2=new TreeInsertText(site2, 0, Arrays.asList(0,0),'z');
 
         int esid = 0;
         Map<Integer, List<Message>> messages = new HashMap<Integer, List<Message>>();

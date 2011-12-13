@@ -4,6 +4,8 @@ package fr.loria.score.jupiter.tree.operation;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeUtils;
 
+import java.util.List;
+
 public class TreeNewParagraph extends TreeOperation {
 
     public TreeNewParagraph() {}
@@ -21,24 +23,29 @@ public class TreeNewParagraph extends TreeOperation {
         root.addChild(paragraph, position);
     }
 
+    @Override
+    public void updateUI() {
+        //Todo
+    }
+
     public String toString() {
         return "NewP(" + super.toString() + ")";
     }
 
     //OT pour NewP
     public TreeOperation handleTreeInsertText(TreeInsertText op1) {
-        if (op1.path[0] < position) {
+        if (op1.path.get(0) < position) {
             return op1;
         }
-        int[] tab = TreeUtils.addP(op1.path, 1);
+        List<Integer> tab = TreeUtils.addP(op1.path, 1);
         return new TreeInsertText(op1.getSiteId(), op1.getPosition(), tab, op1.text);
     }
 
     public TreeOperation handleTreeDeleteText(TreeDeleteText op1) {
-        if (op1.path[0] < position) {
+        if (op1.path.get(0) < position) {
             return op1;
         }
-        int[] tab = TreeUtils.addP(op1.path, 1);
+        List<Integer> tab = TreeUtils.addP(op1.path, 1);
         return new TreeDeleteText(op1.getPosition(), tab);
     }
 
@@ -63,26 +70,26 @@ public class TreeNewParagraph extends TreeOperation {
     }
 
     public TreeOperation handleTreeInsertParagraph(TreeInsertParagraph op1) {
-        if (op1.path[0] < position) {
+        if (op1.path.get(0) < position) {
             return op1;
         }
-        int[] tab = TreeUtils.addP(op1.path, 1);
+        List<Integer> tab = TreeUtils.addP(op1.path, 1);
         return new TreeInsertParagraph(op1.getSiteId(), op1.getPosition(), tab, op1.splitLeft);
     }
 
     public TreeOperation handleTreeDeleteTree(TreeDeleteTree op1) {
-        if (op1.path[0] < position) {
+        if (op1.path.get(0) < position) {
             return op1;
         }
-        int[] tab = TreeUtils.addP(op1.path, 1);
+        List<Integer> tab = TreeUtils.addP(op1.path, 1);
         return new TreeDeleteTree(tab);
     }
 
     public TreeOperation handleTreeStyle(TreeStyle op1) {
-        if (op1.path[0] < position) {
+        if (op1.path.get(0) < position) {
             return op1;
         }
-        int[] tab = TreeUtils.addP(op1.path, 1);
+        List<Integer> tab = TreeUtils.addP(op1.path, 1);
         return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
     }
 

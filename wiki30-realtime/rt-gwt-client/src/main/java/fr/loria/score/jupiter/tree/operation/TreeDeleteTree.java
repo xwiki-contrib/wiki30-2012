@@ -2,11 +2,13 @@ package fr.loria.score.jupiter.tree.operation;
 
 import fr.loria.score.jupiter.tree.Tree;
 
+import java.util.List;
+
 public class TreeDeleteTree extends TreeOperation {
 
     public TreeDeleteTree() {}
 
-    public TreeDeleteTree(int[] path) {
+    public TreeDeleteTree(List<Integer> path) {
         setPath(path);
     }
 
@@ -16,15 +18,16 @@ public class TreeDeleteTree extends TreeOperation {
     }
 
     public String toString() {
-        StringBuffer tab = new StringBuffer();
-        for (int i = 0; i < path.length; i++) {
-            tab.append("/").append(path[i]);
-        }
-        return "DeleteTree(" + super.toString() + tab + ")";
+        return "DeleteTree(" + super.toString() + path + ")";
     }
 
     public TreeOperation transform(TreeOperation op1) {
         return transp(op1);
+    }
+
+    @Override
+    public void updateUI() {
+        //Todo
     }
 
     //OT pour DeleteTree

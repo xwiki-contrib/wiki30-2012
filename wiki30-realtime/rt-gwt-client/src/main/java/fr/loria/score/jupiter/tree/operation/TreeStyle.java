@@ -5,6 +5,7 @@ import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TreeStyle extends TreeOperation {
 
@@ -18,7 +19,7 @@ public class TreeStyle extends TreeOperation {
 
     public TreeStyle() {}
 
-    public TreeStyle(int siteId, int[] path, int start, int end, String param, String value, boolean addStyle, boolean splitLeft, boolean splitRight) {
+    public TreeStyle(int siteId, List<Integer> path, int start, int end, String param, String value, boolean addStyle, boolean splitLeft, boolean splitRight) {
         this.path = path;
         this.start = start;
         this.end = end;
@@ -32,45 +33,45 @@ public class TreeStyle extends TreeOperation {
 
     public void execute(Tree root) {
         Tree tree = root;
-        for (int i = 0; i < path.length - 1; i++) {
-            tree = tree.getChild(path[i]);
+        for (int i = 0; i < path.size() - 1; i++) {
+            tree = tree.getChild(path.get(i));
         }
-        //last==tree.getChild(path[path.length-1]).getValue.length;
+        //last==tree.getChild(path[path.size()-1]).getValue.length;
         if/*(start==0)*/ (!splitLeft) {
             if/*(end==last)*/ (!sr) {//whole String
                 if/*(tree.getValue().toString().equals("style"))*/ (!addStyle) {//suppose one child
                     tree.setAttribute(param, value);
                 } else {
                     //addStyle=true;
-                    Tree tc = tree.removeChild(path[path.length - 1]);
+                    Tree tc = tree.removeChild(path.get(path.size() - 1));
                     Tree ts = new Tree("style", null);
                     ts.setAttribute(param, value);
                     ts.addChild(tc);
-                    tree.addChild(ts, path[path.length - 1]);
+                    tree.addChild(ts, path.get(path.size() - 1));
                     if (tc.isInvisible()) {
                         ts.hide();
                     }
                 }
             } else {//Style applied to the left side
                 if/*(tree.getValue().toString().equals("style"))*/ (!addStyle) {//suppose one child
-                    Tree tc = new Tree("#text", tree.getChild(path[path.length - 1]).split(end));
+                    Tree tc = new Tree("#text", tree.getChild(path.get(path.size() - 1)).split(end));
                     Tree ts = tree.cloneNode();
                     tree.setAttribute(param, value);
                     ts.addChild(tc);
                     Tree parent = tree.getParent();
-                    parent.addChild(ts, path[path.length - 2] + 1);
+                    parent.addChild(ts, path.get(path.size() - 2) + 1);
                     if (tree.isInvisible()) {
                         ts.hide();
                     }
                 } else {
                     //addStyle=true;
-                    Tree t = tree.getChild(path[path.length - 1]);
+                    Tree t = tree.getChild(path.get(path.size() - 1));
                     Tree tc = new Tree("#text", t.split(end));
                     Tree ts = new Tree("style", null);
                     ts.setAttribute(param, value);
-                    ts.addChild(tree.removeChild(path[path.length - 1]));
-                    tree.addChild(tc, path[path.length - 1]);
-                    tree.addChild(ts, path[path.length - 1]);
+                    ts.addChild(tree.removeChild(path.get(path.size() - 1)));
+                    tree.addChild(tc, path.get(path.size() - 1));
+                    tree.addChild(ts, path.get(path.size() - 1));
                     if (t.isInvisible()) {
                         tc.hide();
                         ts.hide();
@@ -80,23 +81,23 @@ public class TreeStyle extends TreeOperation {
         } else {
             if/*(end==last)*/ (!sr) {//Style applied to the right side
                 if/*(tree.getValue().toString().equals("style"))*/ (!addStyle) {//suppose one child
-                    Tree tc = new Tree("#text", tree.getChild(path[path.length - 1]).split(start));
+                    Tree tc = new Tree("#text", tree.getChild(path.get(path.size() - 1)).split(start));
                     Tree ts = tree.cloneNode();
                     ts.setAttribute(param, value);
                     ts.addChild(tc);
                     Tree parent = tree.getParent();
-                    parent.addChild(ts, path[path.length - 2] + 1);
+                    parent.addChild(ts, path.get(path.size() - 2) + 1);
                     if (tree.isInvisible()) {
                         ts.hide();
                     }
                 } else {
                     //addStyle=true;
-                    Tree t = tree.getChild(path[path.length - 1]);
+                    Tree t = tree.getChild(path.get(path.size() - 1));
                     Tree tc = new Tree("#text", t.split(start));
                     Tree ts = new Tree("style", null);
                     ts.setAttribute(param, value);
                     ts.addChild(tc);
-                    tree.addChild(ts, path[path.length - 1] + 1);
+                    tree.addChild(ts, path.get(path.size() - 1) + 1);
                     if (t.isInvisible()) {
                         tc.hide();
                         ts.hide();
@@ -104,7 +105,7 @@ public class TreeStyle extends TreeOperation {
                 }
             } else {//Style applied to the middle
                 if/*(tree.getValue().toString().equals("style"))*/ (!addStyle) {//suppose one child
-                    Tree tc = new Tree("#text", tree.getChild(path[path.length - 1]).split(start));
+                    Tree tc = new Tree("#text", tree.getChild(path.get(path.size() - 1)).split(start));
                     Tree tc2 = new Tree("#text", tc.split(end - start));
                     Tree ts = tree.cloneNode();
                     Tree ts2 = tree.cloneNode();
@@ -112,22 +113,22 @@ public class TreeStyle extends TreeOperation {
                     ts.addChild(tc);
                     ts2.addChild(tc2);
                     Tree parent = tree.getParent();
-                    parent.addChild(ts, path[path.length - 2] + 1);
-                    parent.addChild(ts2, path[path.length - 2] + 2);
+                    parent.addChild(ts, path.get(path.size() - 2) + 1);
+                    parent.addChild(ts2, path.get(path.size() - 2) + 2);
                     if (tree.isInvisible()) {
                         ts.hide();
                         ts2.hide();
                     }
                 } else {
                     //addStyle=true;
-                    Tree t = tree.getChild(path[path.length - 1]);
+                    Tree t = tree.getChild(path.get(path.size() - 1));
                     Tree tc = new Tree("#text",t.split(start));
                     Tree tc2 = new Tree("#text",tc.split(end - start));
                     Tree ts = new Tree("style", null);
                     ts.setAttribute(param, value);
                     ts.addChild(tc);
-                    tree.addChild(ts, path[path.length - 1] + 1);
-                    tree.addChild(tc2, path[path.length - 1] + 2);
+                    tree.addChild(ts, path.get(path.size() - 1) + 1);
+                    tree.addChild(tc2, path.get(path.size() - 1) + 2);
                     if (t.isInvisible()) {
                         tc.hide();
                         ts.hide();
@@ -139,40 +140,41 @@ public class TreeStyle extends TreeOperation {
 
     }
 
+    @Override
+    public void updateUI() {
+        //Todo
+    }
+
     public String toString() {
-        StringBuffer tab = new StringBuffer();
-        for (int i = 0; i < path.length; i++) {
-            tab.append("/").append(path[i]);
-        }
-        return "Style(" + super.toString()+ " path: " + tab + ", start: " + start + ", end: " + end + ", param: " + param + ", value:" + value + ")";
+        return "Style(" + super.toString()+ " path: " + path + ", start: " + start + ", end: " + end + ", param: " + param + ", value:" + value + ")";
     }
 
     //OT pour Style
     public TreeOperation handleTreeInsertText(TreeInsertText op1) {
-        if (op1.path[0] != path[0]) {
+        if (op1.path.get(0) != path.get(0)) {
             return op1;
         }
-        if (op1.path[1] < path[1]) {
+        if (op1.path.get(1) < path.get(1)) {
             return op1;
         }
-        if (op1.path[1] == path[1]) {//meme chemin
+        if (op1.path.get(1) == path.get(1)) {//meme chemin
             if (op1.getPosition() < start) {
                 return op1;
             }
             if (op1.getPosition() == start || op1.getPosition() <= end) {
-                int[] tab = TreeUtils.addC(op1.path, 1, splitLeft ? 1 : 0);
+                List<Integer> tab = TreeUtils.addC(op1.path, 1, splitLeft ? 1 : 0);
                 if (addStyle) {
                     tab = TreeUtils.addLevel(tab);
                 }
                 return new TreeInsertText(op1.getSiteId(), op1.getPosition() - start, tab, op1.text);
             }
-            int[] tab = TreeUtils.addC(op1.path, 1, splitLeft ? 2 : 1);
+            List<Integer> tab = TreeUtils.addC(op1.path, 1, splitLeft ? 2 : 1);
             if (addStyle) {
                 tab = TreeUtils.addLevel(tab);
             }
             return new TreeInsertText(op1.getSiteId(), op1.getPosition() - end, tab, op1.text);
         }
-        //op1.path[1]>path[1]
+        //op1.path.get(1)>path.get(1)
         int d = 0;//decalage
         if (splitLeft) {
             d++;
@@ -180,35 +182,35 @@ public class TreeStyle extends TreeOperation {
         if (sr) {
             d++;
         }
-        int[] tab = TreeUtils.addC(op1.path, 1, d);
+        List<Integer> tab = TreeUtils.addC(op1.path, 1, d);
         return new TreeInsertText(op1.getSiteId(), op1.getPosition(), tab, op1.text);
     }
 
     public TreeOperation handleTreeDeleteText(TreeDeleteText op1) {
-        if (op1.path[0] != path[0]) {
+        if (op1.path.get(0) != path.get(0)) {
             return op1;
         }
-        if (op1.path[1] < path[1]) {
+        if (op1.path.get(1) < path.get(1)) {
             return op1;
         }
-        if (op1.path[1] == path[1]) {//meme chemin
+        if (op1.path.get(1) == path.get(1)) {//meme chemin
             if (op1.getPosition() < start) {
                 return op1;
             }
             if (op1.getPosition() == start || op1.getPosition() < end) {
-                int[] tab = TreeUtils.addC(op1.path, 1, splitLeft ? 1 : 0);
+                List<Integer> tab = TreeUtils.addC(op1.path, 1, splitLeft ? 1 : 0);
                 if (addStyle) {
                     tab = TreeUtils.addLevel(tab);
                 }
                 return new TreeDeleteText(op1.getPosition() - start, tab);
             }
-            int[] tab = TreeUtils.addC(op1.path, 1, splitLeft ? 2 : 1);
+            List<Integer> tab = TreeUtils.addC(op1.path, 1, splitLeft ? 2 : 1);
             if (addStyle) {
                 tab = TreeUtils.addLevel(tab);
             }
             return new TreeDeleteText(op1.getPosition() - end, tab);
         }
-        //op1.path[1]>path[1]
+        //op1.path.get(1)>path.get(1)
         int d = 0;//decalage
         if (splitLeft) {
             d++;
@@ -216,7 +218,7 @@ public class TreeStyle extends TreeOperation {
         if (sr) {
             d++;
         }
-        int[] tab = TreeUtils.addC(op1.path, 1, d);
+        List<Integer> tab = TreeUtils.addC(op1.path, 1, d);
         return new TreeDeleteText(op1.getPosition(), tab);
     }
 
@@ -225,7 +227,7 @@ public class TreeStyle extends TreeOperation {
     }
 
     public TreeOperation handleTreeMergeParagraph(TreeMergeParagraph op1) {
-        if (op1.getPosition() == path[0]) {
+        if (op1.getPosition() == path.get(0)) {
             int d = 0;
             if (splitLeft) {
                 d++;
@@ -235,7 +237,7 @@ public class TreeStyle extends TreeOperation {
             }
             return new TreeMergeParagraph(op1.getPosition(), op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr + d);
         }
-        if (op1.getPosition() == path[0] + 1) {
+        if (op1.getPosition() == path.get(0) + 1) {
             int d = 0;
             if (splitLeft) {
                 d++;
@@ -249,42 +251,42 @@ public class TreeStyle extends TreeOperation {
     }
 
     public TreeOperation handleTreeInsertParagraph(TreeInsertParagraph op1) {
-        if (op1.path[0] != path[0]) {
+        if (op1.path.get(0) != path.get(0)) {
             return op1;
         }
-        if (op1.path[1] < path[1]) {
+        if (op1.path.get(1) < path.get(1)) {
             return op1;
         }
-        if (op1.path[1] == path[1]) {//meme chemin
+        if (op1.path.get(1) == path.get(1)) {//meme chemin
             if (op1.getPosition() < start) {
                 return op1;
             }
             /*if(op1.getPosition()==start || op1.getPosition()<end){
-				int[] tab=TreeUtils.addC(op1.path,1,splitLeft?1:0);
+				List<Integer> tab=TreeUtils.addC(op1.path,1,splitLeft?1:0);
 				if(addStyle){tab=TreeUtils.addLevel(tab);}
 				return new TreeInsertParagraph(op1.getPosition()-start,tab,op1.siteId,op1.splitLeft);
 			}*/
             if (op1.getPosition() == start) {
-                int[] tab = TreeUtils.addC(op1.path, 1, splitLeft ? 1 : 0);
+                List<Integer> tab = TreeUtils.addC(op1.path, 1, splitLeft ? 1 : 0);
                 if (addStyle) {
                     tab = TreeUtils.addLevel(tab);
                 }
                 return new TreeInsertParagraph(op1.getSiteId(), 0, tab, false);
             }
             if (op1.getPosition() < end) {
-                int[] tab = TreeUtils.addC(op1.path, 1, splitLeft ? 1 : 0);
+                List<Integer> tab = TreeUtils.addC(op1.path, 1, splitLeft ? 1 : 0);
                 if (addStyle) {
                     tab = TreeUtils.addLevel(tab);
                 }
                 return new TreeInsertParagraph(op1.getSiteId(), op1.getPosition() - start, tab, op1.splitLeft);
             }
-            int[] tab = TreeUtils.addC(op1.path, 1, splitLeft ? 2 : 1);
+            List<Integer> tab = TreeUtils.addC(op1.path, 1, splitLeft ? 2 : 1);
             if (op1.getPosition() == end) {
                 return new TreeInsertParagraph(op1.getSiteId(), 0, tab, false);
             }
             return new TreeInsertParagraph(op1.getSiteId(), op1.getPosition() - end, tab, op1.splitLeft);
         }
-        //op1.path[1]>path[1]
+        //op1.path.get(1)>path.get(1)
         int d = 0;//decalage
         if (splitLeft) {
             d++;
@@ -292,18 +294,18 @@ public class TreeStyle extends TreeOperation {
         if (sr) {
             d++;
         }
-        int[] tab = TreeUtils.addC(op1.path, 1, d);
+        List<Integer> tab = TreeUtils.addC(op1.path, 1, d);
         return new TreeInsertParagraph(op1.getSiteId(), op1.getPosition(), tab, op1.splitLeft);
     }
 
     public TreeOperation handleTreeDeleteTree(TreeDeleteTree op1) {
-        if (op1.path[0] != path[0]) {
+        if (op1.path.get(0) != path.get(0)) {
             return op1;
         }
-        if (op1.path.length == 1) {
+        if (op1.path.size() == 1) {
             return op1;
         }
-        if (op1.path[1] < path[1]) {
+        if (op1.path.get(1) < path.get(1)) {
             return op1;
         }
         int d = 0;//decalage;
@@ -313,13 +315,13 @@ public class TreeStyle extends TreeOperation {
         if (sr) {
             d++;
         }
-        if (op1.path[1] > path[1]) {
-            int[] tab = TreeUtils.addC(op1.path, 1, d);
+        if (op1.path.get(1) > path.get(1)) {
+            List<Integer> tab = TreeUtils.addC(op1.path, 1, d);
             return new TreeDeleteTree(tab);
         }
         ArrayList<TreeOperation> list = new ArrayList<TreeOperation>();
         for (int i = 0; i <= d; i++) {
-            int[] tab = TreeUtils.addC(op1.path, 1, i);
+            List<Integer> tab = TreeUtils.addC(op1.path, 1, i);
             list.add(new TreeDeleteTree(tab));
         }
         if (list.size() == 1) {
@@ -329,10 +331,10 @@ public class TreeStyle extends TreeOperation {
     }
 
     public TreeOperation handleTreeStyle(TreeStyle op1) {
-        if (op1.path[0] != path[0]) {
+        if (op1.path.get(0) != path.get(0)) {
             return op1;
         }
-        if (op1.path[1] < path[1]) {
+        if (op1.path.get(1) < path.get(1)) {
             return op1;
         }
         int d = 0;//decalage;
@@ -342,8 +344,8 @@ public class TreeStyle extends TreeOperation {
         if (sr) {
             d++;
         }
-        if (op1.path[1] > path[1]) {
-            int[] tab = TreeUtils.addC(op1.path, 1, d);
+        if (op1.path.get(1) > path.get(1)) {
+            List<Integer> tab = TreeUtils.addC(op1.path, 1, d);
             return new TreeStyle(op1.siteId, tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
         }
         //op1.path=path

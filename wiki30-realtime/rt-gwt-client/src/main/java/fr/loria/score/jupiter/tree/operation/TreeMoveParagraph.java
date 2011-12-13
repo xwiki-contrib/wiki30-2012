@@ -27,28 +27,33 @@ public class TreeMoveParagraph extends TreeOperation {
         }
     }
 
+    @Override
+    public void updateUI() {
+        //Todo
+    }
+
     public String toString() {
         return "MoveP(" + super.toString()+ ", startPosition: " + sp + ", endPosition: " + ep + ")";
     }
 
     //OT pour moveP
     public TreeOperation handleTreeInsertText(TreeInsertText op1) {
-        if (op1.path[0] == sp) {
+        if (op1.path.get(0) == sp) {
             if (sp >= ep) {
                 return new TreeInsertText(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep), op1.text);
             } else {
                 return new TreeInsertText(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep - 1), op1.text);
             }
         }
-        if (op1.path[0] < sp) {
-            if (op1.path[0] < ep) {
+        if (op1.path.get(0) < sp) {
+            if (op1.path.get(0) < ep) {
                 return op1;
             } else {
                 return new TreeInsertText(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, 1), op1.text);
             }
         }
-        //op1.path[0]>sp
-        if (op1.path[0] < ep) {
+        //op1.path.get(0)>sp
+        if (op1.path.get(0) < ep) {
             return new TreeInsertText(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, -1), op1.text);
         } else {
             return op1;
@@ -56,22 +61,22 @@ public class TreeMoveParagraph extends TreeOperation {
     }
 
     public TreeOperation handleTreeDeleteText(TreeDeleteText op1) {
-        if (op1.path[0] == sp) {
+        if (op1.path.get(0) == sp) {
             if (sp >= ep) {
                 return new TreeDeleteText(op1.getPosition(), TreeUtils.setP(op1.path, ep));
             } else {
                 return new TreeDeleteText(op1.getPosition(), TreeUtils.setP(op1.path, ep - 1));
             }
         }
-        if (op1.path[0] < sp) {
-            if (op1.path[0] < ep) {
+        if (op1.path.get(0) < sp) {
+            if (op1.path.get(0) < ep) {
                 return op1;
             } else {
                 return new TreeDeleteText(op1.getPosition(), TreeUtils.addP(op1.path, 1));
             }
         }
-        //op1.path[0]>sp
-        if (op1.path[0] < ep) {
+        //op1.path.get(0)>sp
+        if (op1.path.get(0) < ep) {
             return new TreeDeleteText(op1.getPosition(), TreeUtils.addP(op1.path, -1));
         } else {
             return op1;
@@ -149,22 +154,22 @@ public class TreeMoveParagraph extends TreeOperation {
     }
 
     public TreeOperation handleTreeInsertParagraph(TreeInsertParagraph op1) {
-        if (op1.path[0] == sp) {
+        if (op1.path.get(0) == sp) {
             if (sp >= ep) {
                 return new TreeInsertParagraph(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep), op1.splitLeft);
             } else {
                 return new TreeInsertParagraph(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep - 1), op1.splitLeft);
             }
         }
-        if (op1.path[0] < sp) {
-            if (op1.path[0] < ep) {
+        if (op1.path.get(0) < sp) {
+            if (op1.path.get(0) < ep) {
                 return op1;
             } else {
                 return new TreeInsertParagraph(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, 1), op1.splitLeft);
             }
         }
-        //op1.path[0]>sp
-        if (op1.path[0] < ep) {
+        //op1.path.get(0)>sp
+        if (op1.path.get(0) < ep) {
             return new TreeInsertParagraph(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, -1), op1.splitLeft);
         } else {
             return op1;
@@ -172,22 +177,22 @@ public class TreeMoveParagraph extends TreeOperation {
     }
 
     public TreeOperation handleTreeDeleteTree(TreeDeleteTree op1) {
-        if (op1.path[0] == sp) {
+        if (op1.path.get(0) == sp) {
             if (sp >= ep) {
                 return new TreeDeleteTree(TreeUtils.setP(op1.path, ep));
             } else {
                 return new TreeDeleteTree(TreeUtils.setP(op1.path, ep - 1));
             }
         }
-        if (op1.path[0] < sp) {
-            if (op1.path[0] < ep) {
+        if (op1.path.get(0) < sp) {
+            if (op1.path.get(0) < ep) {
                 return op1;
             } else {
                 return new TreeDeleteTree(TreeUtils.addP(op1.path, 1));
             }
         }
-        //op1.path[0]>sp
-        if (op1.path[0] < ep) {
+        //op1.path.get(0)>sp
+        if (op1.path.get(0) < ep) {
             return new TreeDeleteTree(TreeUtils.addP(op1.path, -1));
         } else {
             return op1;
@@ -195,22 +200,22 @@ public class TreeMoveParagraph extends TreeOperation {
     }
 
     public TreeOperation handleTreeStyle(TreeStyle op1) {
-        if (op1.path[0] == sp) {
+        if (op1.path.get(0) == sp) {
             if (sp >= ep) {
                 return new TreeStyle(op1.getSiteId(), TreeUtils.setP(op1.path, ep), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
             } else {
                 return new TreeStyle(op1.getSiteId(), TreeUtils.setP(op1.path, ep - 1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
             }
         }
-        if (op1.path[0] < sp) {
-            if (op1.path[0] < ep) {
+        if (op1.path.get(0) < sp) {
+            if (op1.path.get(0) < ep) {
                 return op1;
             } else {
                 return new TreeStyle(op1.getSiteId(), TreeUtils.addP(op1.path, 1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
             }
         }
-        //op1.path[0]>sp
-        if (op1.path[0] < ep) {
+        //op1.path.get(0)>sp
+        if (op1.path.get(0) < ep) {
             return new TreeStyle(op1.getSiteId(), TreeUtils.addP(op1.path, 1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
         } else {
             return op1;

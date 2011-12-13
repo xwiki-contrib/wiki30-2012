@@ -4,6 +4,7 @@ import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TreeMergeParagraph extends TreeOperation {
 
@@ -55,32 +56,37 @@ public class TreeMergeParagraph extends TreeOperation {
         tree.removeChild(position);
     }
 
+    @Override
+    public void updateUI() {
+        //Todo
+    }
+
     public String toString() {
         return "MergeParagraph(" + super.toString() + "," + leftSiblingChildrenNr + "," + rightSiblingChildrenNr + ")";
     }
 
     //OT pour MergeP
     public TreeOperation handleTreeInsertText(TreeInsertText op1) {
-        if (op1.path[0] < position) {
+        if (op1.path.get(0) < position) {
             return op1;
         }
-        int[] tab = TreeUtils.addP(op1.path, -1);
-        if (op1.path[0] > position) {
+        List<Integer> tab = TreeUtils.addP(op1.path, -1);
+        if (op1.path.get(0) > position) {
             return new TreeInsertText(op1.getSiteId(), op1.getPosition(), tab, op1.text);
         }
-        tab[1] = op1.path[1] + leftSiblingChildrenNr;
+        tab.set(1, op1.path.get(1) + leftSiblingChildrenNr);
         return new TreeInsertText(op1.getSiteId(), op1.getPosition(), tab, op1.text);
     }
 
     public TreeOperation handleTreeDeleteText(TreeDeleteText op1) {
-        if (op1.path[0] < position) {
+        if (op1.path.get(0) < position) {
             return op1;
         }
-        int[] tab = TreeUtils.addP(op1.path, -1);
-        if (op1.path[0] > position) {
+        List<Integer> tab = TreeUtils.addP(op1.path, -1);
+        if (op1.path.get(0) > position) {
             return new TreeDeleteText(op1.getPosition(), tab);
         }
-        tab[1] = op1.path[1] + leftSiblingChildrenNr;
+        tab.set(1, op1.path.get(1) + leftSiblingChildrenNr);
         return new TreeDeleteText(op1.getPosition(), tab);
     }
 
@@ -108,59 +114,59 @@ public class TreeMergeParagraph extends TreeOperation {
     }
 
     public TreeOperation handleTreeInsertParagraph(TreeInsertParagraph op1) {
-        if (op1.path[0] < position) {
+        if (op1.path.get(0) < position) {
             return op1;
         }
-        int[] tab = TreeUtils.addP(op1.path, -1);
-        if (op1.path[0] > position) {
+        List<Integer> tab = TreeUtils.addP(op1.path, -1);
+        if (op1.path.get(0) > position) {
             return new TreeInsertParagraph(op1.getSiteId(), op1.getPosition(), tab, op1.splitLeft);
         }
-        tab[1] = tab[1] + leftSiblingChildrenNr;
+        tab.set(1,tab.get(1) + leftSiblingChildrenNr);
         return new TreeInsertParagraph(op1.getSiteId(), op1.getPosition(), tab, op1.splitLeft);
     }
 
     public TreeOperation handleTreeDeleteTree(TreeDeleteTree op1) {
-        if (op1.path.length == 1 && op1.path[0] == position - 1) {//merge dans un paragraphe qui va être supprimé
+        if (op1.path.size() == 1 && op1.path.get(0) == position - 1) {//merge dans un paragraphe qui va être supprimé
             ArrayList<TreeOperation> list = new ArrayList<TreeOperation>();
             for (int i = 0; i < leftSiblingChildrenNr; i++) {
-                int[] tab = new int[2];
-                tab[0] = op1.path[0];
-                tab[1] = i;
+                List<Integer> tab = new ArrayList<Integer>(2);
+                tab.set(0, op1.path.get(0));
+                tab.set(1, i);
                 list.add(new TreeDeleteTree(tab));
             }
             return new TreeCompositeOperation(list);
         }
-        if (op1.path[0] < position) {
+        if (op1.path.get(0) < position) {
             return op1;
         }
-        if (op1.path[0] > position) {
+        if (op1.path.get(0) > position) {
             return new TreeDeleteTree(TreeUtils.addP(op1.path, -1));
         }
         //meme paragraphe
-        if (op1.path.length == 1) {//merge d'un paragraphe qui va être supprimé
+        if (op1.path.size() == 1) {//merge d'un paragraphe qui va être supprimé
             ArrayList<TreeOperation> list = new ArrayList<TreeOperation>();
             for (int i = 0; i < rightSiblingChildrenNr; i++) {
-                int[] tab = new int[2];
-                tab[0] = op1.path[0] - 1;
-                tab[1] = i + leftSiblingChildrenNr;
+                List<Integer> tab = new ArrayList<Integer>(2);
+                tab.set(0, op1.path.get(0) - 1);
+                tab.set(1, i + leftSiblingChildrenNr);
                 list.add(new TreeDeleteTree(tab));
             }
             return new TreeCompositeOperation(list);
         }
-        int[] tab = TreeUtils.addP(op1.path, -1);
-        tab[1] = tab[1] + leftSiblingChildrenNr;
+        List<Integer> tab = TreeUtils.addP(op1.path, -1);
+        tab.set(1, tab.get(1) + leftSiblingChildrenNr);
         return new TreeDeleteTree(tab);
     }
 
     public TreeOperation handleTreeStyle(TreeStyle op1) {
-        if (op1.path[0] < position) {
+        if (op1.path.get(0) < position) {
             return op1;
         }
-        int[] tab = TreeUtils.addP(op1.path, -1);
-        if (op1.path[0] > position) {
+        List<Integer> tab = TreeUtils.addP(op1.path, -1);
+        if (op1.path.get(0) > position) {
             return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
         }
-        tab[1] = op1.path[1] + leftSiblingChildrenNr;
+        tab.set(1, op1.path.get(1) + leftSiblingChildrenNr);
         return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
     }
 

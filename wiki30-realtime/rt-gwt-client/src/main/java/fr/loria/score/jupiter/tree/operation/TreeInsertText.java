@@ -4,7 +4,7 @@ package fr.loria.score.jupiter.tree.operation;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeUtils;
 
-import java.util.Arrays;
+import java.util.List;
 
 public class TreeInsertText extends TreeOperation {
 
@@ -12,7 +12,7 @@ public class TreeInsertText extends TreeOperation {
 
     public TreeInsertText() {}
 
-    public TreeInsertText(int siteId, int position, int[] path, char c) {
+    public TreeInsertText(int siteId, int position, List<Integer> path, char c) {
         super(siteId, position);
         this.text = c;
         setPath(path);
@@ -23,9 +23,16 @@ public class TreeInsertText extends TreeOperation {
         tree.addChar(text, position);
     }
 
+    @Override
+    public void updateUI() {
+        //operates on a text node
+//        Mutation mutation = new Mutation();
+//        mutation.setType(Mutation.MutationType.INSERT);
+
+    }
+
     public String toString() {
-        String pathString = Arrays.toString(path);
-        return "InsertText(" + super.toString() + "," + pathString + "," + text + ")";
+        return "InsertText(" + super.toString() + "," + path + "," + text + ")";
     }
 
     //OT pour InsertText
