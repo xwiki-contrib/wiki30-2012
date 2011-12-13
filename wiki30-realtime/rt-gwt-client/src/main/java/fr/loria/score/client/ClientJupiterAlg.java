@@ -8,6 +8,7 @@ import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.plain.operation.Operation; //todo: AbstractOp
 import fr.loria.score.jupiter.transform.Transformation;
+import fr.loria.score.jupiter.tree.operation.TreeOperation;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -104,20 +105,7 @@ public class ClientJupiterAlg extends JupiterAlg {
     @Override
     protected void execute(Message receivedMsg) {
         logger.info("Executing message: " + receivedMsg);
-        //todo: this works only for plain messages for now
-        int oldCaretPos = editor.getCaretPosition(); // the caret position in the editor's old document model
-        editor.setOldCaretPos(oldCaretPos);
-
-        Operation operation = (Operation)receivedMsg.getOperation();
-        operation.beforeUpdateUI(editor); // the highlighter code here
-
-        editor.setContent(getDocument().getContent()); // sets the WHOLE text
-
-        if (this.siteId != operation.getSiteId()) {
-            operation.afterUpdateUI(editor);
-        }
-
-        editor.paint(); //cursor.focus() paints it, but it might occur that the page is not focused and thus not updated
+        callback.onExecute(receivedMsg);
     }
 
     protected void send(Message m) {
@@ -168,12 +156,15 @@ public class ClientJupiterAlg extends JupiterAlg {
         timer.scheduleRepeating(REFRESH_INTERVAL);
     }
 
-    //todo: think at other solutions
     public interface ClientCallback {
         void onConnected();
         void onDisconnected();
+        void onExecute(Message receivedMessage);
     }
 
+    /**
+     * Callback for plain text documents, wiki editor
+     */
     public class PlainClientCallback implements ClientCallback {
         @Override
         public void onConnected() {
@@ -184,17 +175,42 @@ public class ClientJupiterAlg extends JupiterAlg {
         }
 
         @Override
-        public void onDisconnected() {
+        public void onDisconnected() {}
+
+        @Override
+        public void onExecute(Message receivedMessage) {
+            int oldCaretPos = editor.getCaretPosition(); // the caret position in the editor's old document model
+            editor.setOldCaretPos(oldCaretPos);
+
+            Operation operation = (Operation)receivedMessage.getOperation();
+            operation.beforeUpdateUI(editor); // the highlighter code here
+
+            editor.setContent(getDocument().getContent()); // sets the WHOLE text
+
+            if (ClientJupiterAlg.this.siteId != operation.getSiteId()) {    //CJA.this.siteId == editor.siteId
+                operation.afterUpdateUI(editor);
+            }
+
+            editor.paint(); //cursor.focus() paints it, but it might occur that the page is not focused and thus not updated
         }
     }
 
-    public class DefaultClientCallback implements ClientCallback {
+    /**
+     * Callback for tree documents, wysiwyg editor
+     */
+    public class TreeClientCallback implements ClientCallback {
         @Override
         public void onConnected() {
         }
 
         @Override
         public void onDisconnected() {
+        }
+
+        @Override
+        public void onExecute(Message receivedMessage) {
+            TreeOperation operation = (TreeOperation) receivedMessage.getOperation();
+
         }
     }
 }

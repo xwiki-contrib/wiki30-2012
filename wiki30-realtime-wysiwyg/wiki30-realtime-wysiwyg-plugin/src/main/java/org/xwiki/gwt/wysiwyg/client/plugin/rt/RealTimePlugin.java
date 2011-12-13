@@ -94,7 +94,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, K
         //todo: I don't like this, move constants separate
         clientJupiter.setEditingSessionId(Integer.parseInt(config.getParameter(RtApi.DOCUMENT_ID)));
         clientJupiter.setCommunicationService(CommunicationService.ServiceHelper.getCommunicationService());
-        clientJupiter.setCallback(clientJupiter.new DefaultClientCallback());
+        clientJupiter.setCallback(clientJupiter.new TreeClientCallback());
         clientJupiter.setDocument(new TreeDocument(t));
         clientJupiter.connect();
     }
@@ -218,12 +218,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, K
         Console.getInstance().log(jsonOperationCall.toString());
 
         OperationTarget target = operationCall.getTarget();
-        List<Integer> spath = target.getStartContainer();
-        int[] path = new int[spath.size()];
-        for (int i = 0; i < spath.size(); i++) {
-            path[i] = spath.get(i);
-        }
-
+        List<Integer> path = target.getStartContainer();
         clientJupiter.generate(new TreeInsertText(clientJupiter.getSiteId(), target.getStartOffset(), path, operationCall.getValue().charAt(0)));
     }
 }
