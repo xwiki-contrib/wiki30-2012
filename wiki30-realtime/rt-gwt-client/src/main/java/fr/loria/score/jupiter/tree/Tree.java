@@ -16,15 +16,14 @@ public class Tree implements Serializable {
     public Tree() {}
 
     public Tree(String nodeName, String nodeValue) {
-        if (nodeName != null)
-            attributes.put(NODE_NAME, nodeName);
-
-        if (nodeValue != null)
-            attributes.put(NODE_VALUE, nodeValue);
+        setNodeName(nodeName);
+        setValue(nodeValue);
     }
 
     public void setNodeName(String nodeName) {
-        attributes.put(NODE_NAME, nodeName);
+        if (nodeName != null) {
+            attributes.put(NODE_NAME, nodeName);
+        }
     }
 
     public void setParent(Tree t) {
@@ -46,8 +45,10 @@ public class Tree implements Serializable {
         return attributes.get(NODE_VALUE);
     }
 
-    public void setValue(String value) {
-        attributes.put(NODE_VALUE, value);
+    public void setValue(String nodeValue) {
+        if (nodeValue != null) {
+            attributes.put(NODE_VALUE, nodeValue);
+        }
     }
 
     public void setAttribute(String key, String value) {
@@ -163,10 +164,10 @@ public class Tree implements Serializable {
         return s;
     }
 
-    public Tree getChildFromPath(int[] path) {
+    public Tree getChildFromPath(List<Integer> path) {
         Tree tree = this;
-        for (int i = 0; i < path.length; i++) {
-            tree = tree.getChild(path[i]);
+        for (int i = 0; i < path.size(); i++) {
+            tree = tree.getChild(path.get(i));
         }
         return tree;
     }
