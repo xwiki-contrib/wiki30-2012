@@ -92,4 +92,17 @@ public class TreeUtils {
         tab.set(i, tab.get(i) - ref.get(i));
         return tab;
     }
+
+    /**
+     * Convert the path into a string as required by XWiki code
+     * @param path the path of the node
+     * @return the locator as a string with slashes as delimitators
+     */
+    public static String getStringLocatorFromPath(List<Integer> path) {
+        StringBuffer locator = new StringBuffer();
+        for(Integer i : path) {
+            locator.append(i).append("/");
+        }
+        return locator.toString();
+    }
 }
