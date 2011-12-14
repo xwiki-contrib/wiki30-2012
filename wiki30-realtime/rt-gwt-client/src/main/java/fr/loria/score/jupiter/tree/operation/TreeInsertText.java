@@ -28,7 +28,7 @@ public class TreeInsertText extends TreeOperation {
 
     @Override
     public void updateUI() {
-        log.info("Upadte UI ...");
+        log.info("Update UI ...");
         //operates on a text node
         Mutation mutation = new Mutation();
         mutation.setType(Mutation.MutationType.INSERT);
