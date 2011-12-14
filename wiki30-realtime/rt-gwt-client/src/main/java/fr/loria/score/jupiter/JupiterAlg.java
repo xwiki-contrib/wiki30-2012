@@ -101,7 +101,7 @@ public abstract class JupiterAlg {
         newMsg.setEditingSessionId(receivedMsg.getEditingSessionId());
 
         currentState.incReceivedMsgs();
-        execute(newMsg);
+        execute(newMsg); // todo:bf -rename afterReceive
         logger.fine(this.toString());
     }
 

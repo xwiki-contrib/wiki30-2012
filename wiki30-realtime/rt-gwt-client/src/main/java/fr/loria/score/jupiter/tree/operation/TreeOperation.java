@@ -1,5 +1,6 @@
 package fr.loria.score.jupiter.tree.operation;
 
+import com.google.gwt.dom.client.Node;
 import fr.loria.score.jupiter.model.AbstractOperation;
 import fr.loria.score.jupiter.tree.Tree;
 
@@ -10,6 +11,9 @@ import java.util.logging.Logger;
 
 public abstract class TreeOperation extends AbstractOperation {
     private transient static final Logger log = Logger.getLogger(TreeOperation.class.getName());
+
+    protected transient Node node; // todo: or stick it in Tree
+    protected List<Integer> path; //path node
 
     public TreeOperation(AbstractOperation o) {
         super(o);
@@ -29,14 +33,16 @@ public abstract class TreeOperation extends AbstractOperation {
         this.path = path;
     }
 
-    protected List<Integer> path; //path node
+    public void setNode(Node node) {
+        this.node = node;
+    }
 
     public abstract void execute(Tree root);
 
     /**
      * Updates the UI
      */
-    public abstract void updateUI();
+    public abstract void updateUI(); //todo: or add node here
 
     public AbstractOperation transform(AbstractOperation op1) {
         log.fine("Transforming:" + op1 + " according to this operation: " + this);

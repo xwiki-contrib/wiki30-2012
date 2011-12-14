@@ -1,12 +1,13 @@
 package fr.loria.score.client;
 
+import com.google.gwt.dom.client.Node;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 import fr.loria.score.jupiter.JupiterAlg;
 import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
-import fr.loria.score.jupiter.plain.operation.Operation; //todo: AbstractOp
+import fr.loria.score.jupiter.plain.operation.Operation;
 import fr.loria.score.jupiter.transform.Transformation;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 
@@ -21,10 +22,11 @@ public class ClientJupiterAlg extends JupiterAlg {
 
     private static final Logger logger = Logger.getLogger(ClientJupiterAlg.class.getName());
     private CommunicationServiceAsync comService;
-    private Editor editor;
+
+    private Editor editor;  //todo: remove em 2
+    private Node root;
 
     private ClientCallback callback;
-
     private int editingSessionId;
 
     public ClientJupiterAlg() {}
@@ -56,6 +58,10 @@ public class ClientJupiterAlg extends JupiterAlg {
 
     public void setEditor(Editor editor) {
         this.editor = editor;
+    }
+
+    public void setRootNode(Node root) {
+        this.root = root;
     }
 
     public void setCommunicationService(CommunicationServiceAsync comService) {
@@ -109,9 +115,8 @@ public class ClientJupiterAlg extends JupiterAlg {
     }
 
     protected void send(Message m) {
-        logger.fine(this + "\t Client sends to server: " + m);
-
         m.setEditingSessionId(this.editingSessionId);
+        logger.fine(this + "\t Client sends to server: " + m);
 
         comService.serverReceive(m, new AsyncCallback<Void>() {
             public void onSuccess(Void result) {
@@ -167,7 +172,7 @@ public class ClientJupiterAlg extends JupiterAlg {
      */
     public class PlainClientCallback implements ClientCallback {
         @Override
-        public void onConnected() {
+        public void onConnected() { //todo: inject the editor
                 //update UI
                 editor.setContent(document.getContent());
                 editor.setSiteId(siteId);
@@ -200,7 +205,7 @@ public class ClientJupiterAlg extends JupiterAlg {
      */
     public class TreeClientCallback implements ClientCallback {
         @Override
-        public void onConnected() {
+        public void onConnected() { //todo: inject the rta
         }
 
         @Override
@@ -210,7 +215,8 @@ public class ClientJupiterAlg extends JupiterAlg {
         @Override
         public void onExecute(Message receivedMessage) {
             TreeOperation operation = (TreeOperation) receivedMessage.getOperation();
-
+            operation.setNode(root);
+            operation.updateUI();
         }
     }
 }

@@ -95,6 +95,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, K
         clientJupiter.setEditingSessionId(Integer.parseInt(config.getParameter(RtApi.DOCUMENT_ID)));
         clientJupiter.setCommunicationService(CommunicationService.ServiceHelper.getCommunicationService());
         clientJupiter.setCallback(clientJupiter.new TreeClientCallback());
+        clientJupiter.setRootNode(textArea.getDocument().getBody());
         clientJupiter.setDocument(new TreeDocument(t));
         clientJupiter.connect();
     }

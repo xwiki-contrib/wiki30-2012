@@ -28,12 +28,12 @@ public class TreeDocument implements Document {
 
     @Override
     public void setContent(String content) {
-        root.setValue(content);// todo: review
+//        root.setValue(content);// todo: review
     }
 
     @Override
     public void apply(AbstractOperation op) {
-        log.fine("Apply: " + op + " to document: " + root.getValue());
+        log.fine("Apply: " + op + " to document: " + root.toString());
         if (op instanceof TreeOperation) {
             TreeOperation treeOperation = (TreeOperation) op;
             treeOperation.execute(root);
