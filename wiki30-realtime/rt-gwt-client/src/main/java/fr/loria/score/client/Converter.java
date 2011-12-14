@@ -19,23 +19,24 @@ import java.util.logging.Logger;
 public class Converter {
     public static final Logger log = Logger.getLogger(Converter.class.getName());
 
-    public static final String NODE_VALUE = "nodeValue";
-    public static final String NODE_TYPE = "nodeType";
-
+    /**
+     * Converts a native DOM element into a serializable, hierarchical object upon which OT functions work
+     * @param nativeElement the native DOM element
+     * @return a custom tree like object
+     */
     public Tree fromNativeToCustom(Element nativeElement) {
-        log.finest("Original native element: " + nativeElement.toString());
+        log.finest("Native DOM element: " + nativeElement.toString());
         Tree root = new Tree();
         DepthFirstPreOrderIterator dfs = new DepthFirstPreOrderIterator(nativeElement, root);
         while (dfs.hasNext()) {
-            Node n = dfs.next();
-            log.finest("Node: " + n.toString());
+            dfs.next();
         }
-        log.fine("Returning tree: " + root.toString());
+        log.finest("Returning tree: " + root.toString());
         return root;
     }
 
 
-    private class DepthFirstPreOrderIterator {
+    class DepthFirstPreOrderIterator {
         /**
          * The current position of the iterator.
          */
@@ -55,6 +56,7 @@ public class Converter {
          * Creates an iterator for the subtree rooted in startNode.
          *
          * @param startNode root of the subtree to iterate through.
+         * @param startTree root of the custom tree to create
          */
         DepthFirstPreOrderIterator(Node startNode, Tree startTree) {
             this.startNode = startNode;
@@ -77,7 +79,7 @@ public class Converter {
         public Node next() {
             // return the currentNode
             Node nodeToReturn = this.currentNode;
-            log.fine("current node:" + currentNode);
+            log.finest("Current node:" + currentNode);
 
             if (!hasNext()) {
                 throw new NoSuchElementException();
@@ -126,25 +128,31 @@ public class Converter {
 
     private void copyAttributes(Node currentNode, Tree treeNode) {
         Map<String, String> attributes = new HashMap<String, String>();
-        attributes.put(Tree.NODE_NAME, currentNode.getNodeName());
-        attributes.put(NODE_VALUE, currentNode.getNodeValue());
+
+        putIfValueNotNull(attributes, Tree.NODE_VALUE, currentNode.getNodeName());
+        putIfValueNotNull(attributes, Tree.NODE_VALUE, currentNode.getNodeValue());
 
         int type = currentNode.getNodeType();
-        attributes.put(NODE_TYPE, String.valueOf(type));
+        putIfValueNotNull(attributes, Tree.NODE_TYPE, String.valueOf(type));
 
         if (type == Node.ELEMENT_NODE) {
             Element element = (Element) currentNode;
-            attributes.put("className", element.getClassName());
-//            attributes.put("innerText", element.getInnerText());
-//            attributes.put("innerHtml", element.getInnerHTML());
-            attributes.put("id", element.getId());
-            attributes.put("style", element.getStyle().toString());
-            attributes.put("tagName", element.getTagName());
-            attributes.put("title", element.getTitle());
+
+            putIfValueNotNull(attributes, "className", element.getClassName());
+            putIfValueNotNull(attributes, "id", element.getId());
+            putIfValueNotNull(attributes, "style", element.getStyle().toString());
+            putIfValueNotNull(attributes, "tagName", element.getTagName());
+            putIfValueNotNull(attributes, "title", element.getTitle());
         } else if (type == Node.TEXT_NODE) {
             Text textElement = (Text) currentNode;
             treeNode.setValue(textElement.getData());
         }
         treeNode.setAttributes(attributes);
+    }
+
+    private <K, V> void putIfValueNotNull(Map<K, V> map, K key, V value) {
+        if (value != null) {
+            map.put(key, value);
+        }
     }
 }
