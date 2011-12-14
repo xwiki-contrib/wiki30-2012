@@ -4,9 +4,20 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Tree implements Serializable {
+    /**
+     * Node name: for Text nodes is "#text", for Elements is tagName
+     */
+    public static final String NODE_NAME = "nodeName";
 
-    public static final String NODE_NAME = "nodeName"; // for Text nodes is "#text", for Elements is tagName
-    public static final String NODE_VALUE = "nodeValue"; // for Text nodes it is the actual text, for Elements is null
+    /**
+     * Node value: for Text nodes it is the actual text, for Elements is null
+     */
+    public static final String NODE_VALUE = "nodeValue";
+
+    /**
+     * Node type: same as for native DOM elements
+     */
+    public static final String NODE_TYPE = "nodeType";
 
     protected Map<String, String> attributes = new HashMap<String, String>();
     protected List<Tree> children = new ArrayList<Tree>();
