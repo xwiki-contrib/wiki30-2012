@@ -21,7 +21,7 @@ public class TreeInsertParagraph extends TreeOperation {
     public TreeInsertParagraph(int siteId, int position, List<Integer> path) {
         super(siteId, position);
         setPath(path);
-        if (position == 0) {
+        if (position == 0) {  // !=
             this.splitLeft = true;
         }
     }
@@ -79,7 +79,7 @@ public class TreeInsertParagraph extends TreeOperation {
     }
 
     public String toString() {
-        return "InsertP(" +  super.toString() + "," + path + ")";
+        return "InsertP(" +  super.toString() + "," + path + ", " + splitLeft + ")";
     }
 
     @Override
@@ -95,17 +95,17 @@ public class TreeInsertParagraph extends TreeOperation {
             }
             List<Integer> tab =  new ArrayList<Integer>(op1.path.size());
             tab.set(0, op1.path.get(0) + 1);
-            return new TreeInsertText(op1.getSiteId(), op1.getPosition() - position, tab, op1.text);
+            return new TreeInsertText(op1.getSiteId(), op1.getPosition() - position, tab, op1.getText());
         }
         if (TreeUtils.inf(op1.path, path)) {
             return op1;
         }
         if (op1.path.get(0) > path.get(0)) {
             List<Integer> tab = TreeUtils.addP(op1.path, 1);
-            return new TreeInsertText(op1.getSiteId(), op1.getPosition(), tab, op1.text);
+            return new TreeInsertText(op1.getSiteId(), op1.getPosition(), tab, op1.getText());
         }
         List<Integer> tab = TreeUtils.reference(op1.path, path);
-        return new TreeInsertText(op1.getSiteId(), op1.getPosition(), tab, op1.text);
+        return new TreeInsertText(op1.getSiteId(), op1.getPosition(), tab, op1.getText());
     }
 
     protected TreeOperation handleTreeDeleteText(TreeDeleteText op1) {
@@ -137,15 +137,15 @@ public class TreeInsertParagraph extends TreeOperation {
 
     protected TreeOperation handleTreeMergeParagraph(TreeMergeParagraph op1) {
         if (op1.getPosition() == path.get(0)) {
-            return new TreeMergeParagraph(op1.getPosition(), op1.leftSiblingChildrenNr, path.get(1) + (splitLeft ? 1 : 0));
+            return new TreeMergeParagraph(op1.getSiteId(), op1.getPosition(), op1.leftSiblingChildrenNr, path.get(1) + (splitLeft ? 1 : 0));
         }
         if (op1.getPosition() == path.get(0) + 1) {
-            return new TreeMergeParagraph(op1.getPosition() + 1, op1.leftSiblingChildrenNr - path.get(1), op1.rightSiblingChildrenNr);
+            return new TreeMergeParagraph(op1.getSiteId(), op1.getPosition() + 1, op1.leftSiblingChildrenNr - path.get(1), op1.rightSiblingChildrenNr);
         }
         if (op1.getPosition() < path.get(0)) {
             return op1;
         }
-        return new TreeMergeParagraph(op1.getPosition() + 1, op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr);
+        return new TreeMergeParagraph(op1.getSiteId(), op1.getPosition() + 1, op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr);
     }
 
     protected TreeOperation handleTreeInsertParagraph(TreeInsertParagraph op1) {

@@ -235,7 +235,7 @@ public class TreeStyle extends TreeOperation {
             if (sr) {
                 d++;
             }
-            return new TreeMergeParagraph(op1.getPosition(), op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr + d);
+            return new TreeMergeParagraph(op1.getSiteId(), op1.getPosition(), op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr + d);
         }
         if (op1.getPosition() == path.get(0) + 1) {
             int d = 0;
@@ -245,7 +245,7 @@ public class TreeStyle extends TreeOperation {
             if (sr) {
                 d++;
             }
-            return new TreeMergeParagraph(op1.getPosition(), op1.leftSiblingChildrenNr + d, op1.rightSiblingChildrenNr);
+            return new TreeMergeParagraph(op1.getSiteId(), op1.getPosition(), op1.leftSiblingChildrenNr + d, op1.rightSiblingChildrenNr);
         }
         return op1;
     }

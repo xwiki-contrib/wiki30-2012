@@ -28,14 +28,10 @@ public class TreeMergeParagraph extends TreeOperation {
     public TreeMergeParagraph() {}
 
     public TreeMergeParagraph(int siteId, int position, int leftSiblingChildrenNr, int rightSiblingChildrenNr) {
-        this(position, leftSiblingChildrenNr, rightSiblingChildrenNr);
-        this.siteId = siteId;
-    }
-
-    public TreeMergeParagraph(int position, int leftSiblingChildrenNr, int rightSiblingChildrenNr) {
-        this.position = position;
+        super(siteId, position);
         this.leftSiblingChildrenNr = leftSiblingChildrenNr;
         this.rightSiblingChildrenNr = rightSiblingChildrenNr;
+
     }
 
     public void execute(Tree root) {
@@ -102,15 +98,15 @@ public class TreeMergeParagraph extends TreeOperation {
             return new TreeIdOp();
         }
         if (op1.getPosition() == position + 1) {
-            return new TreeMergeParagraph(op1.getPosition() - 1, op1.leftSiblingChildrenNr + leftSiblingChildrenNr, op1.rightSiblingChildrenNr);
+            return new TreeMergeParagraph(siteId, op1.getPosition() - 1, op1.leftSiblingChildrenNr + leftSiblingChildrenNr, op1.rightSiblingChildrenNr);
         }
         if (op1.getPosition() == position - 1) {
-            return new TreeMergeParagraph(op1.getPosition(), op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr + rightSiblingChildrenNr);
+            return new TreeMergeParagraph(siteId, op1.getPosition(), op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr + rightSiblingChildrenNr);
         }
         if (op1.getPosition() < position) {
             return op1;
         }
-        return new TreeMergeParagraph(op1.getPosition() - 1, op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr);
+        return new TreeMergeParagraph(siteId, op1.getPosition() - 1, op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr);
     }
 
     public TreeOperation handleTreeInsertParagraph(TreeInsertParagraph op1) {
