@@ -1,20 +1,39 @@
 package fr.loria.score;
 
 import fr.loria.score.client.ClientDTO;
+import fr.loria.score.client.CommunicationService;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.operation.*;
 import fr.loria.score.server.ClientServerCorrespondents;
+import fr.loria.score.server.CommunicationServiceImpl;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 
 
-public class TreeCommunicationServiceTest extends CommunicationServiceTest {
-    //todo: when this test is run, it automatically runs the tests in super class. fix this
+public class TreeCommunicationServiceTest  {
+    private CommunicationService communicationService;
+
+    @Before
+    public void setUp() {
+        communicationService = new CommunicationServiceImpl();
+    }
+
+    @After
+    public void tearDown() {
+        ClientServerCorrespondents.getInstance().getEditingSessions().clear();
+        ClientServerCorrespondents.getInstance().getCorrespondents().clear();
+    }
+
     @Test
     public void test2Clients() throws Exception {
         int nrClients = 2;
@@ -55,6 +74,7 @@ public class TreeCommunicationServiceTest extends CommunicationServiceTest {
     @Test
     public void test3Clients() throws Exception {
         int nrClients = 3;
+        int esid = 0;
         TestUtils.createServerPairs(nrClients, 1, communicationService, 1);
 
         List<Integer> t1 = Arrays.asList(0, 0);
@@ -70,25 +90,24 @@ public class TreeCommunicationServiceTest extends CommunicationServiceTest {
         TreeOperation op05 = new TreeInsertText(siteId1, 0, t2, 'f');
         TreeOperation op06 = new TreeInsertText(siteId1, 1, t2, 'g');
 
+        Map<Integer, List<Message>> messages = new HashMap<Integer, List<Message>>();
+        List<Message> site1Messages = TestUtils.createMessagesFromOperations(esid, op01, op02, op03, op04, op05, op06);
+        messages.put(siteId1, site1Messages);
+
         TreeOperation op11 = new TreeNewParagraph(siteId2, 0);
         TreeOperation op12 = new TreeInsertText(siteId2, 0, t1, 'e');
         TreeOperation op13 = new TreeInsertText(siteId2, 1, t1, 'c');
         TreeOperation op15 = new TreeInsertParagraph(siteId2, 1, t1, true);
         TreeOperation op14 = new TreeMergeParagraph(siteId2, 1, 1, 1);
 
+        List<Message> site2Messages = TestUtils.createMessagesFromOperations(esid, op11, op12, op13, op15, op14);
+        messages.put(siteId2, site2Messages);
+
         TreeOperation op21 = new TreeNewParagraph(siteId3, 0);
         TreeOperation op22 = new TreeInsertText(siteId3, 0, t1, 'i');
         TreeOperation op23 = new TreeInsertText(siteId3, 1, t1, 'd');
         TreeOperation op24 = new TreeInsertText(siteId3, 2, t1, 'j');
         TreeOperation op25 = new TreeInsertParagraph(siteId3, 2, t1,  true);
-
-        int esid = 0;
-        Map<Integer, List<Message>> messages = new HashMap<Integer, List<Message>>();
-        List<Message> site1Messages = TestUtils.createMessagesFromOperations(esid, op01, op02, op03, op04, op05, op06);
-        messages.put(siteId1, site1Messages);
-
-        List<Message> site2Messages = TestUtils.createMessagesFromOperations(esid, op11, op12, op13, op15, op14);
-        messages.put(siteId2, site2Messages);
 
         List<Message> site3Messages = TestUtils.createMessagesFromOperations(esid, op21, op22, op23, op24, op25);
         messages.put(siteId3, site3Messages);
