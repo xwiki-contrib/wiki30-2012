@@ -72,10 +72,10 @@ public class TreeMergeParagraph extends TreeOperation {
         }
         List<Integer> tab = TreeUtils.addP(op1.path, -1);
         if (op1.path.get(0) > position) {
-            return new TreeInsertText(op1.getSiteId(), op1.getPosition(), tab, op1.text);
+            return new TreeInsertText(op1.getSiteId(), op1.getPosition(), tab, op1.getText());
         }
         tab.set(1, op1.path.get(1) + leftSiblingChildrenNr);
-        return new TreeInsertText(op1.getSiteId(), op1.getPosition(), tab, op1.text);
+        return new TreeInsertText(op1.getSiteId(), op1.getPosition(), tab, op1.getText());
     }
 
     public TreeOperation handleTreeDeleteText(TreeDeleteText op1) {

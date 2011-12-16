@@ -36,7 +36,7 @@ public class TreeDeleteText extends TreeOperation {
         if (op1.getPosition() <= position) {
             return op1;
         }
-        return new TreeInsertText(op1.getSiteId(), op1.getPosition() - 1, op1.path, op1.text);
+        return new TreeInsertText(op1.getSiteId(), op1.getPosition() - 1, op1.path, op1.getText());
     }
 
     protected TreeOperation handleTreeDeleteText(TreeDeleteText op1) {

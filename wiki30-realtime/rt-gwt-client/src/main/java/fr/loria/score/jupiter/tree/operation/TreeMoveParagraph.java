@@ -40,21 +40,21 @@ public class TreeMoveParagraph extends TreeOperation {
     public TreeOperation handleTreeInsertText(TreeInsertText op1) {
         if (op1.path.get(0) == sp) {
             if (sp >= ep) {
-                return new TreeInsertText(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep), op1.text);
+                return new TreeInsertText(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep), op1.getText());
             } else {
-                return new TreeInsertText(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep - 1), op1.text);
+                return new TreeInsertText(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep - 1), op1.getText());
             }
         }
         if (op1.path.get(0) < sp) {
             if (op1.path.get(0) < ep) {
                 return op1;
             } else {
-                return new TreeInsertText(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, 1), op1.text);
+                return new TreeInsertText(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, 1), op1.getText());
             }
         }
         //op1.path.get(0)>sp
         if (op1.path.get(0) < ep) {
-            return new TreeInsertText(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, -1), op1.text);
+            return new TreeInsertText(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, -1), op1.getText());
         } else {
             return op1;
         }

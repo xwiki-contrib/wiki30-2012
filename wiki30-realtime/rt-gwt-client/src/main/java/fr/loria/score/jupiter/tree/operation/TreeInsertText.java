@@ -3,7 +3,6 @@ package fr.loria.score.jupiter.tree.operation;
 
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeUtils;
-import org.xwiki.gwt.dom.mutation.client.Mutation;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -11,7 +10,7 @@ import java.util.logging.Logger;
 public class TreeInsertText extends TreeOperation {
     private transient static final Logger log = Logger.getLogger(TreeInsertText.class.getName());
 
-    public char text; //text to insert
+    private char text; //char to insert
 
     public TreeInsertText() {}
 
@@ -26,18 +25,12 @@ public class TreeInsertText extends TreeOperation {
         tree.addChar(text, position);
     }
 
+    public char getText() {
+        return text;
+    }
+
     @Override
     public void updateUI() {
-        log.info("Update UI ...");
-        //operates on a text node
-        Mutation mutation = new Mutation();
-        mutation.setType(Mutation.MutationType.INSERT);
-        mutation.setLocator(TreeUtils.getStringLocatorFromPath(path));
-        mutation.setValue(String.valueOf(position) + "," + text);
-//       todo: why is not working on Server side ??
-//        MutationOperator operator = new DefaultMutationOperator();
-//        operator.operate(mutation, node);
-
     }
 
     public String toString() {
