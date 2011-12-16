@@ -5,10 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Fonctions de comparaison de chemins
+ *
+ * @author Luc.Andre@loria.fr
  * @author Bogdan.Flueras@inria.fr
  */
 public class TreeUtils {
-    //fonctions de comparaison de chemins
 
     //return true if p1 and p2 are different paths
     public static boolean diff(List<Integer> t1, List<Integer> t2) {
@@ -36,7 +38,7 @@ public class TreeUtils {
     //addP(1/0/2, 2)=3/0/2
     public static List<Integer> addP(List<Integer> path, int nb) {
        List<Integer> copy = new ArrayList<Integer>(path.size());
-       copy.set(0, path.get(0) + nb);
+       copy.add(0, path.get(0) + nb);
        for (int i = 1; i < path.size(); i++) {
            copy.add(new Integer(path.get(i).intValue()));
        }
@@ -47,7 +49,7 @@ public class TreeUtils {
     //setP(1/0/2,2)=2/0/2
     public static List<Integer> setP(List<Integer> path, int nb) {
         List<Integer> tab = new ArrayList<Integer>(path.size());
-        tab.set(0, nb);
+        tab.add(0, nb);
         for (int i = 1; i < path.size(); i++) {
             tab.add(new Integer(path.get(i).intValue()));
         }
@@ -79,13 +81,13 @@ public class TreeUtils {
     }
 
     //used to change a path after a paragraph split occured.
-    //given two paths in the same paragraph, rewites the second one as if the first one was x+1/0/0/...
+    //given two paths in the same paragraph, rewrites the second one as if the first one was x+1/0/0/...
     //reference(1/3/2,1/4/0)=2/1/0
     //reference(1/3/2,1/3/3)=2/0/1
     public static List<Integer> reference(List<Integer> path, List<Integer> ref) {
         List<Integer> tab = addP(path, 1);
         int i = 1;
-        while (ref.get(i) == tab.get(i)) {
+        while (ref.get(i).equals(tab.get(i))) {
             tab.set(i, 0);
             i++;
         }
