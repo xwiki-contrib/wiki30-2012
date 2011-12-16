@@ -26,12 +26,13 @@ import static org.junit.Assert.*;
  * @author Bogdan Flueras (email: Bogdan.Flueras@inria.fr)
  */
 public class CommunicationServiceTest {
-    private static final Logger LOG = LoggerFactory.getLogger(CommunicationServiceTest.class);
-    
-    protected CommunicationService communicationService = new CommunicationServiceImpl();
     public static final int NR_CLIENTS = 6;
     public static final int NR_MESSAGES = 25;
     public static final int NR_SESSIONS = 1;
+
+    private static final Logger LOG = LoggerFactory.getLogger(CommunicationServiceTest.class);
+    
+    private CommunicationService communicationService = new CommunicationServiceImpl();
 
     @Before
     public void setUp() {
