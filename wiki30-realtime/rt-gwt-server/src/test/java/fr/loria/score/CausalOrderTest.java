@@ -21,6 +21,8 @@ import static org.junit.Assert.*;
 /**
  * Test that messages received by a Jupiter server are causal ordered - that is they hold a specific invariant
  * @author Bogdan Flueras (email: Bogdan.Flueras@inria.fr)
+ * Todo -bf: it is not a proper way to test it: instead of working with server instances and synchronizing on doReceive
+ * method, it should use the CommunicationService
  */
 public class CausalOrderTest {
     private static final Logger LOG = LoggerFactory.getLogger(CausalOrderTest.class);
