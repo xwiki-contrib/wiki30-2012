@@ -170,8 +170,7 @@ public class CommunicationServiceTest {
         //remove it
         communicationService.removeServerPairForClient(client);
         editingSessions = ClientServerCorrespondents.getInstance().getEditingSessions();
-        assertTrue("Invalid editing session id", editingSessions.containsKey(sessionId));
-        assertEquals("Site id exists for editing session:", 0, editingSessions.get(sessionId).size());
+        assertEquals("Invalid nr of editing sessions", 0, editingSessions.size());
 
         correspondents = ClientServerCorrespondents.getInstance().getCorrespondents();
         assertEquals("Invalid correspondents size", 0, correspondents.size());
