@@ -177,6 +177,60 @@ public class CommunicationServiceTest {
         assertEquals("Invalid correspondents size", 0, correspondents.size());
     }
 
+    @Test
+    public void removeServerPairsForClientsInDifferentSessions() {
+        int esid1 = 500;
+        ClientDTO client511 = new ClientDTO("", 11, esid1);
+        ClientDTO client513 = new ClientDTO("", 13, esid1);
+
+        communicationService.createServerPairForClient(client511);
+        communicationService.createServerPairForClient(client513);
+
+
+        int esid2 = 700;
+        ClientDTO client709 = new ClientDTO("", 9, esid2);
+        ClientDTO client725 = new ClientDTO("", 25, esid2);
+        ClientDTO client759 = new ClientDTO("", 59, esid2);
+
+        communicationService.createServerPairForClient(client709);
+        communicationService.createServerPairForClient(client725);
+        communicationService.createServerPairForClient(client759);
+
+
+        // we have 2 sessions
+        assertEquals("Invalid nr of editing sessions", 2, ClientServerCorrespondents.getInstance().getEditingSessions().size());
+
+        // esid1 has 2 clients, esid2 has 3
+        assertEquals("Invalid nr of clients for session 1", 2, ClientServerCorrespondents.getInstance().getEditingSessions().get(esid1).size());
+        assertEquals("Invalid nr of clients for session 2", 3, ClientServerCorrespondents.getInstance().getEditingSessions().get(esid2).size());
+        assertEquals("Invalid nr of server correspondents", 5, ClientServerCorrespondents.getInstance().getCorrespondents().size());
+
+        // remove clients from esid2
+        communicationService.removeServerPairForClient(client709);
+        // we still have 2 sessions
+        assertEquals("Invalid nr of editing sessions", 2, ClientServerCorrespondents.getInstance().getEditingSessions().size());
+        assertEquals("Invalid nr of clients for session 1", 2, ClientServerCorrespondents.getInstance().getEditingSessions().get(esid1).size());
+        assertEquals("Invalid nr of clients for session 2", 2, ClientServerCorrespondents.getInstance().getEditingSessions().get(esid2).size());
+        assertEquals("Invalid nr of server correspondents", 4, ClientServerCorrespondents.getInstance().getCorrespondents().size());
+
+        communicationService.removeServerPairForClient(client759);
+        assertEquals("Invalid nr of editing sessions", 2, ClientServerCorrespondents.getInstance().getEditingSessions().size());
+        assertEquals("Invalid nr of clients for session 1", 2, ClientServerCorrespondents.getInstance().getEditingSessions().get(esid1).size());
+        assertEquals("Invalid nr of clients for session 2", 1, ClientServerCorrespondents.getInstance().getEditingSessions().get(esid2).size());
+        assertEquals("Invalid nr of server correspondents", 3, ClientServerCorrespondents.getInstance().getCorrespondents().size());
+
+        communicationService.removeServerPairForClient(client511);
+        assertEquals("Invalid nr of editing sessions", 2, ClientServerCorrespondents.getInstance().getEditingSessions().size());
+        assertEquals("Invalid nr of clients for session 1", 1, ClientServerCorrespondents.getInstance().getEditingSessions().get(esid1).size());
+        assertEquals("Invalid nr of clients for session 2", 1, ClientServerCorrespondents.getInstance().getEditingSessions().get(esid2).size());
+        assertEquals("Invalid nr of server correspondents", 2, ClientServerCorrespondents.getInstance().getCorrespondents().size());
+
+        communicationService.removeServerPairForClient(client513);
+        assertEquals("Invalid nr of editing sessions", 1, ClientServerCorrespondents.getInstance().getEditingSessions().size());
+        assertEquals("Invalid nr of clients for session 2", 1, ClientServerCorrespondents.getInstance().getEditingSessions().get(esid2).size());
+        assertEquals("Invalid nr of server correspondents", 1, ClientServerCorrespondents.getInstance().getCorrespondents().size());
+    }
+
     /**
      * Ensures that server correctly receives and handles all client messages
      */

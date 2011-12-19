@@ -12,7 +12,7 @@ import java.util.*;
  * Each site has a pair of a client and a server
  */
 public final class ClientServerCorrespondents {
-
+    // the mapping between the site id's and the corresponding server pair
     private final Map<Integer, ServerJupiterAlg> correspondents = new HashMap<Integer, ServerJupiterAlg>();
 
     //the mapping between the editing session id and the list of ids of the clients that share the same editing session
@@ -32,23 +32,23 @@ public final class ClientServerCorrespondents {
     /**
      * Creates a new server correspondent for the given client
      *
-     * @param clientJupiterAlg the client for which to create a server correspondent
+     * @param clientDTO the client for which to create a server correspondent
      * @return the document on some server in same editing session if any, otherwise the document sent by the client
      */
-    public Document addServerForClient(ClientDTO clientJupiterAlg) {
+    public Document addServerForClient(ClientDTO clientDTO) {
         //Based on it's editing session id the client's id is added to the sessions map
-        int editingSessionId = clientJupiterAlg.getEditingSessionId();
+        int editingSessionId = clientDTO.getEditingSessionId();
         synchronized (editingSessions) {
             if (!editingSessions.containsKey(editingSessionId)) {
                 editingSessions.put(editingSessionId, new ArrayList<Integer>());
             }
-            editingSessions.get(editingSessionId).add(clientJupiterAlg.getSiteId());
+            editingSessions.get(editingSessionId).add(clientDTO.getSiteId());
         }
 
         // the client receives the content available on an existing 'jupiter server' in same editing session (if any)
-        int siteId = clientJupiterAlg.getSiteId();
+        int siteId = clientDTO.getSiteId();
 
-        Document document = clientJupiterAlg.getDocument();
+        Document document = clientDTO.getDocument();
 
         List<Integer> serverIds = editingSessions.get(editingSessionId);
         if (serverIds.size() > 0) {
@@ -66,13 +66,21 @@ public final class ClientServerCorrespondents {
         return document;
     }
 
-    public void removeServerForClient(ClientDTO clientJupiterAlg) {
-        int editingSessionId = clientJupiterAlg.getEditingSessionId();
-        int siteId = clientJupiterAlg.getSiteId();
+    public void removeServerForClient(ClientDTO clientDTO) {
+        int editingSessionId = clientDTO.getEditingSessionId();
+        int siteId = clientDTO.getSiteId();
          //1. remove it from the editing session id
         if (editingSessions.containsKey(editingSessionId)) {
             synchronized (editingSessions) {
-                editingSessions.get(editingSessionId).remove(Integer.valueOf(siteId));
+                List<Integer> serverIds = editingSessions.get(editingSessionId);
+                int idx = serverIds.indexOf(siteId);
+                if (idx > -1) {
+                    serverIds.remove(idx);
+                }
+                //remove the empty mapping
+                if (serverIds.size() == 0) {
+                    editingSessions.remove(editingSessionId);
+                }
             }
         }
 
