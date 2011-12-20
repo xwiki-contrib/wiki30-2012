@@ -39,7 +39,7 @@ public class ServerJupiterAlg extends JupiterAlg {
         doReceive(receivedMsg);
     }
 
-    private synchronized void doReceive(Message receivedMsg) {
+    private void doReceive(Message receivedMsg) {
         // Ensure causality processing
         if (receivedMsg.getState().getGeneratedMsgs() > currentState.getReceivedMsgs()) {
             logger.debug(this + "\tEnsuring causal receival. Add " + receivedMsg + " to: " + causalOrderedMessages);
