@@ -9,7 +9,12 @@ import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.plain.operation.Operation;
 import fr.loria.score.jupiter.transform.Transformation;
+import fr.loria.score.jupiter.tree.TreeUtils;
+import fr.loria.score.jupiter.tree.operation.TreeInsertText;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
+import org.xwiki.gwt.dom.mutation.client.DefaultMutationOperator;
+import org.xwiki.gwt.dom.mutation.client.Mutation;
+import org.xwiki.gwt.dom.mutation.client.MutationOperator;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -27,7 +32,6 @@ public class ClientJupiterAlg extends JupiterAlg {
     private Node root;
 
     private ClientCallback callback;
-    private int editingSessionId;
 
     public ClientJupiterAlg() {}
 
@@ -42,14 +46,6 @@ public class ClientJupiterAlg extends JupiterAlg {
 
     public ClientJupiterAlg(Document initialData, int siteId, Transformation transform) {
         super(siteId, initialData, transform);
-    }
-
-    public void setEditingSessionId(int editingSessionId) {
-        this.editingSessionId = editingSessionId;
-    }
-
-    public int getEditingSessionId() {
-        return editingSessionId;
     }
 
     public Editor getEditor() {
@@ -161,7 +157,7 @@ public class ClientJupiterAlg extends JupiterAlg {
         timer.scheduleRepeating(REFRESH_INTERVAL);
     }
 
-    public interface ClientCallback {
+    public interface ClientCallback {  //move it
         void onConnected();
         void onDisconnected();
         void onExecute(Message receivedMessage);
@@ -214,9 +210,20 @@ public class ClientJupiterAlg extends JupiterAlg {
 
         @Override
         public void onExecute(Message receivedMessage) {
+            logger.info("Update UI ...");
             TreeOperation operation = (TreeOperation) receivedMessage.getOperation();
-            operation.setNode(root);
-            operation.updateUI();
+            if (operation instanceof TreeInsertText) {
+                //operates on a text node
+                TreeInsertText tit = (TreeInsertText) operation;
+
+                Mutation mutation = new Mutation();
+                mutation.setType(Mutation.MutationType.INSERT);
+//                mutation.setLocator(TreeUtils.getStringLocatorFromPath(tit.getPath()));
+                mutation.setValue(String.valueOf(tit.getPosition()) + "," + tit.getText());
+
+                MutationOperator operator = new DefaultMutationOperator();
+                operator.operate(mutation, root);
+            }
         }
     }
 }

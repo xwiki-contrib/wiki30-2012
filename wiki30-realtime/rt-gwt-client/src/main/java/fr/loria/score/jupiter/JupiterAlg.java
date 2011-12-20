@@ -25,6 +25,8 @@ public abstract class JupiterAlg {
     // If 2 operations are simultaneously received by the server, it will sequentially apply them in an ascending order
     protected int siteId;
 
+    protected int editingSessionId = -1;
+
     protected State currentState = new State();
 
     //the outgoing list of processed operations used to transform the received operations
@@ -51,12 +53,13 @@ public abstract class JupiterAlg {
      *
      * @param op the operation to be applied and sent
      */
-    public void generate(AbstractOperation op) {
+    public void generate(AbstractOperation op) { //todo: use message and remove esid here
         logger.info(this + "\t Generate: " + op);
         //apply op locally
         document.apply(op);
 
         Message newMsg = new Message(new State(currentState), op);
+        newMsg.setEditingSessionId(editingSessionId);
         queue.add(newMsg);
         currentState.incGeneratedMsgs();
         logger.fine(this.toString());
@@ -94,6 +97,7 @@ public abstract class JupiterAlg {
 
             m.setOperation(op2);
         }
+        logger.fine(this + "\t applying operation: " + receivedOperation);
         //apply transformed receivedMsg
         document.apply(receivedOperation);
 
@@ -157,5 +161,13 @@ public abstract class JupiterAlg {
     @Override
     public String toString() {
         return getClass().getName() + "@" + siteId + "#" + document + ", " + currentState + "#";
+    }
+
+    public void setEditingSessionId(int editingSessionId) {
+        this.editingSessionId = editingSessionId;
+    }
+
+    public int getEditingSessionId() {
+        return editingSessionId;
     }
 }
