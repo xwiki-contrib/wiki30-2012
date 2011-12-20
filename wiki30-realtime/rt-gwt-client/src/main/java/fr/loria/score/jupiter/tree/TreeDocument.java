@@ -41,6 +41,12 @@ public class TreeDocument implements Document {
     }
 
     @Override
+    public Document deepCloneDocument() {
+        Tree clonedTree = TreeUtils.cloneTree(root);
+        return new TreeDocument(clonedTree);
+    }
+
+    @Override
     public String toString() {
         return getContent();
     }

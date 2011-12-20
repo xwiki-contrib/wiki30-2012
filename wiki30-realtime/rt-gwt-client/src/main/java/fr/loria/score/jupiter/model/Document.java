@@ -28,4 +28,9 @@ public interface Document extends Serializable {
      * @param op the operation to be applied on this document
      */
     public void apply(AbstractOperation op);
+
+    /**
+     * @return a deep clone of this Document
+     */
+    public Document deepCloneDocument();
 }

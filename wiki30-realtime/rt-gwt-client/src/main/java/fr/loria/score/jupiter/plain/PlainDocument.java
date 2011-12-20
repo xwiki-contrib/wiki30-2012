@@ -61,6 +61,11 @@ public class PlainDocument implements Document {
     }
 
     @Override
+    public Document deepCloneDocument() {
+        return new PlainDocument(content);
+    }
+
+    @Override
     public String toString() {
         return getContent();
     }

@@ -54,11 +54,12 @@ public final class ClientServerCorrespondents {
         if (serverIds.size() > 0) {
             ServerJupiterAlg serverPair = correspondents.get(serverIds.get(0));
             if (serverPair != null) {
-                document = serverPair.getDocument();
+                document = serverPair.getDocument().deepCloneDocument();
             }
         }
 
         ServerJupiterAlg serverJupiter = new ServerJupiterAlg(document, siteId);
+//        serverJupiter.setEditingSessionId(editingSessionId);
 
         synchronized (correspondents) {
             correspondents.put(siteId, serverJupiter);
