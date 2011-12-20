@@ -56,11 +56,12 @@ public class TestUtils
                         //todo: review this stuff   MAKE an ENUM!
                         ClientDTO dto = new ClientDTO();
                         if (docType == 0) {
-                            dto.setDocument(new PlainDocument("")).setSiteId(counter).setEditingSessionId(counter % nrSessions); // uniformly distribute clients for sessions
+                            dto.setDocument(new PlainDocument(""));
                         } else if (docType == 1){
-                            dto.setDocument(new TreeDocument(new Tree("", null))).setSiteId(counter).setEditingSessionId(counter % nrSessions); // uniformly distribute clients for sessions
+                            dto.setDocument(new TreeDocument(new Tree("root", null)));
                         }
-                        commService.createServerPairForClient(dto);
+                        dto.setEditingSessionId(counter % nrSessions); // uniformly distribute clients for sessions
+                        commService.initClient(dto);
                     } catch (InterruptedException e) {
                         fail(e.getMessage());
                     } finally {
@@ -76,6 +77,51 @@ public class TestUtils
             fail(e.getMessage());
         }
         assertEquals("Invalid nr of server pairs created", nrClients, ClientServerCorrespondents.getInstance().getCorrespondents().size());
+    }
+
+    public static void createServerPairs1(int nrClients,
+                                          final int esid,
+                                          final CommunicationService commService,
+                                          final int docType)
+    {
+        System.out.println("Creating server pairs");
+        // create server pairs
+        final CountDownLatch start = new CountDownLatch(1);
+        final CountDownLatch end = new CountDownLatch(nrClients);
+        final Executor executor = Executors.newFixedThreadPool(nrClients);
+
+        for (int i = 0; i < nrClients; i++) {
+            executor.execute(new Runnable()
+            {
+                public void run()
+                {
+                    try {
+                        start.await();
+                        //todo: review this stuff   MAKE an ENUM!
+                        ClientDTO dto = new ClientDTO();
+                        if (docType == 0) {
+                            dto.setDocument(new PlainDocument(""));
+                        } else if (docType == 1){
+                            dto.setDocument(new TreeDocument(new Tree("root", null)));
+                        }
+                        dto.setEditingSessionId(esid);
+                        commService.initClient(dto);
+                    } catch (InterruptedException e) {
+                        fail(e.getMessage());
+                    } finally {
+                        end.countDown();
+                    }
+                }
+            });
+        }
+        start.countDown();
+        try {
+            end.await();
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
+        }
+        assertEquals("Invalid nr of server pairs created", nrClients, ClientServerCorrespondents.getInstance().getCorrespondents().size());
+        System.out.println("Done Creating server pairs");
     }
 
     /**
@@ -145,6 +191,10 @@ public class TestUtils
             messages.add(message);
         }
         return messages;
+    }
+
+    public static List<Message> createMessagesFromOperations(int esid, List<AbstractOperation> ops) {
+        return createMessagesFromOperations(esid, ops.toArray(new AbstractOperation[0]));
     }
 
     /**
