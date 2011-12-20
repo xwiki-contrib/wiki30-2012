@@ -44,8 +44,10 @@ public class CommunicationServiceImpl implements CommunicationService
      */
     public void serverReceive(Message msg)
     {
+        synchronized (this) { //todo: test the old synch
         logger.debug("Server receives message: " + msg);
         ClientServerCorrespondents.getInstance().serverReceive(msg);
+        }
     }
 
     /**
