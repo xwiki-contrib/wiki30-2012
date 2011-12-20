@@ -36,7 +36,13 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- Make sure we provide a default implementation of SLF4J for any test 
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>1.6.4</version>
+    </dependency>
+
+    <!-- Make sure we provide a default implementation of SLF4J for any test
       indirectly use it -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
