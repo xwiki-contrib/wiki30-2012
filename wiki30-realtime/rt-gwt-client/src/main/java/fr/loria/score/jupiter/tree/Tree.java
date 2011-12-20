@@ -32,9 +32,9 @@ public class Tree implements Serializable {
     }
 
     public void setNodeName(String nodeName) {
-        if (nodeName != null) {
+//        if (nodeName != null) {
             attributes.put(NODE_NAME, nodeName);
-        }
+//        }
     }
 
     public void setParent(Tree t) {
@@ -148,6 +148,7 @@ public class Tree implements Serializable {
             String s1 = value.substring(0, p);
             String s2 = value.substring(p);
             value = s1;
+            setValue(value);
             return s2;
         } else {
             return ""; // todo: this is not good.
@@ -159,26 +160,35 @@ public class Tree implements Serializable {
             return "";
         }
 
-        String s;
-        s = "<" + (attributes.get(NODE_VALUE) != null ? attributes.get(NODE_VALUE) : attributes.get(NODE_NAME) ) + ": ";
+        StringBuilder sb = new StringBuilder();
+        final String tag = attributes.get(NODE_VALUE) != null ? attributes.get(NODE_VALUE) : attributes.get(NODE_NAME);
+        sb = sb.append("<").append(tag).append(":");
 
         for (Iterator<Map.Entry<String, String>> it = attributes.entrySet().iterator(); it.hasNext();) {
             Map.Entry<String, String> entry = it.next();
-            s = s + " " + entry.getKey() + "=" + entry.getValue() + ",";
-        }
-        s = s + ">";
 
-        for (int j = 0; j < children.size(); j++) {
-            s = s + children.get(j).toString();
+            if (entry.getValue() != null && (!entry.getKey().equals(NODE_NAME) && !entry.getKey().equals(NODE_VALUE))) {
+                sb = sb.append(" ").append(entry.getKey()).append("=").append(entry.getValue());
+            }
+
+            if (it.hasNext()) {
+                sb = sb.append(", ");
+            }
         }
-        s = s + "</" + attributes.get(NODE_NAME) + ">";
-        return s;
+        sb = sb.append(">");
+
+        for (Tree child : children) {
+            sb = sb.append(child.toString());
+        }
+
+        sb = sb.append("</").append(tag).append(">");
+        return sb.toString();
     }
 
-    public Tree getChildFromPath(List<Integer> path) {
+    public Tree getChildFromPath(int[] path) {
         Tree tree = this;
-        for (int i = 0; i < path.size(); i++) {
-            tree = tree.getChild(path.get(i));
+        for (int i = 0; i < path.length; i++) {
+            tree = tree.getChild(path[i]);
         }
         return tree;
     }

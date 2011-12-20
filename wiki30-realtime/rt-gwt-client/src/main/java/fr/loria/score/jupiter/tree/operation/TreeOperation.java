@@ -1,19 +1,14 @@
 package fr.loria.score.jupiter.tree.operation;
 
-import com.google.gwt.dom.client.Node;
 import fr.loria.score.jupiter.model.AbstractOperation;
 import fr.loria.score.jupiter.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Logger;
 
 public abstract class TreeOperation extends AbstractOperation {
     private transient static final Logger log = Logger.getLogger(TreeOperation.class.getName());
-
-    protected transient Node node; // todo: or stick it in Tree
-    protected List<Integer> path; //path node
 
     public TreeOperation(AbstractOperation o) {
         super(o);
@@ -29,20 +24,13 @@ public abstract class TreeOperation extends AbstractOperation {
 
     public TreeOperation() {}
 
-    public TreeOperation(List<Integer> path) {
+    public TreeOperation(int[] path) {
         this.path = path;
     }
 
-    public void setNode(Node node) {
-        this.node = node;
-    }
+    protected int[] path; //path node
 
     public abstract void execute(Tree root);
-
-    /**
-     * Updates the UI
-     */
-    public abstract void updateUI(); //todo: or add node here
 
     public AbstractOperation transform(AbstractOperation op1) {
         log.fine("Transforming:" + op1 + " according to this operation: " + this);
@@ -110,14 +98,19 @@ public abstract class TreeOperation extends AbstractOperation {
     }
 
     public String toString() {
+        String str = "";
+//        if (path != null) {
+//            str = Arrays.asList(path).toString();
+//        }
+//        return super.toString() + ", path: " + str;
         return "siteId: " + siteId + " position: " + position;
     }
 
-    public List<Integer> getPath() {
+    public int[] getPath() {
         return path;
     }
 
-    public void setPath(List<Integer> path) {
+    public void setPath(int[] path) {
         this.path = path;
     }
 }

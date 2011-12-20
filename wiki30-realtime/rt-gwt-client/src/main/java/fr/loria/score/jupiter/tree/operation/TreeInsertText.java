@@ -4,17 +4,15 @@ package fr.loria.score.jupiter.tree.operation;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeUtils;
 
-import java.util.List;
-import java.util.logging.Logger;
+import java.util.Arrays;
 
 public class TreeInsertText extends TreeOperation {
-    private transient static final Logger log = Logger.getLogger(TreeInsertText.class.getName());
 
-    private char text; //char to insert
+    public char text; //text to insert
 
     public TreeInsertText() {}
 
-    public TreeInsertText(int siteId, int position, List<Integer> path, char c) {
+    public TreeInsertText(int siteId, int position, int[] path, char c) {
         super(siteId, position);
         this.text = c;
         setPath(path);
@@ -29,12 +27,9 @@ public class TreeInsertText extends TreeOperation {
         return text;
     }
 
-    @Override
-    public void updateUI() {
-    }
-
     public String toString() {
-        return "InsertText(" + super.toString() + "," + path + "," + text + ")";
+        String pathString = Arrays.toString(path);
+        return "InsertText(" + super.toString() + "," + pathString + "," + text + ")";
     }
 
     //OT pour InsertText
