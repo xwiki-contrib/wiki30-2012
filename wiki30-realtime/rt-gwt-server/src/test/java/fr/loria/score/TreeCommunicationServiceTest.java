@@ -38,13 +38,10 @@ public class TreeCommunicationServiceTest  {
     @Test
     public void test2Clients() throws Exception {
         int nrClients = 2;
-        int nrSessions = 1;
         int esid = 45;
 
         TestUtils.createServerPairs1(nrClients, esid, communicationService, 1);
         assertEquals(1, ClientServerCorrespondents.getInstance().getEditingSessions().size());
-        assertEquals(nrClients, ClientServerCorrespondents.getInstance().getEditingSessions().get(esid).size());
-        assertEquals(nrClients, ClientServerCorrespondents.getInstance().getCorrespondents().size());
 
         int[] t1 = new int[] {0, 0};
         int[] t2 = new int[] {1, 0};
@@ -192,13 +189,13 @@ public class TreeCommunicationServiceTest  {
 		TreeOperation insertText1=new TreeInsertText(site1, 0, new int[] {0,0},'x');
 		TreeOperation paragraph11=new TreeNewParagraph(site1, 1);
 		TreeOperation insertText11=new TreeInsertText(site1, 0, new int[] {1,0},'y');
-//        TreeOperation move1=new TreeMoveParagraph(site1, 0, 1);
+        TreeOperation move1=new TreeMoveParagraph(site1, 0, 1);
 
         TreeOperation paragraph2=new TreeNewParagraph(site2, 0);
         TreeOperation insertText2=new TreeInsertText(site2, 0, new int[] {0,0},'z');
 
         Map<Integer, List<Message>> messages = new HashMap<Integer, List<Message>>();
-        List<Message> message1 = TestUtils.createMessagesFromOperations(esid, paragraph1, insertText1, paragraph11, insertText11);
+        List<Message> message1 = TestUtils.createMessagesFromOperations(esid, paragraph1, insertText1, paragraph11, insertText11, move1);
         messages.put(site1, message1);
 
         List<Message> message2 = TestUtils.createMessagesFromOperations(esid, paragraph2, insertText2);
