@@ -218,11 +218,12 @@ public class ClientJupiterAlg extends JupiterAlg {
 
                 Mutation mutation = new Mutation();
                 mutation.setType(Mutation.MutationType.INSERT);
-//                mutation.setLocator(TreeUtils.getStringLocatorFromPath(tit.getPath()));
+                mutation.setLocator(TreeUtils.getStringLocatorFromPath(tit.getPath()));
                 mutation.setValue(String.valueOf(tit.getPosition()) + "," + tit.getText());
 
                 MutationOperator operator = new DefaultMutationOperator();
                 operator.operate(mutation, root);
+                logger.info("Applied mutation: " + mutation + " on node: " + root.toString());
             }
         }
     }
