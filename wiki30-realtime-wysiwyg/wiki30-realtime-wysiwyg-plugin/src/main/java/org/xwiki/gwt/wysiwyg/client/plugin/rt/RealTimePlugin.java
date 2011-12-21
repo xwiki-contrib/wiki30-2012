@@ -220,6 +220,11 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, K
 
         OperationTarget target = operationCall.getTarget();
         List<Integer> path = target.getStartContainer();
-        clientJupiter.generate(new TreeInsertText(clientJupiter.getSiteId(), target.getStartOffset(), path, operationCall.getValue().charAt(0)));
+        int [] ppath = new int[path.size()];
+        for (int i = 0; i < path.size(); i++) {
+            ppath[i] = path .get(i);
+        }
+        //todo: fix the locator pb when typing first char on empty editor
+        clientJupiter.generate(new TreeInsertText(clientJupiter.getSiteId(), target.getStartOffset(), ppath, operationCall.getValue().charAt(0)));
     }
 }
