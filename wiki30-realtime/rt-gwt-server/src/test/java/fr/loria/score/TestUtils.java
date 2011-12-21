@@ -84,7 +84,6 @@ public class TestUtils
                                           final CommunicationService commService,
                                           final int docType)
     {
-        System.out.println("Creating server pairs");
         // create server pairs
         final CountDownLatch start = new CountDownLatch(1);
         final CountDownLatch end = new CountDownLatch(nrClients);
@@ -121,7 +120,7 @@ public class TestUtils
             fail(e.getMessage());
         }
         assertEquals("Invalid nr of server pairs created", nrClients, ClientServerCorrespondents.getInstance().getCorrespondents().size());
-        System.out.println("Done Creating server pairs");
+        assertEquals("Invalid nr of clients for the editing session", nrClients, ClientServerCorrespondents.getInstance().getEditingSessions().get(esid).size());
     }
 
     /**
