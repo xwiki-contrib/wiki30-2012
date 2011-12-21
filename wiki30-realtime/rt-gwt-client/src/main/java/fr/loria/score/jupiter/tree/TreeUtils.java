@@ -110,6 +110,14 @@ public class TreeUtils {
         return locator.toString();
     }
 
+    public static String getStringLocatorFromPath(int[] path) {
+        StringBuffer locator = new StringBuffer();
+        for (int i = 0; i < path.length; i++) {
+            locator.append(path[i]).append("/");
+        }
+        return locator.substring(0, locator.length() - 1);
+    }
+
     public static Tree cloneTree(Tree root) {
         if (root == null) {
             return null;
