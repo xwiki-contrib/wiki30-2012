@@ -74,11 +74,15 @@ public class RtApi {
             parentElem.removeChild(htmlTextAreaElement);
 
             injectJSFilesForRTEditor(parentElem);
+
+            editor = Editor.getEditor();
+            editor.addHooksToEventListeners(new EditorApi());
+
             clientJupiter.setCommunicationService(comService);
             clientJupiter.setDocument(new PlainDocument(tArea.getText()));
             clientJupiter.setEditingSessionId(Integer.valueOf(config.getParameter(DOCUMENT_ID)));
-            clientJupiter.setCallback(clientJupiter.new PlainClientCallback());
-            initClient();
+            clientJupiter.setCallback(new ClientCallback.PlainClientCallback(editor));
+            clientJupiter.connect();
         }
     }
 
@@ -137,81 +141,6 @@ public class RtApi {
         script.setAttribute("language", "javascript");
         return script;
       }
-
-    /**
-     * Set the server generated id for this client
-     */
-    private void initClient() {
-        comService.generateClientId(new AsyncCallback<Integer>() {
-            public void onFailure(Throwable throwable) {
-                //recover somehow, either throw e
-                logger.severe("Failed to generate siteId, using local generated id. " + throwable);
-            }
-
-            public void onSuccess(Integer id) {
-                logger.finest("Generated site id: " + id);
-                clientJupiter.setSiteId(id);
-
-                createServerPairForClient();
-                serverPushForClient();
-            }
-        });
-    }
-
-    /**
-     * Create the corresponding server component for this client on the server side AND update the text area with the available content
-     */
-    private void createServerPairForClient() {
-        comService.createServerPairForClient(new ClientDTO(clientJupiter), new AsyncCallback<fr.loria.score.jupiter.model.Document>() {
-            public void onFailure(Throwable caught) {
-                logger.severe("Fail to create server pair. Error: " + caught);
-            }
-
-            public void onSuccess(fr.loria.score.jupiter.model.Document doc) {
-                logger.finest("Created the server pair for this client");
-                if (doc != null) {
-                    clientJupiter.setDocument(doc);
-                    //update UI
-                    editor = Editor.getEditor();
-                    clientJupiter.setEditor(editor);
-
-                    // todo: extract this in a callback
-                    editor.addHooksToEventListeners(new EditorApi());
-                    editor.setContent(doc.getContent());
-                    editor.paint();
-                }
-            }
-        });
-    }
-
-    /**
-     * Simulate the server-push via simple polling
-     */
-    private void serverPushForClient() {
-
-        final Timer timer = new Timer() {
-            @Override
-            public void run() {
-                logger.fine(">> Server push for client: clientId = " + clientJupiter.getSiteId());
-                comService.clientReceive(clientJupiter.getSiteId(), new AsyncCallback<Message[]>() {
-                    public void onFailure(Throwable caught) {
-                        logger.severe("Error: " + caught);
-                    }
-
-                    public void onSuccess(Message[] messages) {
-                        logger.finest("Receive server sent messages: " + Arrays.asList(messages));
-                        if (messages.length > 0) {
-                            for (int i = 0; i < messages.length; i++) {
-                                Message message = messages[i];
-                                clientJupiter.receive(message);
-                            }
-                        }
-                    }
-                });
-            }
-        };
-        timer.scheduleRepeating(REFRESH_INTERVAL);
-    }
 
     //EDITOR API
     class EditorApi {

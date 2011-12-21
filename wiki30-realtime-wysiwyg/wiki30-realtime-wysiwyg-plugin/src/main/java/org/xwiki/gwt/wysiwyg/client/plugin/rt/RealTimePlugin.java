@@ -27,10 +27,7 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
-import fr.loria.score.client.ClientJupiterAlg;
-import fr.loria.score.client.CommunicationService;
-import fr.loria.score.client.Converter;
-import fr.loria.score.client.RtApi;
+import fr.loria.score.client.*;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
@@ -94,8 +91,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, K
         //todo: I don't like this, move constants separate
         clientJupiter.setEditingSessionId(Integer.parseInt(config.getParameter(RtApi.DOCUMENT_ID)));
         clientJupiter.setCommunicationService(CommunicationService.ServiceHelper.getCommunicationService());
-        clientJupiter.setCallback(clientJupiter.new TreeClientCallback());
-        clientJupiter.setRootNode(textArea.getDocument().getBody());
+        clientJupiter.setCallback(new ClientCallback.TreeClientCallback(textArea.getDocument().getBody()));
         clientJupiter.setDocument(new TreeDocument(t));
         clientJupiter.connect();
     }

@@ -1,20 +1,12 @@
 package fr.loria.score.client;
 
-import com.google.gwt.dom.client.Node;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 import fr.loria.score.jupiter.JupiterAlg;
 import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
-import fr.loria.score.jupiter.plain.operation.Operation;
 import fr.loria.score.jupiter.transform.Transformation;
-import fr.loria.score.jupiter.tree.TreeUtils;
-import fr.loria.score.jupiter.tree.operation.TreeInsertText;
-import fr.loria.score.jupiter.tree.operation.TreeOperation;
-import org.xwiki.gwt.dom.mutation.client.DefaultMutationOperator;
-import org.xwiki.gwt.dom.mutation.client.Mutation;
-import org.xwiki.gwt.dom.mutation.client.MutationOperator;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -27,9 +19,6 @@ public class ClientJupiterAlg extends JupiterAlg {
 
     private static final Logger logger = Logger.getLogger(ClientJupiterAlg.class.getName());
     private CommunicationServiceAsync comService;
-
-    private Editor editor;  //todo: remove em 2
-    private Node root;
 
     private ClientCallback callback;
 
@@ -46,18 +35,6 @@ public class ClientJupiterAlg extends JupiterAlg {
 
     public ClientJupiterAlg(Document initialData, int siteId, Transformation transform) {
         super(siteId, initialData, transform);
-    }
-
-    public Editor getEditor() {
-        return editor;
-    }
-
-    public void setEditor(Editor editor) {
-        this.editor = editor;
-    }
-
-    public void setRootNode(Node root) {
-        this.root = root;
     }
 
     public void setCommunicationService(CommunicationServiceAsync comService) {
@@ -83,7 +60,7 @@ public class ClientJupiterAlg extends JupiterAlg {
                 siteId = clientDTO.getSiteId();
                 document = clientDTO.getDocument();
 
-                callback.onConnected();
+                callback.onConnected(clientDTO, document); // hmm.. dto should be enough
 
                 serverPushForClient();
             }
@@ -155,76 +132,5 @@ public class ClientJupiterAlg extends JupiterAlg {
             }
         };
         timer.scheduleRepeating(REFRESH_INTERVAL);
-    }
-
-    public interface ClientCallback {  //move it
-        void onConnected();
-        void onDisconnected();
-        void onExecute(Message receivedMessage);
-    }
-
-    /**
-     * Callback for plain text documents, wiki editor
-     */
-    public class PlainClientCallback implements ClientCallback {
-        @Override
-        public void onConnected() { //todo: inject the editor
-                //update UI
-                editor.setContent(document.getContent());
-                editor.setSiteId(siteId);
-                editor.paint();
-        }
-
-        @Override
-        public void onDisconnected() {}
-
-        @Override
-        public void onExecute(Message receivedMessage) {
-            int oldCaretPos = editor.getCaretPosition(); // the caret position in the editor's old document model
-            editor.setOldCaretPos(oldCaretPos);
-
-            Operation operation = (Operation)receivedMessage.getOperation();
-            operation.beforeUpdateUI(editor); // the highlighter code here
-
-            editor.setContent(getDocument().getContent()); // sets the WHOLE text
-
-            if (ClientJupiterAlg.this.siteId != operation.getSiteId()) {    //CJA.this.siteId == editor.siteId
-                operation.afterUpdateUI(editor);
-            }
-
-            editor.paint(); //cursor.focus() paints it, but it might occur that the page is not focused and thus not updated
-        }
-    }
-
-    /**
-     * Callback for tree documents, wysiwyg editor
-     */
-    public class TreeClientCallback implements ClientCallback {
-        @Override
-        public void onConnected() { //todo: inject the rta
-        }
-
-        @Override
-        public void onDisconnected() {
-        }
-
-        @Override
-        public void onExecute(Message receivedMessage) {
-            logger.info("Update UI ...");
-            TreeOperation operation = (TreeOperation) receivedMessage.getOperation();
-            if (operation instanceof TreeInsertText) {
-                //operates on a text node
-                TreeInsertText tit = (TreeInsertText) operation;
-
-                Mutation mutation = new Mutation();
-                mutation.setType(Mutation.MutationType.INSERT);
-                mutation.setLocator(TreeUtils.getStringLocatorFromPath(tit.getPath()));
-                mutation.setValue(String.valueOf(tit.getPosition()) + "," + tit.getText());
-
-                MutationOperator operator = new DefaultMutationOperator();
-                operator.operate(mutation, root);
-                logger.info("Applied mutation: " + mutation + " on node: " + root.toString());
-            }
-        }
     }
 }

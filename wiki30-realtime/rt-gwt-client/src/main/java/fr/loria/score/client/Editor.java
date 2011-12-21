@@ -83,6 +83,10 @@ public final class Editor extends JavaScriptObject {
         $wnd.editor.siteId = siteId;
     }-*/;
 
+    public native int getSiteId()/*-{
+        return $wnd.editor.siteId;
+    }-*/;
+
     /**
      * Shifts left/right the UI caret.
      * N.B. the new content was setup before calling this method
