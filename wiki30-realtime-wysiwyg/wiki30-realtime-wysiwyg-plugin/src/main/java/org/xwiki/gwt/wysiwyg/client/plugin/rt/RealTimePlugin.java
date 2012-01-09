@@ -20,10 +20,7 @@
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
 import com.google.gwt.dom.client.Node;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
@@ -52,7 +49,7 @@ import java.util.logging.Logger;
  * 
  * @version $Id: 4e19fb82c1f5869f4850b80c3b5f5d3b3d319483 $
  */
-public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, KeyDownHandler, CommandListener
+public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, KeyPressHandler, KeyUpHandler, CommandListener
 {
     private static Logger log = Logger.getLogger(RealTimePlugin.class.getName());
     private ClientJupiterAlg clientJupiter;
@@ -80,7 +77,10 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, K
     {
         super.init(textArea, config);
 
+        saveRegistration(textArea.addKeyDownHandler(this));
         saveRegistration(textArea.addKeyPressHandler(this));
+        saveRegistration(textArea.addKeyUpHandler(this));
+
         getTextArea().getCommandManager().addCommandListener(this);
 
         clientJupiter = new ClientJupiterAlg();
@@ -115,6 +115,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, K
      */
     public boolean onBeforeCommand(CommandManager sender, Command command, String param)
     {
+        log.info("onBeforeCommand: " + command + ", param: " + param);
         commandOperationCall = null;
         if (getTextArea().isAttached() && getTextArea().isEnabled() && !IGNORED_COMMANDS.contains(command)) {
             Selection selection = getTextArea().getDocument().getSelection();
@@ -122,6 +123,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, K
                 // We have to save the selection before the command is executed.
                 Range range = selection.getRangeAt(0);
                 commandOperationCall = new OperationCall(command.toString(), param, getTarget(range));
+                log.info(commandOperationCall.toString());
             }
         }
         return false;
@@ -134,9 +136,15 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, K
      */
     public void onCommand(CommandManager sender, final Command command, final String param)
     {
+        log.info("onCommand: " + command + ", param: " + param);
         if (commandOperationCall != null) {
             broadcast(commandOperationCall);
         }
+    }
+
+    @Override
+    public void onKeyDown(KeyDownEvent event) {
+        log.info("onKeyDown: " );  //todo: handle event.getNativeKeyCode()
     }
 
     /**
@@ -158,8 +166,8 @@ public class RealTimePlugin extends AbstractPlugin implements KeyPressHandler, K
     }
 
     @Override
-    public void onKeyDown(KeyDownEvent event) {
-        log.info("onKeyDown: " );  //todo: handle event.getNativeKeyCode()
+    public void onKeyUp(KeyUpEvent event) {
+        log.info("onKeyUp: " );
     }
 
     /**
