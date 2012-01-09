@@ -145,4 +145,9 @@ public class OperationTarget implements IsSerializable
     {
         this.endOffset = endOffset;
     }
+
+    @Override
+    public String toString() {
+        return "OperationTarget: startContainer " + startContainer + ", startOffset: " + startOffset + ", endContainer: " + endContainer + ", endOffset:" + endOffset;
+    }
 }

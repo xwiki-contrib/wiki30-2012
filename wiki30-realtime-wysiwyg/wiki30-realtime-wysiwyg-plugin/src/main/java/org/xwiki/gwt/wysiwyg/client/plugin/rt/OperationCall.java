@@ -117,4 +117,9 @@ public class OperationCall implements IsSerializable
     {
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "OperationCall: opId: " + operationId + ", value: " + value + ", target: " + target;
+    }
 }
