@@ -110,17 +110,17 @@ public class TreeInsertParagraph extends TreeOperation {
             }
             int[] tab = new int[op1.path.length];
             tab[0] = op1.path[0] + 1;
-            return new TreeDeleteText(op1.getPosition() - position, tab);
+            return new TreeDeleteText(op1.getSiteId(), op1.getPosition() - position, tab);
         }
         if (TreeUtils.inf(op1.path, path)) {
             return op1;
         }
         if (op1.path[0] > path[0]) {
             int[] tab = TreeUtils.addP(op1.path, 1);
-            return new TreeDeleteText(op1.getPosition(), tab);
+            return new TreeDeleteText(op1.getSiteId(), op1.getPosition(), tab);
         }
         int[] tab = TreeUtils.reference(op1.path, path);
-        return new TreeDeleteText(op1.getPosition(), tab);
+        return new TreeDeleteText(op1.getSiteId(), op1.getPosition(), tab);
     }
 
     protected TreeOperation handleTreeNewParagraph(TreeNewParagraph op1) {

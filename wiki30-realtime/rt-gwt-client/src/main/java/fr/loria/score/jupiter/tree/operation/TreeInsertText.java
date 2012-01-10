@@ -54,7 +54,7 @@ public class TreeInsertText extends TreeOperation {
         if (op1.getPosition() < position) {
             return /*new TreeDeleteText(op1.position,op1.path)*/ op1;
         }
-        return new TreeDeleteText(op1.getPosition() + 1, op1.path);
+        return new TreeDeleteText(op1.getSiteId(), op1.getPosition() + 1, op1.path);
     }
 
     public TreeOperation handleTreeNewParagraph(TreeNewParagraph op1) {

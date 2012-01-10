@@ -200,13 +200,13 @@ public class TreeStyle extends TreeOperation {
                 if (addStyle) {
                     tab = TreeUtils.addLevel(tab);
                 }
-                return new TreeDeleteText(op1.getPosition() - start, tab);
+                return new TreeDeleteText(op1.getSiteId(), op1.getPosition() - start, tab);
             }
             int[] tab = TreeUtils.addC(op1.path, 1, splitLeft ? 2 : 1);
             if (addStyle) {
                 tab = TreeUtils.addLevel(tab);
             }
-            return new TreeDeleteText(op1.getPosition() - end, tab);
+            return new TreeDeleteText(op1.getSiteId(), op1.getPosition() - end, tab);
         }
         //op1.path[1]>path[1]
         int d = 0;//decalage
@@ -217,7 +217,7 @@ public class TreeStyle extends TreeOperation {
             d++;
         }
         int[] tab = TreeUtils.addC(op1.path, 1, d);
-        return new TreeDeleteText(op1.getPosition(), tab);
+        return new TreeDeleteText(op1.getSiteId(), op1.getPosition(), tab);
     }
 
     public TreeOperation handleTreeNewParagraph(TreeNewParagraph op1) {

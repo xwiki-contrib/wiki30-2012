@@ -58,21 +58,21 @@ public class TreeMoveParagraph extends TreeOperation {
     public TreeOperation handleTreeDeleteText(TreeDeleteText op1) {
         if (op1.path[0] == sp) {
             if (sp >= ep) {
-                return new TreeDeleteText(op1.getPosition(), TreeUtils.setP(op1.path, ep));
+                return new TreeDeleteText(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep));
             } else {
-                return new TreeDeleteText(op1.getPosition(), TreeUtils.setP(op1.path, ep - 1));
+                return new TreeDeleteText(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep - 1));
             }
         }
         if (op1.path[0] < sp) {
             if (op1.path[0] < ep) {
                 return op1;
             } else {
-                return new TreeDeleteText(op1.getPosition(), TreeUtils.addP(op1.path, 1));
+                return new TreeDeleteText(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, 1));
             }
         }
         //op1.path[0]>sp
         if (op1.path[0] < ep) {
-            return new TreeDeleteText(op1.getPosition(), TreeUtils.addP(op1.path, -1));
+            return new TreeDeleteText(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, -1));
         } else {
             return op1;
         }

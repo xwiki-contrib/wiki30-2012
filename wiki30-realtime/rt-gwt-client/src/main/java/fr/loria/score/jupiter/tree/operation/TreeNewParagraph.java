@@ -39,7 +39,7 @@ public class TreeNewParagraph extends TreeOperation {
             return op1;
         }
         int[] tab = TreeUtils.addP(op1.path, 1);
-        return new TreeDeleteText(op1.getPosition(), tab);
+        return new TreeDeleteText(op1.getSiteId(), op1.getPosition(), tab);
     }
 
     public TreeOperation handleTreeNewParagraph(TreeNewParagraph op1) {

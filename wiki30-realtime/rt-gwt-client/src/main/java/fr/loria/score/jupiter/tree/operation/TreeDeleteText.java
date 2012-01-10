@@ -9,8 +9,18 @@ public class TreeDeleteText extends TreeOperation {
 
     public TreeDeleteText() {}
 
-    public TreeDeleteText(int position, int[] path) {
-        super(position);
+    /**
+     * @param siteId is used only by the backend Jupiter algo and not by the transformation functions
+     * @param position
+     * @param path
+     */
+    public TreeDeleteText(int siteId, int position, int[] path) {
+        super(siteId, position);
+        setPath(path);
+    }
+
+    public TreeDeleteText(int a, int[] path) {
+        super(a);
         setPath(path);
     }
 
@@ -45,7 +55,7 @@ public class TreeDeleteText extends TreeOperation {
         if (op1.getPosition() < position) {
             return op1;
         }
-        return new TreeDeleteText(op1.getPosition() - 1, op1.path);
+        return new TreeDeleteText(this.siteId, op1.getPosition() - 1, op1.path);
     }
 
     protected TreeOperation handleTreeNewParagraph(TreeNewParagraph op1) {
