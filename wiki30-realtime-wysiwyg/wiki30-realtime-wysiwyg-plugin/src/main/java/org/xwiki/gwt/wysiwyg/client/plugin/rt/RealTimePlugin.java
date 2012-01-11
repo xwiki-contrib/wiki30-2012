@@ -25,8 +25,11 @@ import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import fr.loria.score.client.*;
+import fr.loria.score.jupiter.model.AbstractOperation;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
+import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
+import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
 import org.xwiki.gwt.dom.client.DOMUtils;
 import org.xwiki.gwt.dom.client.Range;
@@ -144,7 +147,32 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
 
     @Override
     public void onKeyDown(KeyDownEvent event) {
-        log.info("onKeyDown: " );  //todo: handle event.getNativeKeyCode()
+        final int keyCode = event.getNativeKeyCode();
+        log.info("onKeyDown: " + keyCode);
+        Selection selection = getTextArea().getDocument().getSelection();
+        if (selection.getRangeCount() > 0) {
+            Range range = selection.getRangeAt(0);
+            OperationTarget t = getTarget(range);
+            log.info("Range: " + t);
+
+            int pos = t.getStartOffset();
+            List<Integer> path = t.getStartContainer();
+
+            AbstractOperation op = null;
+            //todo: delete and backspace MIGHT delete a paragraph if on position 0; <p>a</p> <p>b</p> ->  <p>ab</p>
+            if (keyCode == 8) { // backspace
+                pos = pos - 1;
+                op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
+            } else if (keyCode == 46) { //delete
+                op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
+            } else if (keyCode == 13) { //enter
+                //todo: Enter: <p>abc</p>  -> <p>a</p> <p>bc</p>
+                op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
+            }
+            if (op != null) {
+                clientJupiter.generate(op);
+            }
+        }
     }
 
     /**
@@ -154,9 +182,15 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
      */
     public void onKeyPress(KeyPressEvent event)
     {
+        log.info("onKeyPress: c" + event.getCharCode() + "c");
+        log.info("onKeyPress: u" + event.getUnicodeCharCode() + "u");
         log.info("onKeyPress: " + getTextArea().getHTML());
+        //todo: test with French keyboard
         boolean isAltControlOrMetaDown = event.isAltKeyDown() || event.isControlKeyDown() || event.isMetaKeyDown();
-        if (getTextArea().isAttached() && getTextArea().isEnabled() && !isAltControlOrMetaDown) {
+        boolean isNoteworthyKeyPressed = event.getCharCode() != '\u0000';
+        log.info(String.valueOf(isNoteworthyKeyPressed));
+
+        if (getTextArea().isAttached() && getTextArea().isEnabled() && !isAltControlOrMetaDown && isNoteworthyKeyPressed) {
             Selection selection = getTextArea().getDocument().getSelection();
             if (selection.getRangeCount() > 0) {
                 Range range = selection.getRangeAt(0);
@@ -167,7 +201,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
 
     @Override
     public void onKeyUp(KeyUpEvent event) {
-        log.info("onKeyUp: " );
+        //for now nothing
     }
 
     /**
@@ -224,11 +258,15 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
 
         OperationTarget target = operationCall.getTarget();
         List<Integer> path = target.getStartContainer();
-        int [] ppath = new int[path.size()];
+        //todo: fix the locator pb when typing first char on empty editor
+        clientJupiter.generate(new TreeInsertText(clientJupiter.getSiteId(), target.getStartOffset(), convertPath(path), operationCall.getValue().charAt(0)));
+    }
+
+    private int[] convertPath(List<Integer> path) {
+        int[] ppath = new int[path.size()];
         for (int i = 0; i < path.size(); i++) {
             ppath[i] = path .get(i);
         }
-        //todo: fix the locator pb when typing first char on empty editor
-        clientJupiter.generate(new TreeInsertText(clientJupiter.getSiteId(), target.getStartOffset(), ppath, operationCall.getValue().charAt(0)));
+        return ppath;
     }
 }
