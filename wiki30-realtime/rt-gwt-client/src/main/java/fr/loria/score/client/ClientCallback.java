@@ -5,6 +5,7 @@ import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.plain.operation.Operation;
 import fr.loria.score.jupiter.tree.TreeUtils;
+import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import org.xwiki.gwt.dom.mutation.client.DefaultMutationOperator;
@@ -91,22 +92,28 @@ public interface ClientCallback {
 
         @Override
         public void onExecute(Message receivedMessage) {   // todo: generify
-            log.fine("Executing received: " + receivedMessage);
+            log.fine("Executing received: " + receivedMessage + " on: " + root.toString());
             TreeOperation operation = (TreeOperation) receivedMessage.getOperation();
+            int position = operation.getPosition();
+
+            Mutation mutation = new Mutation();
+            mutation.setLocator(TreeUtils.getStringLocatorFromPath(operation.getPath()));
 
             if (operation instanceof TreeInsertText) {
                 //operates on a text node
                 TreeInsertText tit = (TreeInsertText) operation;
 
-                Mutation mutation = new Mutation();
                 mutation.setType(Mutation.MutationType.INSERT);
-                mutation.setLocator(TreeUtils.getStringLocatorFromPath(tit.getPath()));
-                mutation.setValue(String.valueOf(tit.getPosition()) + "," + tit.getText());
+                mutation.setValue(String.valueOf(position) + "," + tit.getText());
+            } else if (operation instanceof TreeDeleteText) {
+                TreeDeleteText treeDeleteText = (TreeDeleteText) operation;
 
-                MutationOperator operator = new DefaultMutationOperator();
-                operator.operate(mutation, root);
-                log.info("Applied mutation: " + mutation + " on node: " + root.toString());
+                mutation.setType(Mutation.MutationType.REMOVE);
+                mutation.setValue(String.valueOf(position) + "," + String.valueOf(position + 1)); // delete 1 char
             }
+            MutationOperator operator = new DefaultMutationOperator();
+            operator.operate(mutation, root);
+            log.info("Applied mutation: " + mutation + ".  Node is: " + root.toString());
         }
     }
 }
