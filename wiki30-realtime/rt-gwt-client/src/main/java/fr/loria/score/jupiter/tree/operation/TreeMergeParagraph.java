@@ -56,7 +56,7 @@ public class TreeMergeParagraph extends TreeOperation {
     }
 
     public String toString() {
-        return "MergeParagraph(" + super.toString() + "," + leftSiblingChildrenNr + "," + rightSiblingChildrenNr + ")";
+        return "TreeMergeParagraph(" + super.toString() + ", leftSiblingChildrenNr: " + leftSiblingChildrenNr + ", rightSiblingChildrenNr: " + rightSiblingChildrenNr + ")";
     }
 
     //OT pour MergeP

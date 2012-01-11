@@ -32,7 +32,7 @@ public class TreeCompositeOperation extends TreeOperation {
         Iterator<TreeOperation> it = operations.iterator();
         String s = it.next().toString();
         while (it.hasNext()) {
-            s = s + "," + it.next().toString();
+            s = s + ", " + it.next().toString();
         }
         return "Composite(" + s + ")";
     }

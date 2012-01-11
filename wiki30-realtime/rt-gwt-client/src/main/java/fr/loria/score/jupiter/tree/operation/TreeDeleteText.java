@@ -3,8 +3,6 @@ package fr.loria.score.jupiter.tree.operation;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeUtils;
 
-import java.util.Arrays;
-
 public class TreeDeleteText extends TreeOperation {
 
     public TreeDeleteText() {}
@@ -30,8 +28,7 @@ public class TreeDeleteText extends TreeOperation {
     }
 
     public String toString() {
-        String tab = Arrays.toString(path);
-        return "DeleteText(" + super.toString() + "," + tab + ")";
+        return "DeleteText(" + super.toString() + ")";
     }
 
     //OT pour DeleteText

@@ -4,8 +4,6 @@ package fr.loria.score.jupiter.tree.operation;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeUtils;
 
-import java.util.Arrays;
-
 public class TreeInsertText extends TreeOperation {
 
     public char text; //text to insert
@@ -28,8 +26,7 @@ public class TreeInsertText extends TreeOperation {
     }
 
     public String toString() {
-        String pathString = Arrays.toString(path);
-        return "InsertText(" + super.toString() + "," + pathString + "," + text + ")";
+        return "InsertText(" + super.toString() + ", " + text + ")";
     }
 
     //OT pour InsertText

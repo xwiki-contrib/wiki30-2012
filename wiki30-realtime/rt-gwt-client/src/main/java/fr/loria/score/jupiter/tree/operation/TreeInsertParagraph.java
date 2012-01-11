@@ -3,8 +3,6 @@ package fr.loria.score.jupiter.tree.operation;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeUtils;
 
-import java.util.Arrays;
-
 public class TreeInsertParagraph extends TreeOperation {
 
     public boolean splitLeft;//split left : true if position<>0(generation)
@@ -78,8 +76,7 @@ public class TreeInsertParagraph extends TreeOperation {
     }
 
     public String toString() {
-        String pathString = Arrays.toString(path);
-        return "InsertP(" +  super.toString() + "," + pathString + ")";
+        return "InsertP(" +  super.toString() + ")";
     }
 
     //OT pour InsertP

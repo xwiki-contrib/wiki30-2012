@@ -4,6 +4,7 @@ import fr.loria.score.jupiter.model.AbstractOperation;
 import fr.loria.score.jupiter.tree.Tree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
@@ -98,12 +99,7 @@ public abstract class TreeOperation extends AbstractOperation {
     }
 
     public String toString() {
-        String str = "";
-//        if (path != null) {
-//            str = Arrays.asList(path).toString();
-//        }
-//        return super.toString() + ", path: " + str;
-        return "siteId: " + siteId + " position: " + position;
+        return "siteId: " + siteId + ", position: " + position + ", path: " + Arrays.toString(path);
     }
 
     public int[] getPath() {
