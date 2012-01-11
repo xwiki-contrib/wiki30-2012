@@ -190,6 +190,18 @@ public class DefaultMutationOperatorTest extends AbstractMutationTest
         testChangeText("toucan", MutationType.REMOVE, "3,6", "tou");
     }
 
+    public void testDeleteSingleCharacter()
+    {
+        //todo: assumes that DMO.deleteText mutationValue is composed of 2 parts, which might not be always the case
+        testChangeText("ABCD", MutationType.REMOVE, "0,1", "zzzzBCD");  // it doesn't fail
+        fail("This test is failing, fix the line above");
+
+        testChangeText("ABCD", MutationType.REMOVE, "1,2", "ACD");
+        testChangeText("ABCD", MutationType.REMOVE, "2,3", "ABD");
+        testChangeText("ABCD", MutationType.REMOVE, "3,4", "ABC");
+
+    }
+
     /**
      * Tests how a mutation that replaces some characters is executed.
      */
