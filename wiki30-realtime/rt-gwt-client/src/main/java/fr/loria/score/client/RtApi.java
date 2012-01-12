@@ -19,7 +19,6 @@ import org.xwiki.gwt.user.client.internal.DefaultConfig;
 import java.util.logging.Logger;
 
 public class RtApi {
-    private static final int REFRESH_INTERVAL = 2000;
     public static final String DOCUMENT_ID = "documentId";
 
     private Editor editor;
