@@ -129,7 +129,7 @@ public class Converter {
     private void copyAttributes(Node currentNode, Tree treeNode) {
         Map<String, String> attributes = new HashMap<String, String>();
 
-        putIfValueNotNull(attributes, Tree.NODE_VALUE, currentNode.getNodeName());
+        putIfValueNotNull(attributes, Tree.NODE_NAME, currentNode.getNodeName());
         putIfValueNotNull(attributes, Tree.NODE_VALUE, currentNode.getNodeValue());
 
         int type = currentNode.getNodeType();
