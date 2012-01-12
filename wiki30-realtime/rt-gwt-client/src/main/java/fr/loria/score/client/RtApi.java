@@ -7,11 +7,7 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Random;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TextArea;
-import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.plain.PlainDocument;
 import fr.loria.score.jupiter.plain.operation.DeleteOperation;
 import fr.loria.score.jupiter.plain.operation.InsertOperation;
@@ -20,7 +16,6 @@ import org.xwiki.gwt.dom.client.JavaScriptObject;
 import org.xwiki.gwt.user.client.Config;
 import org.xwiki.gwt.user.client.internal.DefaultConfig;
 
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class RtApi {
@@ -31,7 +26,7 @@ public class RtApi {
     private JsBundle bundle = GWT.create(JsBundle.class);
 
     private CommunicationServiceAsync comService = CommunicationService.ServiceHelper.getCommunicationService();
-    private ClientJupiterAlg clientJupiter = new ClientJupiterAlg(new PlainDocument(""), Random.nextInt(100));
+    private ClientJupiterAlg clientJupiter = new ClientJupiterAlg(new PlainDocument(""));
 
     private static final Logger logger = Logger.getLogger(RtApi.class.getName());
 

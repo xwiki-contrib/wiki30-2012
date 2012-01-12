@@ -89,7 +89,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
         Converter converter = new Converter();
         Tree t = converter.fromNativeToCustom(textArea.getDocument().getBody());
 
-        clientJupiter = new ClientJupiterAlg(new TreeDocument(t), -1); // todo: fix this constructor with siteID
+        clientJupiter = new ClientJupiterAlg(new TreeDocument(t));
 
         //todo: I don't like this, move constants separate
         clientJupiter.setEditingSessionId(Integer.parseInt(config.getParameter(RtApi.DOCUMENT_ID)));

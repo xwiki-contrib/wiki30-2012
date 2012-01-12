@@ -22,19 +22,19 @@ public class ClientJupiterAlg extends JupiterAlg {
 
     private ClientCallback callback;
 
-    public ClientJupiterAlg() {}
+    protected ClientJupiterAlg() {}
 
-    public ClientJupiterAlg(Document initialDocument, int siteId) {
-        super(siteId, initialDocument);
+    public ClientJupiterAlg(Document document) {
+        super(document);
     }
 
-    public ClientJupiterAlg(Document initialDocument, int siteId, int editingSessionId) {
-        this(initialDocument, siteId);
+    public ClientJupiterAlg(Document document, int editingSessionId) {
+        this(document);
         this.editingSessionId = editingSessionId;
     }
 
-    public ClientJupiterAlg(Document initialData, int siteId, Transformation transform) {
-        super(siteId, initialData, transform);
+    public ClientJupiterAlg(Document document, Transformation transform) {
+        super(document, transform);
     }
 
     public void setCommunicationService(CommunicationServiceAsync comService) {

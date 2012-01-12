@@ -105,7 +105,8 @@ public class CommunicationServiceTest {
         int siteId = 1;
         int sessionId = 47;
 
-        ClientJupiterAlg client = new ClientJupiterAlg(new PlainDocument("foo"), siteId);
+        ClientJupiterAlg client = new ClientJupiterAlg(new PlainDocument("foo"));
+        client.setSiteId(siteId);
         client.setEditingSessionId(sessionId);
 
         String actualData = communicationService.createServerPairForClient(new ClientDTO(client)).getContent();

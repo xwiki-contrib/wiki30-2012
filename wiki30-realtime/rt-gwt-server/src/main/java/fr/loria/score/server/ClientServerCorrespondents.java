@@ -58,7 +58,8 @@ public final class ClientServerCorrespondents {
             }
         }
 
-        ServerJupiterAlg serverJupiter = new ServerJupiterAlg(document, siteId);
+        ServerJupiterAlg serverJupiter = new ServerJupiterAlg(document);
+        serverJupiter.setSiteId(siteId);
 //        serverJupiter.setEditingSessionId(editingSessionId);
 
         synchronized (correspondents) {

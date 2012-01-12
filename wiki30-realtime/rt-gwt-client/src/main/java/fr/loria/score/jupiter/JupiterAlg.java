@@ -35,17 +35,18 @@ public abstract class JupiterAlg {
 
     protected volatile Document document;
 
-    public JupiterAlg() {
-    }
+    /**
+     * Used only by GWT's reflection mechanism
+     */
+    protected JupiterAlg() {}
 
-    public JupiterAlg(int siteId, Document document, Transformation transformation) {
+    public JupiterAlg(Document document, Transformation transformation) {
         this.document = document;
-        this.siteId = siteId;
         xform = transformation;
     }
 
-    public JupiterAlg(int siteId, Document initalDocument) {
-        this(siteId, initalDocument, TransformationFactory.createTransformation(initalDocument));
+    public JupiterAlg(Document document) {
+        this(document, TransformationFactory.createTransformation(document));
     }
 
     /**
@@ -73,6 +74,8 @@ public abstract class JupiterAlg {
      */
     public void receive(Message receivedMsg) {
         logger.info(this + "\tReceive: " + receivedMsg);
+        logger.fine("Queue is: " + queue);
+
         // Discard acknowledged messages
         for (Iterator<Message> it = queue.iterator(); it.hasNext();) {
             Message m = it.next();

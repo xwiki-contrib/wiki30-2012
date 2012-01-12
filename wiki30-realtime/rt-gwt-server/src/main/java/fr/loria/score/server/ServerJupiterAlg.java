@@ -23,15 +23,14 @@ public class ServerJupiterAlg extends JupiterAlg {
         }
     });
 
-    public ServerJupiterAlg() {
+    protected ServerJupiterAlg() {}
+
+    public ServerJupiterAlg(Document document) {
+        super(document);
     }
 
-    public ServerJupiterAlg(Document document, int siteId) {
-        super(siteId, document);
-    }
-
-    public ServerJupiterAlg(Document initialData, int siteId, Transformation transform) {
-        super(siteId, initialData, transform);
+    public ServerJupiterAlg(Document document, Transformation transform) {
+        super(document, transform);
     }
 
     @Override

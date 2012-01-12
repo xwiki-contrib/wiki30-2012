@@ -9,7 +9,7 @@ import fr.loria.score.server.ServerJupiterAlg;
  */
 public class MockServerJupiterAlg extends ServerJupiterAlg {
     public MockServerJupiterAlg(String initialData, int siteId) {
-        super(new PlainDocument(initialData), siteId);
+        super(new PlainDocument(initialData));
     }
 
     @Override

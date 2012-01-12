@@ -10,7 +10,8 @@ import fr.loria.score.jupiter.plain.PlainDocument;
 public class MockClientJupiter extends JupiterAlg {
 
     public MockClientJupiter(int siteId) {
-        super(siteId, new PlainDocument(""));
+        super(new PlainDocument(""));
+        this.siteId = siteId;
     }
 
     @Override
