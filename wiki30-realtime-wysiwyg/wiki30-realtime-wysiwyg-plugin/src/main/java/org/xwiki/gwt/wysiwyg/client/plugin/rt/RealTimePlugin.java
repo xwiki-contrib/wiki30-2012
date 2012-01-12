@@ -118,7 +118,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
      */
     public boolean onBeforeCommand(CommandManager sender, Command command, String param)
     {
-        log.info("onBeforeCommand: " + command + ", param: " + param);
+        log.finest("onBeforeCommand: " + command + ", param: " + param);
         commandOperationCall = null;
         if (getTextArea().isAttached() && getTextArea().isEnabled() && !IGNORED_COMMANDS.contains(command)) {
             Selection selection = getTextArea().getDocument().getSelection();
@@ -139,7 +139,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
      */
     public void onCommand(CommandManager sender, final Command command, final String param)
     {
-        log.info("onCommand: " + command + ", param: " + param);
+        log.finest("onCommand: " + command + ", param: " + param);
         if (commandOperationCall != null) {
             broadcast(commandOperationCall);
         }
@@ -148,12 +148,12 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
     @Override
     public void onKeyDown(KeyDownEvent event) {
         final int keyCode = event.getNativeKeyCode();
-        log.info("onKeyDown: " + keyCode);
+        log.finest("onKeyDown: " + keyCode);
         Selection selection = getTextArea().getDocument().getSelection();
         if (selection.getRangeCount() > 0) {
             Range range = selection.getRangeAt(0);
             OperationTarget t = getTarget(range);
-            log.info("Range: " + t);
+            log.finest("Range: " + t);
 
             int pos = t.getStartOffset();
             List<Integer> path = t.getStartContainer();
@@ -182,13 +182,10 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
      */
     public void onKeyPress(KeyPressEvent event)
     {
-        log.info("onKeyPress: c" + event.getCharCode() + "c");
-        log.info("onKeyPress: u" + event.getUnicodeCharCode() + "u");
         log.info("onKeyPress: " + getTextArea().getHTML());
         //todo: test with French keyboard
         boolean isAltControlOrMetaDown = event.isAltKeyDown() || event.isControlKeyDown() || event.isMetaKeyDown();
         boolean isNoteworthyKeyPressed = event.getCharCode() != '\u0000';
-        log.info(String.valueOf(isNoteworthyKeyPressed));
 
         if (getTextArea().isAttached() && getTextArea().isEnabled() && !isAltControlOrMetaDown && isNoteworthyKeyPressed) {
             Selection selection = getTextArea().getDocument().getSelection();

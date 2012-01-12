@@ -33,7 +33,7 @@ public class TreeDocument implements Document {
 
     @Override
     public void apply(AbstractOperation op) {
-        log.fine("Apply: " + op + " to document: " + root.toString());
+        log.fine("Applying: " + op + " to document: " + root.toString());
         if (op instanceof TreeOperation) {
             TreeOperation treeOperation = (TreeOperation) op;
             treeOperation.execute(root);

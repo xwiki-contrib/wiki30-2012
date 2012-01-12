@@ -92,7 +92,8 @@ public interface ClientCallback {
 
         @Override
         public void onExecute(Message receivedMessage) {   // todo: generify
-            log.fine("Executing received: " + receivedMessage + " on: " + root.getParentElement().getString());
+            log.fine("Executing received: " + receivedMessage);
+            log.finest("Native node is before: " + root.getParentElement().getString());
             TreeOperation operation = (TreeOperation) receivedMessage.getOperation();
             int position = operation.getPosition();
 
@@ -113,7 +114,8 @@ public interface ClientCallback {
             }
             MutationOperator operator = new DefaultMutationOperator();
             operator.operate(mutation, root);
-            log.info("Applied mutation: " + mutation + ".  Node is: " + root.getParentElement().getInnerHTML());
+            log.finest("Applied mutation: " + mutation);
+            log.finest("Native node is after: " + root.getParentElement().getInnerHTML());
         }
     }
 }
