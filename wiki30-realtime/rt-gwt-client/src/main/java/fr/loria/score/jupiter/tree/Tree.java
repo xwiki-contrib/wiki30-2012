@@ -32,9 +32,11 @@ public class Tree implements Serializable {
     }
 
     public void setNodeName(String nodeName) {
-//        if (nodeName != null) {
-            attributes.put(NODE_NAME, nodeName);
-//        }
+        attributes.put(NODE_NAME, nodeName);
+    }
+
+    public String getNodeName() {
+        return attributes.get(NODE_NAME);
     }
 
     public void setParent(Tree t) {
@@ -63,14 +65,21 @@ public class Tree implements Serializable {
     }
 
     public void setAttribute(String key, String value) {
-        if (attributes.containsKey(key)) {
-            attributes.remove(key);
-        }
         attributes.put(key, value);
     }
 
-    public void setAttributes( Map<String, String> attributes) {
+    public String getAttribute(String key) {
+        return attributes.get(key);
+    }
+
+    public void setAttributes(Map<String, String> attributes) {
         this.attributes.putAll(attributes);
+    }
+
+    public Map<String, String> getAttributes() {
+        Map<String, String> map = new HashMap<String, String>();
+        map.putAll(attributes);
+        return map;
     }
 
     public void hide() {
@@ -191,6 +200,20 @@ public class Tree implements Serializable {
             tree = tree.getChild(path[i]);
         }
         return tree;
+    }
+
+    /**
+     * @return the next sibling for a tree or null.
+     * <br>It is necessary to iterate each time,
+     * because we could call this method for child 0 then for child 7 so an index optimization would be useless
+     */
+    public Tree getNextSibling() {
+        for (int i = 0; i < parent.nbChildren(); i++) {
+            if (parent.getChild(i) == this) {
+                return parent.getChild(i + 1); // not quite.
+            }
+        }
+        return null;
     }
 }
 
