@@ -4,6 +4,7 @@ import com.google.gwt.dom.client.Node;
 import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.plain.operation.Operation;
+import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.TreeUtils;
 import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
@@ -21,8 +22,23 @@ import java.util.logging.Logger;
 public interface ClientCallback {
     static final Logger log = Logger.getLogger(ClientCallback.class.getName());
 
-    void onConnected(ClientDTO dto, Document document);
+    /**
+     * Executed after the client is connected to server
+     * @param dto the DTO replied by the server used to initialize and update different things on client
+     * @param document the document
+     * @param updateUI if <code>true</code> syncs the view according to the new received document content
+     */
+    void onConnected(ClientDTO dto, Document document, boolean updateUI);
+
+    /**
+     * Executed when client is disconnected from server
+     */
     void onDisconnected();
+
+    /**
+     * Executed each time the client receives a new message from the server, <strong>after</strong> the original message was transformed
+     * @param receivedMessage the transformed message
+     */
     void onExecute(Message receivedMessage);
 
 
@@ -38,16 +54,16 @@ public interface ClientCallback {
         }
 
         @Override
-        public void onConnected(ClientDTO dto, Document document) {
-            log.fine("Successfully connected:" + dto);
+        public void onConnected(ClientDTO dto, Document document, boolean updateUI) {
             this.document = document;
 
             final int siteId = dto.getSiteId();
             editor.setSiteId(siteId);
 
-            //update UI
-            editor.setContent(dto.getDocument().getContent());
-            editor.paint();
+            if (updateUI) {
+                editor.setContent(dto.getDocument().getContent());
+                editor.paint();
+            }
         }
 
         @Override
@@ -76,24 +92,29 @@ public interface ClientCallback {
      * Callback for tree documents, wysiwyg editor
      */
     public class TreeClientCallback implements ClientCallback {
-        private Node root;
+        private Node nativeNode;
 
-        public TreeClientCallback(Node root) {
-            this.root = root;
+        public TreeClientCallback(Node nativeNode) {
+            this.nativeNode = nativeNode;
         }
 
         @Override
-        public void onConnected(ClientDTO dto, Document document) {
+        public void onConnected(ClientDTO dto, Document document, boolean updateUI) {
+            log.info("update ui: " + updateUI);
+            if(true) {  //todo: use arg
+                Node newNode = Converter.fromCustomToNative(((TreeDocument)document).getRoot());
+                log.finest("Switching native node: " + nativeNode + ", with: " + newNode);
+                nativeNode.getParentNode().replaceChild(newNode, nativeNode);
+            }
         }
 
         @Override
-        public void onDisconnected() {
-        }
+        public void onDisconnected() {}
 
         @Override
         public void onExecute(Message receivedMessage) {   // todo: generify
             log.fine("Executing received: " + receivedMessage);
-            log.finest("Native node is before: " + root.getParentElement().getString());
+            log.finest("Native node is before: " + nativeNode.getParentElement().getString());
             TreeOperation operation = (TreeOperation) receivedMessage.getOperation();
             int position = operation.getPosition();
 
@@ -105,7 +126,7 @@ public interface ClientCallback {
                 TreeInsertText tit = (TreeInsertText) operation;
 
                 mutation.setType(Mutation.MutationType.INSERT);
-                mutation.setValue(String.valueOf(position) + "," + tit.getText());
+                mutation.setValue(String.valueOf(position) + "," + tit.getText()); // insert 1 char
             } else if (operation instanceof TreeDeleteText) {
                 TreeDeleteText treeDeleteText = (TreeDeleteText) operation;
 
@@ -113,9 +134,9 @@ public interface ClientCallback {
                 mutation.setValue(String.valueOf(position) + "," + String.valueOf(position + 1)); // delete 1 char
             }
             MutationOperator operator = new DefaultMutationOperator();
-            operator.operate(mutation, root);
+            operator.operate(mutation, nativeNode);
             log.finest("Applied mutation: " + mutation);
-            log.finest("Native node is after: " + root.getParentElement().getInnerHTML());
+            log.finest("Native node is after: " + nativeNode.getParentElement().getInnerHTML());
         }
     }
 }

@@ -45,8 +45,11 @@ public class ClientJupiterAlg extends JupiterAlg {
         this.callback = callback;
     }
 
+    /**
+     * Connects to server where it creates the corresponding server component for this client on the server side<br>
+     * AND if necessary updates the editor view with the newly received content
+     */
     public void connect() {
-//        Create the corresponding server component for this client on the server side AND update the editor with the available content
         comService.initClient(new ClientDTO(this), new AsyncCallback<ClientDTO>() {
 
             @Override
@@ -58,15 +61,21 @@ public class ClientJupiterAlg extends JupiterAlg {
             public void onSuccess(ClientDTO clientDTO) {
                 logger.fine("Successfully connected to server. DTO is: " + clientDTO);
                 siteId = clientDTO.getSiteId();
+
+                boolean updateUI = !document.getContent().equals(clientDTO.getDocument().getContent());
+
                 document = clientDTO.getDocument();
 
-                callback.onConnected(clientDTO, document); // hmm.. dto should be enough
+                callback.onConnected(clientDTO, document, updateUI); // hmm.. dto should be enough
 
                 serverPushForClient();
             }
         });
     }
 
+    /**
+     * Disconnects this client from the server. It won't receive any real-time modifications to the document
+     */
     public void disconnect() {
         ClientDTO dto = new ClientDTO(this);
         comService.removeServerPairForClient(dto, new AsyncCallback<Void>() {
@@ -78,7 +87,7 @@ public class ClientJupiterAlg extends JupiterAlg {
                 logger.finest("Successfully removed server pair for client");
             }
         });
-        callback.onDisconnected();   // todo: fix NPE
+        callback.onDisconnected();
     }
 
     @Override
