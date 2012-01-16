@@ -1,5 +1,6 @@
 package fr.loria.score.client;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Text;
@@ -24,7 +25,7 @@ public class Converter {
      * @param nativeElement the native DOM element
      * @return a custom tree like object
      */
-    public Tree fromNativeToCustom(Element nativeElement) {
+    public static Tree fromNativeToCustom(Element nativeElement) {
         log.finest("Native DOM element: " + nativeElement.toString());
         Tree root = new Tree();
         DepthFirstPreOrderIterator dfs = new DepthFirstPreOrderIterator(nativeElement, root);
@@ -35,8 +36,33 @@ public class Converter {
         return root;
     }
 
+    /**
+     * Converts a custom hierarchical model into a native DOM node
+     * @param tree the custom tree model
+     * @return a native DOM node
+     */
+    public static Node fromCustomToNative(Tree tree) {
+        log.finest("Custom tree element: " + tree);
+        DepthFirstPreOrderIterator1 dfs1 = new DepthFirstPreOrderIterator1(tree);
+        while(dfs1.hasNext()) {
+            dfs1.next();
+        }
+	    Node result = dfs1.getNode();
+        toString(result);
+        return result;
+    }
 
-    class DepthFirstPreOrderIterator {
+    public static void toString(Node node) {
+        if (node != null) {
+            log.info("Node:" + node.getNodeName() + ", " + node.getNodeValue() + ", type: " + node.getNodeType());
+            for(int i = 0; i < node.getChildCount(); i++) {
+                toString(node.getChild(i));
+            }
+        }
+    }
+
+
+    static class DepthFirstPreOrderIterator {
         /**
          * The current position of the iterator.
          */
@@ -126,7 +152,88 @@ public class Converter {
         }
     }
 
-    private void copyAttributes(Node currentNode, Tree treeNode) {
+
+    static class DepthFirstPreOrderIterator1 {
+        /**
+         * The current position of the iterator.
+         */
+        private Node currentNode;
+
+        /**
+         * The node where the iteration has started (the root of the subtree which we're iterating).
+         */
+        private Tree startTree;
+
+        /**
+         * The node which is to be filled in from the currentNode
+         */
+        private Tree currentTree;
+
+        /**
+         * Creates an iterator for the subtree rooted in startTree.
+         *
+         * @param startTree root of the custom tree to create
+         */
+        DepthFirstPreOrderIterator1(Tree startTree) {
+            this.startTree = startTree;
+            this.currentTree = startTree;
+
+            this.currentNode = createNativeNode(startTree);
+        }
+
+	public Node getNode() {
+		return this.currentNode;
+	}
+        /**
+         * {@inheritDoc}
+         */
+        public boolean hasNext() {
+            return this.currentTree != null;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public Tree next() {
+            log.finest("Current tree:" + currentTree);
+
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            // try to go down
+            if (currentTree.getChild(0) != null) {
+                currentTree = currentTree.getChild(0);
+
+                Node child = createNativeNode(currentTree);
+                currentNode.appendChild(child);
+                currentNode = child;
+            } else {
+                // try to go right: from this node or any of its ancestors, until we haven't reached the startTree
+                Tree ancestor = currentTree;
+                while (ancestor != startTree) {
+                    Tree nextSibling = ancestor.getNextSibling();
+                    if (nextSibling != null) {
+                        currentTree = nextSibling;
+
+                        Node parent = currentNode.getParentElement();
+                        Node child = createNativeNode(currentTree);
+                        parent.appendChild(child);
+                        currentNode = child;
+                        break;
+                    }
+                    ancestor = ancestor.getParent();
+                    currentNode = currentNode.getParentNode();
+                }
+                // if we got back to the root searching up, then we have no more options
+                if (ancestor == startTree) {
+                    this.currentTree = null;
+                }
+            }
+            return currentTree;
+        }
+    }
+
+    private static void copyAttributes(Node currentNode, Tree treeNode) {
         Map<String, String> attributes = new HashMap<String, String>();
 
         putIfValueNotNull(attributes, Tree.NODE_NAME, currentNode.getNodeName());
@@ -137,12 +244,11 @@ public class Converter {
 
         if (type == Node.ELEMENT_NODE) {
             Element element = (Element) currentNode;
-
-            putIfValueNotNull(attributes, "className", element.getClassName());
-            putIfValueNotNull(attributes, "id", element.getId());
-            putIfValueNotNull(attributes, "style", element.getStyle().toString());
-            putIfValueNotNull(attributes, "tagName", element.getTagName());
-            putIfValueNotNull(attributes, "title", element.getTitle());
+//            putIfValueNotNull(attributes, "className", element.getClassName());
+//            putIfValueNotNull(attributes, "id", element.getId());
+//            putIfValueNotNull(attributes, "style", element.getStyle().toString());
+            putIfValueNotNull(attributes, "tagName", element.getTagName().trim().toLowerCase());
+//            putIfValueNotNull(attributes, "title", element.getTitle());
         } else if (type == Node.TEXT_NODE) {
             Text textElement = (Text) currentNode;
             treeNode.setValue(textElement.getData());
@@ -150,7 +256,29 @@ public class Converter {
         treeNode.setAttributes(attributes);
     }
 
-    private <K, V> void putIfValueNotNull(Map<K, V> map, K key, V value) {
+    private static Node createNativeNode(Tree tree) {
+        log.fine("Copying attributes from tree: " + tree);
+        Node node = null;
+
+        int nodeType = Integer.valueOf(tree.getAttribute(Tree.NODE_TYPE));
+        if (nodeType == Node.ELEMENT_NODE) {
+            Element element = Document.get().createElement(tree.getNodeName().trim().toLowerCase());
+//            Map<String, String> attrs = tree.getAttributes();
+//            for (Map.Entry<String, String> entry : attrs.entrySet()) {
+//                element.setAttribute(entry.getKey(), entry.getValue());
+//            }
+            element.setNodeValue(tree.getValue());
+
+            node = element;
+        } else if (nodeType == Node.TEXT_NODE) {
+            Text text = Document.get().createTextNode(tree.getValue());
+            node = text;
+        }
+        log.fine("Node created is: " + node.toString());
+        return node;
+    }
+
+    private static <K, V> void putIfValueNotNull(Map<K, V> map, K key, V value) {
         if (value != null) {
             map.put(key, value);
         }

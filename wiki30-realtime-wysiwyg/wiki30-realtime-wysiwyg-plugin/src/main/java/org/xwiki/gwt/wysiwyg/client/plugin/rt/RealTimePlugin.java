@@ -86,9 +86,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
 
         getTextArea().getCommandManager().addCommandListener(this);
 
-        Converter converter = new Converter();
-        Tree t = converter.fromNativeToCustom(textArea.getDocument().getBody());
-
+        Tree t = Converter.fromNativeToCustom(textArea.getDocument().getBody());
         clientJupiter = new ClientJupiterAlg(new TreeDocument(t));
 
         //todo: I don't like this, move constants separate
@@ -147,12 +145,12 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
     @Override
     public void onKeyDown(KeyDownEvent event) {
         final int keyCode = event.getNativeKeyCode();
-        log.finest("onKeyDown: " + keyCode);
+        log.fine("onKeyDown: " + keyCode + ", native evt.keyCode" + event.getNativeEvent().getKeyCode());
         Selection selection = getTextArea().getDocument().getSelection();
         if (selection.getRangeCount() > 0) {
             Range range = selection.getRangeAt(0);
             OperationTarget t = getTarget(range);
-            log.finest("Range: " + t);
+            log.fine("Range: " + t);
 
             int pos = t.getStartOffset();
             List<Integer> path = t.getStartContainer();
@@ -182,6 +180,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
     public void onKeyPress(KeyPressEvent event)
     {
         log.info("onKeyPress: " + getTextArea().getHTML());
+        log.info("onKeyPress: " + event.getCharCode() + ", native evt.keyCode" + event.getNativeEvent().getKeyCode());
         //todo: test with French keyboard
         boolean isAltControlOrMetaDown = event.isAltKeyDown() || event.isControlKeyDown() || event.isMetaKeyDown();
         boolean isNoteworthyKeyPressed = event.getCharCode() != '\u0000';
