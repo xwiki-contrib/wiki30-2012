@@ -82,7 +82,7 @@ public class Tree implements Serializable {
     }
 
     public Map<String, String> getAttributes() {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<String, String>();
         map.putAll(attributes);
         return map;
     }

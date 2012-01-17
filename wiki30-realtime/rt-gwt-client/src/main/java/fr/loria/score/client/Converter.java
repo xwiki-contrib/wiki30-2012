@@ -251,7 +251,6 @@ public class Converter {
                 final Node node = nodeAttributes.get(i);
                 putIfValueNotNullOrEmpty(attributes, node.getNodeName(), node.getNodeValue());
             }
-            putIfValueNotNullOrEmpty(attributes, "tagName", element.getTagName().trim().toLowerCase());
             putIfValueNotNullOrEmpty(attributes, "title", element.getTitle());
         } else if (type == Node.TEXT_NODE) {
             Text textElement = (Text) currentNode;
@@ -266,12 +265,13 @@ public class Converter {
 
         int nodeType = Integer.valueOf(tree.getAttribute(Tree.NODE_TYPE));
         if (nodeType == Node.ELEMENT_NODE) {
+            // nodeName == tagName for elements
             Element element = Document.get().createElement(tree.getNodeName().trim().toLowerCase());
             Map<String, String> attrs = tree.getAttributes();
             for (Map.Entry<String, String> entry : attrs.entrySet()) {
                 String entryKey = entry.getKey();
-                //ignore tagName, nodeName, nodeType
-                if (entryKey.equals(Tree.NODE_NAME) || entryKey.equals(Tree.NODE_TYPE) || entryKey.equals("tagName")) {
+                //ignore nodeName, nodeType
+                if (entryKey.equals(Tree.NODE_NAME) || entryKey.equals(Tree.NODE_TYPE)) {
                     continue;
                 }
                 element.setAttribute(entryKey, entry.getValue());
