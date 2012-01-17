@@ -3,7 +3,10 @@ package fr.loria.score.jupiter.tree.operation;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeUtils;
 
+import java.util.logging.Logger;
+
 public class TreeInsertParagraph extends TreeOperation {
+    private static transient Logger logger = Logger.getLogger(TreeInsertParagraph.class.getName());
 
     public boolean splitLeft;//split left : true if position<>0(generation)
 
@@ -73,6 +76,7 @@ public class TreeInsertParagraph extends TreeOperation {
             }
         }
         root.addChild(pTree, path[0] + d);
+        logger.info("Done executing " + toString() + " root is: " + root);
     }
 
     public String toString() {
