@@ -19,7 +19,12 @@ public class Tree implements Serializable {
      */
     public static final String NODE_TYPE = "nodeType";
 
-    protected Map<String, String> attributes = new HashMap<String, String>();
+    /**
+     * The attributes for this Tree.
+     * The key order is preserved during serialization/de-serialization process
+     */
+    protected Map<String, String> attributes = new LinkedHashMap<String, String>();
+
     protected List<Tree> children = new ArrayList<Tree>();
     protected boolean invisible;
     protected Tree parent;
