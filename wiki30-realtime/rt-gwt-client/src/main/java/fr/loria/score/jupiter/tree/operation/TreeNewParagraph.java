@@ -2,6 +2,7 @@ package fr.loria.score.jupiter.tree.operation;
 
 
 import fr.loria.score.jupiter.tree.Tree;
+import fr.loria.score.jupiter.tree.TreeFactory;
 import fr.loria.score.jupiter.tree.TreeUtils;
 
 public class TreeNewParagraph extends TreeOperation {
@@ -13,8 +14,8 @@ public class TreeNewParagraph extends TreeOperation {
     }
 
     public void execute(Tree root) {
-        Tree paragraph = new Tree("p", null);
-        Tree t3 = new Tree("", "");
+        Tree paragraph = TreeFactory.createParagraphTree();
+        Tree t3 = TreeFactory.createTextTree("");
 
         paragraph.addChild(t3);
 

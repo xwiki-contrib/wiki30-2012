@@ -138,7 +138,7 @@ public class TreeUtils {
      * @return a deep clone of the give tree: parent, children, attributes
      */
     private static Tree cloneTree(Tree root, Tree parent) {
-        Tree cloned = new Tree();
+        Tree cloned = TreeFactory.createEmptyTree();
         cloned.setParent(parent);
 
         Map<String, String> clonedAttrs = new HashMap<String, String>();

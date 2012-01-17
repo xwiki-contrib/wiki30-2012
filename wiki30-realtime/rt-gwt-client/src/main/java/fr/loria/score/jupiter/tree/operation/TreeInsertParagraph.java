@@ -1,6 +1,7 @@
 package fr.loria.score.jupiter.tree.operation;
 
 import fr.loria.score.jupiter.tree.Tree;
+import fr.loria.score.jupiter.tree.TreeFactory;
 import fr.loria.score.jupiter.tree.TreeUtils;
 
 import java.util.logging.Logger;
@@ -42,7 +43,7 @@ public class TreeInsertParagraph extends TreeOperation {
     public void execute(Tree root) {
         int d = 1;//décalage
         Tree tree = root;
-        Tree pTree = new Tree("p", null);
+        Tree pTree = TreeFactory.createParagraphTree();
         Tree tTree = pTree;
         tree = tree.getChild(path[0]);
         Tree r;
@@ -71,7 +72,7 @@ public class TreeInsertParagraph extends TreeOperation {
                     tree = tree.getChild(path[i + 1]);
                     String str = tree.split(position);
 
-                    tTree.addChild(new Tree(str, str), 0);
+                    tTree.addChild(TreeFactory.createTextTree(str), 0);
                 }
             }
         }

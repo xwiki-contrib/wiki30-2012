@@ -6,6 +6,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Text;
 import fr.loria.score.jupiter.tree.Tree;
+import fr.loria.score.jupiter.tree.TreeFactory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -28,11 +29,11 @@ public class Converter {
      */
     public static Tree fromNativeToCustom(Element nativeElement) {
         log.finest("Native DOM element: " + nativeElement.toString());
-        Tree root = new Tree();
-        DepthFirstPreOrderIterator dfs = new DepthFirstPreOrderIterator(nativeElement, root);
+        DepthFirstPreOrderIterator dfs = new DepthFirstPreOrderIterator(nativeElement);
         while (dfs.hasNext()) {
             dfs.next();
         }
+        Tree root = dfs.getTree();
         log.finest("Returning tree: " + root.toString());
         return root;
     }
@@ -52,16 +53,6 @@ public class Converter {
         toString(result);
         return result;
     }
-
-    public static void toString(Node node) {
-        if (node != null) {
-            log.finest("Node:" + node.getNodeName() + ", " + node.getNodeValue() + ", type: " + node.getNodeType());
-            for(int i = 0; i < node.getChildCount(); i++) {
-                toString(node.getChild(i));
-            }
-        }
-    }
-
 
     static class DepthFirstPreOrderIterator {
         /**
@@ -83,14 +74,16 @@ public class Converter {
          * Creates an iterator for the subtree rooted in startNode.
          *
          * @param startNode root of the subtree to iterate through.
-         * @param startTree root of the custom tree to create
          */
-        DepthFirstPreOrderIterator(Node startNode, Tree startTree) {
+        DepthFirstPreOrderIterator(Node startNode) {
             this.startNode = startNode;
             this.currentNode = startNode;
 
-            this.currentTree = startTree;
-            copyAttributes(currentNode, startTree);
+            this.currentTree = createTreeNode(currentNode);
+        }
+
+        public Tree getTree() {
+            return currentTree;
         }
 
         /**
@@ -116,10 +109,9 @@ public class Converter {
             if (currentNode.getFirstChild() != null) {
                 this.currentNode = currentNode.getFirstChild();
 
-                Tree child = new Tree();
+                Tree child = createTreeNode(currentNode);
                 child.setParent(currentTree);
                 currentTree.addChild(child);
-                copyAttributes(currentNode, child);
 
                 currentTree = child;
             } else {
@@ -131,11 +123,9 @@ public class Converter {
 
                         Tree parent = currentTree.getParent();
 
-                        Tree child = new Tree();
-
+                        Tree child = createTreeNode(currentNode);
                         child.setParent(parent);
                         parent.addChild(child);
-                        copyAttributes(currentNode, child);
 
                         currentTree = child;
 
@@ -182,9 +172,9 @@ public class Converter {
             this.currentNode = createNativeNode(startTree);
         }
 
-	public Node getNode() {
-		return this.currentNode;
-	}
+        public Node getNode() {
+            return this.currentNode;
+        }
         /**
          * {@inheritDoc}
          */
@@ -234,7 +224,9 @@ public class Converter {
         }
     }
 
-    private static void copyAttributes(Node currentNode, Tree treeNode) {
+    private static Tree createTreeNode(Node currentNode) {
+        Tree treeNode = TreeFactory.createEmptyTree();
+
         Map<String, String> attributes = new LinkedHashMap<String, String>();
 
         putIfValueNotNullOrEmpty(attributes, Tree.NODE_NAME, currentNode.getNodeName());
@@ -257,10 +249,11 @@ public class Converter {
             treeNode.setValue(textElement.getData());
         }
         treeNode.setAttributes(attributes);
+        return treeNode;
     }
 
     private static Node createNativeNode(Tree tree) {
-        log.fine("Copying attributes from tree: " + tree);
+        log.finest("Create native node from tree: " + tree);
         Node node = null;
 
         int nodeType = Integer.valueOf(tree.getAttribute(Tree.NODE_TYPE));
@@ -283,7 +276,7 @@ public class Converter {
             Text text = Document.get().createTextNode(tree.getValue());
             node = text;
         }
-        log.fine("Node created is: " + node.toString());
+        log.finest("Node created is: " + node.toString());
         return node;
     }
 
@@ -301,4 +294,17 @@ public class Converter {
     private static native JsArray<Node> getNodeAttributes(Node node) /*-{
         return node.attributes;
     }-*/;
+
+    /**
+     * Utility method to see a comprehensible representation of a native element
+     * @param node the node
+     */
+    private static void toString(Node node) {
+        if (node != null) {
+            log.finest("Node:" + node.getNodeName() + ", " + node.getNodeValue() + ", type: " + node.getNodeType());
+            for(int i = 0; i < node.getChildCount(); i++) {
+                toString(node.getChild(i));
+            }
+        }
+    }
 }

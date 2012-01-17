@@ -8,8 +8,8 @@ import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.model.State;
 import fr.loria.score.jupiter.plain.PlainDocument;
 import fr.loria.score.jupiter.plain.operation.InsertOperation;
-import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
+import fr.loria.score.jupiter.tree.TreeFactory;
 import fr.loria.score.server.ClientServerCorrespondents;
 import fr.loria.score.server.ServerJupiterAlg;
 import org.slf4j.Logger;
@@ -58,7 +58,7 @@ public class TestUtils
                         if (docType == 0) {
                             dto.setDocument(new PlainDocument(""));
                         } else if (docType == 1){
-                            dto.setDocument(new TreeDocument(new Tree("root", null)));
+                            dto.setDocument(new TreeDocument(TreeFactory.createElementTree("body")));
                         }
                         dto.setEditingSessionId(counter % nrSessions); // uniformly distribute clients for sessions
                         commService.initClient(dto);
@@ -101,7 +101,7 @@ public class TestUtils
                         if (docType == 0) {
                             dto.setDocument(new PlainDocument(""));
                         } else if (docType == 1){
-                            dto.setDocument(new TreeDocument(new Tree("root", null)));
+                            dto.setDocument(new TreeDocument(TreeFactory.createElementTree("body")));
                         }
                         dto.setEditingSessionId(esid);
                         commService.initClient(dto);

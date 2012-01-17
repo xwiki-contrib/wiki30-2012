@@ -3,8 +3,8 @@ package fr.loria.score;
 import fr.loria.score.client.ClientDTO;
 import fr.loria.score.client.CommunicationService;
 import fr.loria.score.jupiter.model.Message;
-import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
+import fr.loria.score.jupiter.tree.TreeFactory;
 import fr.loria.score.jupiter.tree.operation.*;
 import fr.loria.score.server.ClientServerCorrespondents;
 import fr.loria.score.server.CommunicationServiceImpl;
@@ -124,7 +124,7 @@ public class TreeCommunicationServiceTest  {
         TestUtils.compareServersAtQuiescence();
 
         //a new client joins and should receive the existing content
-        ClientDTO client = new ClientDTO().setEditingSessionId(esid).setDocument(new TreeDocument(new Tree("root", null)));
+        ClientDTO client = new ClientDTO().setEditingSessionId(esid).setDocument(new TreeDocument(TreeFactory.createElementTree("body")));
         client = communicationService.initClient(client);
         Integer id = client.getSiteId();
         String clientContent = client.getDocument().getContent();

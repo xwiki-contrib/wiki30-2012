@@ -29,12 +29,7 @@ public class Tree implements Serializable {
     protected boolean invisible;
     protected Tree parent;
 
-    public Tree() {}
-
-    public Tree(String nodeName, String nodeValue) {
-        setNodeName(nodeName);
-        setValue(nodeValue);
-    }
+    protected Tree() {}
 
     public void setNodeName(String nodeName) {
         attributes.put(NODE_NAME, nodeName);
@@ -168,7 +163,7 @@ public class Tree implements Serializable {
             return ""; // todo: this is not good.
         }
     }
-
+    //todo: review and fix failing TCST tests
     public String toString() {
         if (invisible) {
             return "";
