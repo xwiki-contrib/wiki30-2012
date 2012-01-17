@@ -1,12 +1,13 @@
 package fr.loria.score.client;
 
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Text;
 import fr.loria.score.jupiter.tree.Tree;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
@@ -54,7 +55,7 @@ public class Converter {
 
     public static void toString(Node node) {
         if (node != null) {
-            log.info("Node:" + node.getNodeName() + ", " + node.getNodeValue() + ", type: " + node.getNodeType());
+            log.finest("Node:" + node.getNodeName() + ", " + node.getNodeValue() + ", type: " + node.getNodeType());
             for(int i = 0; i < node.getChildCount(); i++) {
                 toString(node.getChild(i));
             }
@@ -234,21 +235,24 @@ public class Converter {
     }
 
     private static void copyAttributes(Node currentNode, Tree treeNode) {
-        Map<String, String> attributes = new HashMap<String, String>();
+        Map<String, String> attributes = new LinkedHashMap<String, String>();
 
-        putIfValueNotNull(attributes, Tree.NODE_NAME, currentNode.getNodeName());
-        putIfValueNotNull(attributes, Tree.NODE_VALUE, currentNode.getNodeValue());
+        putIfValueNotNullOrEmpty(attributes, Tree.NODE_NAME, currentNode.getNodeName());
+        putIfValueNotNullOrEmpty(attributes, Tree.NODE_VALUE, currentNode.getNodeValue());
 
         int type = currentNode.getNodeType();
-        putIfValueNotNull(attributes, Tree.NODE_TYPE, String.valueOf(type));
+        putIfValueNotNullOrEmpty(attributes, Tree.NODE_TYPE, String.valueOf(type));
 
         if (type == Node.ELEMENT_NODE) {
             Element element = (Element) currentNode;
-//            putIfValueNotNull(attributes, "className", element.getClassName());
-//            putIfValueNotNull(attributes, "id", element.getId());
-//            putIfValueNotNull(attributes, "style", element.getStyle().toString());
-            putIfValueNotNull(attributes, "tagName", element.getTagName().trim().toLowerCase());
-//            putIfValueNotNull(attributes, "title", element.getTitle());
+            // id, style, class == className, contenteditable etc.
+            final JsArray<Node> nodeAttributes = getNodeAttributes(element);
+            for (int i = 0; i < nodeAttributes.length(); i++) {
+                final Node node = nodeAttributes.get(i);
+                putIfValueNotNullOrEmpty(attributes, node.getNodeName(), node.getNodeValue());
+            }
+            putIfValueNotNullOrEmpty(attributes, "tagName", element.getTagName().trim().toLowerCase());
+            putIfValueNotNullOrEmpty(attributes, "title", element.getTitle());
         } else if (type == Node.TEXT_NODE) {
             Text textElement = (Text) currentNode;
             treeNode.setValue(textElement.getData());
@@ -263,10 +267,15 @@ public class Converter {
         int nodeType = Integer.valueOf(tree.getAttribute(Tree.NODE_TYPE));
         if (nodeType == Node.ELEMENT_NODE) {
             Element element = Document.get().createElement(tree.getNodeName().trim().toLowerCase());
-//            Map<String, String> attrs = tree.getAttributes();
-//            for (Map.Entry<String, String> entry : attrs.entrySet()) {
-//                element.setAttribute(entry.getKey(), entry.getValue());
-//            }
+            Map<String, String> attrs = tree.getAttributes();
+            for (Map.Entry<String, String> entry : attrs.entrySet()) {
+                String entryKey = entry.getKey();
+                //ignore tagName, nodeName, nodeType
+                if (entryKey.equals(Tree.NODE_NAME) || entryKey.equals(Tree.NODE_TYPE) || entryKey.equals("tagName")) {
+                    continue;
+                }
+                element.setAttribute(entryKey, entry.getValue());
+            }
             element.setNodeValue(tree.getValue());
 
             node = element;
@@ -278,9 +287,18 @@ public class Converter {
         return node;
     }
 
-    private static <K, V> void putIfValueNotNull(Map<K, V> map, K key, V value) {
-        if (value != null) {
+    private static <K, V> void putIfValueNotNullOrEmpty(Map<K, V> map, K key, V value) {
+        if (value != null && !value.equals("")) {
             map.put(key, value);
         }
     }
+
+    /**
+     * GWT provides no way to get all attributes for a node
+     * @param node the node to get it's attributes
+     * @return all the attributes for a node
+     */
+    private static native JsArray<Node> getNodeAttributes(Node node) /*-{
+        return node.attributes;
+    }-*/;
 }
