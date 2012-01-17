@@ -118,6 +118,10 @@ public class TreeUtils {
         return locator.substring(0, locator.length() - 1);
     }
 
+    /**
+     * @param root the tree to be deeply cloned
+     * @return a deep clone of the given argument tree: parent, children, attributes
+     */
     public static Tree cloneTree(Tree root) {
         if (root == null) {
             return null;
