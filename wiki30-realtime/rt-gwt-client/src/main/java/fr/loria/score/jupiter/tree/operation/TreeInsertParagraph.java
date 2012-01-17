@@ -21,7 +21,7 @@ public class TreeInsertParagraph extends TreeOperation {
     public TreeInsertParagraph(int siteId, int position, int[] path) {
         super(siteId, position);
         setPath(path);
-        if (position == 0) {
+        if (position != 0) {
             this.splitLeft = true;
         }
     }
