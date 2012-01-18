@@ -122,7 +122,6 @@ public class ClientJupiterAlg extends JupiterAlg {
             public void run() {
                 comService.clientReceive(getSiteId(), new AsyncCallback<Message[]>() {
                     public void onSuccess(Message[] messages) {
-                        logger.finest("Receive server sent messages: " + Arrays.asList(messages));
                         if (messages.length > 0) {
                             for (int i = 0; i < messages.length; i++) {
                                 Message message = messages[i];
