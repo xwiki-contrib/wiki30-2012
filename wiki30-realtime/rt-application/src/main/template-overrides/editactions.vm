@@ -1,7 +1,7 @@
 ### Buttons displayed in the edit interface: cancel, preview (when enabled), save and continue, save and view.
 ###
 #if ("$!showactions" != '0')
-  #if ($editor == 'rt')
+  #if ($editor == 'rt' || $editor == 'wysiwyg')
     $xwiki.jsfx.use('js/xwiki/rte/xre/actionButtonsRT.js', true)
   #else
     $xwiki.jsfx.use('js/xwiki/actionbuttons/actionButtons.js', true)

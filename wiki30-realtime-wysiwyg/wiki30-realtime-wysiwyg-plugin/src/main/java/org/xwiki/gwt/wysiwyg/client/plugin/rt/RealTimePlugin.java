@@ -55,7 +55,7 @@ import java.util.logging.Logger;
 public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, KeyPressHandler, KeyUpHandler, CommandListener
 {
     private static Logger log = Logger.getLogger(RealTimePlugin.class.getName());
-    private ClientJupiterAlg clientJupiter;
+    private static ClientJupiterAlg clientJupiter;
 
     /**
      * The list of command that shouldn't be broadcasted.
@@ -94,6 +94,8 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
         clientJupiter.setCommunicationService(CommunicationService.ServiceHelper.getCommunicationService());
         clientJupiter.setCallback(new ClientCallback.TreeClientCallback(textArea.getDocument().getBody()));
         clientJupiter.connect();
+
+        customizeActionListeners();
     }
 
     /**
@@ -263,5 +265,26 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             ppath[i] = path .get(i);
         }
         return ppath;
+    }
+
+    /**
+     * Customize the action listeners found in actionButtonsRT.js
+     */
+    private static native void customizeActionListeners() /*-{
+        $wnd.onCancelHook = function() {
+            @org.xwiki.gwt.wysiwyg.client.plugin.rt.RealTimePlugin::disconnect()();
+        };
+
+        $wnd.onSaveAndViewHook= function() {
+            @org.xwiki.gwt.wysiwyg.client.plugin.rt.RealTimePlugin::disconnect()();
+        };
+
+        $wnd.onSaveAndContinueHook = function() {
+            @org.xwiki.gwt.wysiwyg.client.plugin.rt.RealTimePlugin::disconnect()();
+        }
+    }-*/;
+
+    private static void disconnect() {
+        clientJupiter.disconnect();
     }
 }
