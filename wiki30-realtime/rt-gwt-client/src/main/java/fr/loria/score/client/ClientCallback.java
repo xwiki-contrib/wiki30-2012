@@ -120,7 +120,8 @@ public interface ClientCallback {
             int position = operation.getPosition();
 
             Mutation mutation = new Mutation();
-            mutation.setLocator(TreeUtils.getStringLocatorFromPath(operation.getPath()));
+            final String locator = TreeUtils.getStringLocatorFromPath(operation.getPath());
+            mutation.setLocator(locator);
 
             if (operation instanceof TreeInsertText) {
                 //operates on a text node
@@ -136,8 +137,26 @@ public interface ClientCallback {
             } else if (operation instanceof TreeInsertParagraph) {
                 TreeInsertParagraph treeInsertParagraph = (TreeInsertParagraph) operation;
 
-                mutation.setType(Mutation.MutationType.INSERT);
-                mutation.setValue(String.valueOf(position) + ",<p>...</p>"); //todo: fix
+                //Get the actual text node
+                Node textNode = DefaultMutationOperator.getChildNodeFromLocator(nativeNode, locator);
+                String actualText = textNode.getNodeValue();
+
+                // first remove from the textnode what was after caret position
+                Mutation removeMutation = new Mutation();
+                removeMutation.setType(Mutation.MutationType.REMOVE);
+                removeMutation.setLocator(locator);
+                removeMutation.setValue(position +"," + (actualText.length() - position));
+
+                MutationOperator operator = new DefaultMutationOperator();
+                operator.operate(removeMutation, nativeNode);
+
+                //then insert new node
+                Mutation insertMutation = new Mutation();
+                insertMutation.setType(Mutation.MutationType.INSERT);
+                insertMutation.setLocator("");// what?
+                insertMutation.setValue("<p>" + actualText.substring(position + 1) + "</p>");
+                operator.operate(insertMutation, nativeNode);
+
             }
 
             MutationOperator operator = new DefaultMutationOperator();
