@@ -202,17 +202,22 @@ public class DefaultMutationOperatorTest extends AbstractMutationTest
 
     }
 
+    //is there a cleaner way to do this?
     public void testInsertNewParagraph()
     {
         getContainer().setInnerHTML("<p>abcd</p>");
         Mutation m = new Mutation();
         m.setType(MutationType.INSERT);
-        m.setLocator("1/0");
-        m.setValue("2");
+        m.setLocator("0/0");
+        m.setValue("2,<p>cd</p>");
+
+        //todo: apply REMOVE mutation too
 
         MutationOperator mo = new DefaultMutationOperator();
         mo.operate(m, getContainer());
+
         assertEquals("<p>ab</p><p>cd</p>", getContainer().getInnerHTML());
+        fail("Incomplete test, Fix it");
     }
 
     /**
