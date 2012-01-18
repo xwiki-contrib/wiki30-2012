@@ -1,12 +1,14 @@
 package fr.loria.score.client;
 
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.user.client.Element;
 import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.plain.operation.Operation;
 import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.TreeUtils;
 import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
+import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import org.xwiki.gwt.dom.mutation.client.DefaultMutationOperator;
@@ -113,7 +115,7 @@ public interface ClientCallback {
         @Override
         public void onExecute(Message receivedMessage) {   // todo: generify
             log.fine("Executing received: " + receivedMessage);
-            log.finest("Native node is before: " + nativeNode.getParentElement().getString());
+            log.fine("Native node is before: " + Element.as(nativeNode).getString());
             TreeOperation operation = (TreeOperation) receivedMessage.getOperation();
             int position = operation.getPosition();
 
@@ -131,11 +133,17 @@ public interface ClientCallback {
 
                 mutation.setType(Mutation.MutationType.REMOVE);
                 mutation.setValue(String.valueOf(position) + "," + String.valueOf(position + 1)); // delete 1 char
+            } else if (operation instanceof TreeInsertParagraph) {
+                TreeInsertParagraph treeInsertParagraph = (TreeInsertParagraph) operation;
+
+                mutation.setType(Mutation.MutationType.INSERT);
+                mutation.setValue(String.valueOf(position) + ",<p>...</p>"); //todo: fix
             }
+
             MutationOperator operator = new DefaultMutationOperator();
             operator.operate(mutation, nativeNode);
-            log.finest("Applied mutation: " + mutation);
-            log.finest("Native node is after: " + nativeNode.getParentElement().getInnerHTML());
+            log.fine("Applied mutation: " + mutation);
+            log.fine("Native node is after: " + Element.as(nativeNode).getString());
         }
     }
 }
