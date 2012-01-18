@@ -123,6 +123,28 @@ public class DefaultMutationOperator implements MutationOperator
                 break;
         }
     }
+    // todo: extract in in Utils...
+
+    /**
+     * @param root the node where the locator is relative to
+     * @param locator the location/path
+     * @return the child node at the locator value starting from the root node
+     */
+    public static Node getChildNodeFromLocator(Node root, String locator)
+    {
+        Node targetNode = root;
+        if (locator.length() > 0) {
+            String[] path = locator.split("/");
+            for (int i = 0; i < path.length - 1; i++) {
+                targetNode = targetNode.getChildNodes().getItem(Integer.parseInt(path[i]));
+            }
+            String pathEnd = path[path.length - 1];
+            if (pathEnd.charAt(0) >= '0' && pathEnd.charAt(0) <= '9') {
+                targetNode = targetNode.getChildNodes().getItem(Integer.parseInt(pathEnd));
+            }
+        }
+        return targetNode;
+    }
 
     /**
      * @param locator the location where the mutation took place
@@ -133,7 +155,7 @@ public class DefaultMutationOperator implements MutationOperator
     private MutationTarget getMutationTarget(String locator, Node root, MutationType mutationType)
     {
         MutationTarget mutationTarget = new MutationTarget();
-
+        //todo: use getChildNodeFromLocator
         if (locator.length() > 0) {
             String[] path = locator.split("/");
             Node targetNode = root;
