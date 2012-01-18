@@ -202,6 +202,19 @@ public class DefaultMutationOperatorTest extends AbstractMutationTest
 
     }
 
+    public void testInsertNewParagraph()
+    {
+        getContainer().setInnerHTML("<p>abcd</p>");
+        Mutation m = new Mutation();
+        m.setType(MutationType.INSERT);
+        m.setLocator("1/0");
+        m.setValue("2");
+
+        MutationOperator mo = new DefaultMutationOperator();
+        mo.operate(m, getContainer());
+        assertEquals("<p>ab</p><p>cd</p>", getContainer().getInnerHTML());
+    }
+
     /**
      * Tests how a mutation that replaces some characters is executed.
      */
