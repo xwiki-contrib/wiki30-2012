@@ -1,6 +1,7 @@
 package fr.loria.score.client;
 
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
@@ -123,44 +124,39 @@ public interface ClientCallback {
             final String locator = TreeUtils.getStringLocatorFromPath(operation.getPath());
             mutation.setLocator(locator);
 
+            MutationOperator operator = new DefaultMutationOperator();
+
             if (operation instanceof TreeInsertText) {
                 //operates on a text node
                 TreeInsertText tit = (TreeInsertText) operation;
 
                 mutation.setType(Mutation.MutationType.INSERT);
                 mutation.setValue(String.valueOf(position) + "," + tit.getText()); // insert 1 char
+
+                operator.operate(mutation, nativeNode);
             } else if (operation instanceof TreeDeleteText) {
                 TreeDeleteText treeDeleteText = (TreeDeleteText) operation;
 
                 mutation.setType(Mutation.MutationType.REMOVE);
                 mutation.setValue(String.valueOf(position) + "," + String.valueOf(position + 1)); // delete 1 char
+
+                operator.operate(mutation, nativeNode);
             } else if (operation instanceof TreeInsertParagraph) {
                 TreeInsertParagraph treeInsertParagraph = (TreeInsertParagraph) operation;
 
                 //Get the actual text node
+                //first remove from the textnode what was after caret position
                 Node textNode = DefaultMutationOperator.getChildNodeFromLocator(nativeNode, locator);
                 String actualText = textNode.getNodeValue();
-
-                // first remove from the textnode what was after caret position
-                Mutation removeMutation = new Mutation();
-                removeMutation.setType(Mutation.MutationType.REMOVE);
-                removeMutation.setLocator(locator);
-                removeMutation.setValue(position +"," + (actualText.length() - position));
-
-                MutationOperator operator = new DefaultMutationOperator();
-                operator.operate(removeMutation, nativeNode);
+                textNode.setNodeValue(actualText.substring(0, position));
 
                 //then insert new node
-                Mutation insertMutation = new Mutation();
-                insertMutation.setType(Mutation.MutationType.INSERT);
-                insertMutation.setLocator("");// what?
-                insertMutation.setValue("<p>" + actualText.substring(position + 1) + "</p>");
-                operator.operate(insertMutation, nativeNode);
-
+                Node n = textNode.getParentElement();
+                log.fine("Parent node: " + Element.as(n).getString());
+                Element p = DOM.createElement("p");
+                p.setInnerText(actualText.substring(position));
+                n.getParentElement().insertAfter(p, n);
             }
-
-            MutationOperator operator = new DefaultMutationOperator();
-            operator.operate(mutation, nativeNode);
             log.fine("Applied mutation: " + mutation);
             log.fine("Native node is after: " + Element.as(nativeNode).getString());
         }
