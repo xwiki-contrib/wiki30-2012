@@ -25,12 +25,9 @@ import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import fr.loria.score.client.*;
-import fr.loria.score.jupiter.model.AbstractOperation;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
-import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
-import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
-import fr.loria.score.jupiter.tree.operation.TreeInsertText;
+import fr.loria.score.jupiter.tree.operation.*;
 import org.xwiki.gwt.dom.client.DOMUtils;
 import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.dom.client.Selection;
@@ -157,15 +154,22 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             int pos = t.getStartOffset();
             List<Integer> path = t.getStartContainer();
 
-            AbstractOperation op = null;
+            TreeOperation op = null;
             //todo: delete and backspace MIGHT delete a paragraph if on position 0; <p>a</p> <p>b</p> ->  <p>ab</p>
             if (keyCode == 8) { // backspace
-                pos = pos - 1;
-                op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
+                if (pos == 0) { // perhaps a line merge
+                    if (isNoteworthyPath(path)) {
+                        // definitively a line merge
+                        op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
+                        op.setPath(convertPath(path));
+                    }
+                } else {
+                    pos = pos - 1;
+                    op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
+                }
             } else if (keyCode == 46) { //delete
                 op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
             } else if (keyCode == 13) { //enter
-                //todo: Enter: <p>abc</p>  -> <p>a</p> <p>bc</p>
                 op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
             }
             if (op != null) {
@@ -286,5 +290,16 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
 
     private static void disconnect() {
         clientJupiter.disconnect();
+    }
+
+    private boolean isNoteworthyPath(List<Integer> path) {
+        boolean noteworthy = false;
+        for (Integer i : path) {
+            if (!i.equals(0)) {
+                noteworthy = true;
+                break;
+            }
+        }
+        return noteworthy;
     }
 }

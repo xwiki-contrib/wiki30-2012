@@ -8,10 +8,7 @@ import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.plain.operation.Operation;
 import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.TreeUtils;
-import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
-import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
-import fr.loria.score.jupiter.tree.operation.TreeInsertText;
-import fr.loria.score.jupiter.tree.operation.TreeOperation;
+import fr.loria.score.jupiter.tree.operation.*;
 import org.xwiki.gwt.dom.mutation.client.DefaultMutationOperator;
 import org.xwiki.gwt.dom.mutation.client.Mutation;
 import org.xwiki.gwt.dom.mutation.client.MutationOperator;
@@ -158,6 +155,15 @@ public interface ClientCallback {
                 Element p = DOM.createElement("p");
                 p.setInnerText(actualText.substring(position));
                 n.getParentElement().insertAfter(p, n);
+            } else if (operation instanceof TreeMergeParagraph) {
+                Node textNode = DefaultMutationOperator.getChildNodeFromLocator(nativeNode, locator);
+                Node p = textNode.getParentElement();
+                Node n = p.getPreviousSibling();
+
+                textNode.removeFromParent();
+                p.removeFromParent();
+
+                n.appendChild(textNode);
             }
             log.fine("Applied mutation: " + mutation);
             log.fine("Native node is after: " + Element.as(nativeNode).getString());
