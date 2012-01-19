@@ -104,9 +104,11 @@ public interface ClientCallback {
         @Override
         public void onConnected(ClientDTO dto, Document document, boolean updateUI) {
             if (updateUI) {
-                log.finest("Updating UI for WYSIWYG. Replacing DOM node: " + nativeNode);
+                log.finest("Updating UI for WYSIWYG. Replacing native node: " + Element.as(nativeNode).getString());
                 Node newNode = Converter.fromCustomToNative(((TreeDocument)document).getRoot());
                 nativeNode.getParentNode().replaceChild(newNode, nativeNode);
+                nativeNode = newNode;
+                log.finest("New native node: " + Element.as(nativeNode).getString());
             }
         }
 
