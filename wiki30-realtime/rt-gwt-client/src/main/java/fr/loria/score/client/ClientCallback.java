@@ -1,6 +1,7 @@
 package fr.loria.score.client;
 
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.Text;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import fr.loria.score.jupiter.model.Document;
@@ -158,12 +159,14 @@ public interface ClientCallback {
             } else if (operation instanceof TreeMergeParagraph) {
                 Node textNode = DefaultMutationOperator.getChildNodeFromLocator(nativeNode, locator);
                 Node p = textNode.getParentElement();
-                Node n = p.getPreviousSibling();
+                Node pPreviousSibling = p.getPreviousSibling();
 
                 textNode.removeFromParent();
                 p.removeFromParent();
 
-                n.appendChild(textNode);
+                Node oldTextNode = pPreviousSibling.getChild(0);
+                Text newTextNode = com.google.gwt.dom.client.Document.get().createTextNode(oldTextNode.getNodeValue() + textNode.getNodeValue());
+                pPreviousSibling.replaceChild(newTextNode, oldTextNode);
             }
             log.fine("Applied mutation: " + mutation);
             log.fine("Native node is after: " + Element.as(nativeNode).getString());
