@@ -20,11 +20,13 @@
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.Text;
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.json.client.JSONNumber;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONString;
-import fr.loria.score.client.*;
+import com.google.gwt.user.client.Element;
+import fr.loria.score.client.ClientJupiterAlg;
+import fr.loria.score.client.CommunicationService;
+import fr.loria.score.client.Converter;
+import fr.loria.score.client.RtApi;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.operation.*;
@@ -32,7 +34,6 @@ import org.xwiki.gwt.dom.client.DOMUtils;
 import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.dom.client.Selection;
 import org.xwiki.gwt.user.client.Config;
-import org.xwiki.gwt.user.client.Console;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
 import org.xwiki.gwt.user.client.ui.rta.cmd.Command;
 import org.xwiki.gwt.user.client.ui.rta.cmd.CommandListener;
@@ -53,6 +54,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
 {
     private static Logger log = Logger.getLogger(RealTimePlugin.class.getName());
     private static ClientJupiterAlg clientJupiter;
+    private Node bodyNode;
 
     /**
      * The list of command that shouldn't be broadcasted.
@@ -82,14 +84,15 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
         saveRegistration(textArea.addKeyUpHandler(this));
 
         getTextArea().getCommandManager().addCommandListener(this);
+        bodyNode = textArea.getDocument().getBody();
 
-        Tree t = Converter.fromNativeToCustom(textArea.getDocument().getBody());
+        Tree t = Converter.fromNativeToCustom(Element.as(bodyNode));
         clientJupiter = new ClientJupiterAlg(new TreeDocument(t));
 
         //todo: I don't like this, move constants separate
         clientJupiter.setEditingSessionId(Integer.parseInt(config.getParameter(RtApi.DOCUMENT_ID)));
         clientJupiter.setCommunicationService(CommunicationService.ServiceHelper.getCommunicationService());
-        clientJupiter.setCallback(new ClientCallback.TreeClientCallback(textArea.getDocument().getBody()));
+        clientJupiter.setCallback(new TreeClientCallback(bodyNode));
         clientJupiter.connect();
 
         customizeActionListeners();
@@ -137,7 +140,6 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
     {
         log.finest("onCommand: " + command + ", param: " + param);
         if (commandOperationCall != null) {
-            broadcast(commandOperationCall);
         }
     }
 
@@ -153,9 +155,8 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
 
             int pos = t.getStartOffset();
             List<Integer> path = t.getStartContainer();
-
+            //make case
             TreeOperation op = null;
-            //todo: delete and backspace MIGHT delete a paragraph if on position 0; <p>a</p> <p>b</p> ->  <p>ab</p>
             if (keyCode == 8) { // backspace
                 if (pos == 0) { // perhaps a line merge
                     if (isNoteworthyPath(path)) {
@@ -168,7 +169,14 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                     op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
                 }
             } else if (keyCode == 46) { //delete
-                op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
+                Text textNode = Text.as(TreeHelper.getChildNodeFromLocator(bodyNode, convertPath(t.getStartContainer())));
+                if ((t.getStartOffset() == t.getEndOffset()) &&(textNode.getLength() == t.getStartOffset()) ) {
+                    //line merge
+                    path.set(0, path.get(0) + 1);
+                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
+                } else {
+                    op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
+                }
             } else if (keyCode == 13) { //enter
                 op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
             }
@@ -195,7 +203,10 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             Selection selection = getTextArea().getDocument().getSelection();
             if (selection.getRangeCount() > 0) {
                 Range range = selection.getRangeAt(0);
-                broadcast(new OperationCall("KeyPress", new String(new int[] {event.getUnicodeCharCode()}, 0, 1), getTarget(range)));
+                OperationTarget target = getTarget(range);
+                List<Integer> path = target.getStartContainer();
+
+                clientJupiter.generate(new TreeInsertText(clientJupiter.getSiteId(), target.getStartOffset(), convertPath(path), new String(new int[]{event.getUnicodeCharCode()}, 0, 1).charAt(0)));
             }
         }
     }
@@ -234,33 +245,6 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             ancestor = ancestor.getParentNode();
         }
         return locator;
-    }
-
-    /**
-     * Broadcast an operation call.
-     * 
-     * @param operationCall the operation call to broadcast
-     */
-    private void broadcast(OperationCall operationCall)
-    {
-        JSONObject jsonTarget = new JSONObject();
-        jsonTarget.put("startContainer", new JSONString(operationCall.getTarget().getStartContainer().toString()));
-        jsonTarget.put("startOffset", new JSONNumber(operationCall.getTarget().getStartOffset()));
-        jsonTarget.put("endContainer", new JSONString(operationCall.getTarget().getEndContainer().toString()));
-        jsonTarget.put("endoffset", new JSONNumber(operationCall.getTarget().getEndOffset()));
-
-        JSONObject jsonOperationCall = new JSONObject();
-        jsonOperationCall.put("operationId", new JSONString(operationCall.getOperationId()));
-        if (operationCall.getValue() != null) {
-            jsonOperationCall.put("value", new JSONString(operationCall.getValue()));
-        }
-        jsonOperationCall.put("target", jsonTarget);
-        Console.getInstance().log(jsonOperationCall.toString());
-
-        OperationTarget target = operationCall.getTarget();
-        List<Integer> path = target.getStartContainer();
-        //todo: fix the locator pb when typing first char on empty editor
-        clientJupiter.generate(new TreeInsertText(clientJupiter.getSiteId(), target.getStartOffset(), convertPath(path), operationCall.getValue().charAt(0)));
     }
 
     private int[] convertPath(List<Integer> path) {
