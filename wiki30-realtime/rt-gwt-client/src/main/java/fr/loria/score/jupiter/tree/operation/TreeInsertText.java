@@ -2,6 +2,7 @@ package fr.loria.score.jupiter.tree.operation;
 
 
 import fr.loria.score.jupiter.tree.Tree;
+import fr.loria.score.jupiter.tree.TreeFactory;
 import fr.loria.score.jupiter.tree.TreeUtils;
 
 public class TreeInsertText extends TreeOperation {
@@ -18,7 +19,12 @@ public class TreeInsertText extends TreeOperation {
 
     public void execute(Tree root) {
         Tree tree = root.getChildFromPath(path);
-        tree.addChar(text, position);
+        if (tree == root) {
+            // path is empty so add a new text node child
+            tree.addChild(TreeFactory.createTextTree(String.valueOf(text)));
+        } else {
+            tree.addChar(text, position);
+        }
     }
 
     public char getText() {
