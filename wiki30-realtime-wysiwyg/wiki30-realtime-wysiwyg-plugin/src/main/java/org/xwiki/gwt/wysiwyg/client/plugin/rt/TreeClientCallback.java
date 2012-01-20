@@ -38,7 +38,7 @@ public class TreeClientCallback implements ClientCallback {
     }
 
     @Override
-    public void onExecute(Message receivedMessage) {   // todo: generify
+    public void onExecute(Message receivedMessage) {
         log.fine("Executing received: " + receivedMessage);
         log.fine("Native node is before: " + Element.as(nativeNode).getString());
         TreeOperation operation = (TreeOperation) receivedMessage.getOperation();
@@ -52,16 +52,16 @@ public class TreeClientCallback implements ClientCallback {
             String txt = String.valueOf(insertText.getText());
 
             if (targetNode == nativeNode) {
-                Node textNode = com.google.gwt.dom.client.Document.get().createTextNode(txt);
+                Node newTextNode = com.google.gwt.dom.client.Document.get().createTextNode(txt);
                 //some browsers insert a br element on an empty text area, so remove it
                 Node brElement = nativeNode.getChild(0);
                 if (brElement != null) {
-                    nativeNode.replaceChild(textNode, brElement);
+                    nativeNode.replaceChild(newTextNode, brElement);
                 } else {
-                    nativeNode.appendChild(textNode);
+                    nativeNode.appendChild(newTextNode);
                 }
             } else {
-                targetNode.setNodeValue(targetNode.getNodeValue() + txt);
+                ((Text)targetNode).insertData(position, txt);
             }
         } else if (operation instanceof TreeDeleteText) {
             TreeDeleteText deleteText = (TreeDeleteText) operation;
