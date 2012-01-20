@@ -23,7 +23,7 @@ public class Tree implements Serializable {
      * The attributes for this Tree.
      * The key order is preserved during serialization/de-serialization process
      */
-    protected Map<String, String> attributes = new LinkedHashMap<String, String>();
+    protected Map<String, String> attributes = new TreeMap<String, String>();
 
     protected List<Tree> children = new ArrayList<Tree>();
     protected boolean invisible;
@@ -163,7 +163,7 @@ public class Tree implements Serializable {
             return ""; // todo: this is not good.
         }
     }
-    //todo: review and fix failing TCST tests
+
     public String toString() {
         if (invisible) {
             return "";
@@ -178,10 +178,10 @@ public class Tree implements Serializable {
 
             if (entry.getValue() != null && (!entry.getKey().equals(NODE_NAME) && !entry.getKey().equals(NODE_VALUE))) {
                 sb = sb.append(" ").append(entry.getKey()).append("=").append(entry.getValue());
-            }
 
-            if (it.hasNext()) {
-                sb = sb.append(", ");
+                if (it.hasNext()) {
+                    sb = sb.append(", ");
+                }
             }
         }
         sb = sb.append(">");
