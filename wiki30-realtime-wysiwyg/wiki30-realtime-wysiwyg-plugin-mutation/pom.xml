@@ -40,15 +40,14 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-wysiwyg-plugin-api</artifactId>
-      <version>${platform.version}</version>
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-gwt-user</artifactId>
     </dependency>
     <dependency>
-    	<groupId>org.xwiki.platform</groupId>
-    	<artifactId>xwiki-platform-gwt-dom</artifactId>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-gwt-dom</artifactId>
     </dependency>
   </dependencies>
   <build>

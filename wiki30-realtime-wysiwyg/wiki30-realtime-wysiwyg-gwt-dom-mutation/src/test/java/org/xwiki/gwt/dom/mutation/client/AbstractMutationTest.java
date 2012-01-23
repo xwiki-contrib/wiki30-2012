@@ -34,7 +34,7 @@ import com.google.gwt.junit.client.GWTTestCase;
  * @version $Id: ee2843175d2f7f69c9eb7d9d1c6c4bec5e3a2af2 $
  */
 @DoNotRunWith(Platform.HtmlUnitBug)
-public class AbstractMutationTest extends GWTTestCase
+public abstract class AbstractMutationTest extends GWTTestCase
 {
     /**
      * The document in which we run the tests.
