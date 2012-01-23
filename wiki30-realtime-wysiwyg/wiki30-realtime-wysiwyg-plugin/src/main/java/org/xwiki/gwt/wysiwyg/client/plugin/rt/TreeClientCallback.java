@@ -1,9 +1,9 @@
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Text;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import fr.loria.score.client.ClientCallback;
 import fr.loria.score.client.ClientDTO;
 import fr.loria.score.client.Converter;
@@ -69,52 +69,57 @@ public class TreeClientCallback implements ClientCallback {
             textNode.deleteData(position, 1); //delete 1 char
         } else if (operation instanceof TreeInsertParagraph) {
             TreeInsertParagraph treeInsertParagraph = (TreeInsertParagraph) operation;
-            log.info("1");
             // cases
             //1 hit enter on empty text area
-            if (nativeNode.getChildCount() == 0) { //nativeNode == targetNode
-                log.info("2");
-                targetNode.insertFirst(com.google.gwt.dom.client.Document.get().createElement("p"));
+            final Element p = com.google.gwt.dom.client.Document.get().createElement("p");
+            if (nativeNode.getChildCount() == 0) {
+                targetNode.insertFirst(p);
             } else if (nativeNode.getChildCount() == 1 && nativeNode.getFirstChild().getNodeName().equalsIgnoreCase("br")) {
                 log.info("3");
-                nativeNode.replaceChild(nativeNode.getFirstChild(), com.google.gwt.dom.client.Document.get().createElement("p"));
+                nativeNode.replaceChild(nativeNode.getFirstChild(), p);
                 //2 hit enter on first line
-            } else if (path.length == 1 && path[0] == 0) {
-                log.info("3");
+            } else if (position == 0) {
                 //2.1 enter at the start of the text
-                if (position == 0) { // pull down all lines
-                    log.info("4");
-                    targetNode.getParentNode().insertFirst(com.google.gwt.dom.client.Document.get().createElement("p"));
+                // pull down all lines below
+                p.appendChild(com.google.gwt.dom.client.Document.get().createBRElement());
+                Node parentNode = targetNode.getParentElement();
+                if (path.length == 1 && path[0] == 0) {
+                    parentNode.insertBefore(p, targetNode);
                 } else {
-                    log.info("5");
-                    //split the line, assume the targetNode is text
-                    String actualText = targetNode.getNodeValue();
-                    //2.2 enter in the middle of the text
-                    if (true) {//position < actualText.length()
-                        log.info("6");
-                        Text textNode = Text.as(targetNode);
-                        textNode.deleteData(position, actualText.length() - position);
-
-                        Node parentElement = targetNode.getParentElement();
-                        Element p = DOM.createElement("p");
-                        p.setInnerText(actualText.substring(position));
-                        parentElement.insertAfter(textNode, p);
-                    } else {
-                    //2.2 enter at the end of the text
-
-                    }
+                    parentNode.getParentNode().insertBefore(p, parentNode);
                 }
-                return;
             } else {
-                log.info("7");
-                handleNewParagraph(targetNode, position);
-            }
+                log.info("5");
+                //split the line, assume the targetNode is text
+                String actualText = targetNode.getNodeValue();
+                //2.2 enter in the middle of the text
+                //2.3 enter at the end of the text
+                //position < actualText.length()
+                Text textNode = Text.as(targetNode);
+                textNode.deleteData(0, position);
 
-            //3 hit enter in between
-            //4 hit enter at the end
+                p.setInnerText(actualText.substring(0, position));
+
+                Node parentElement = targetNode.getParentElement();
+                parentElement.getParentElement().insertBefore(p, parentElement);
+            }
+            //3 hit enter in between , not first line
+            //4 hit enter at the end , nfl
 
             //Get the actual text node
             //first remove from the textnode what was after caret position
+        } else if (operation instanceof TreeNewParagraph) {
+            TreeNewParagraph treeNewParagraph = (TreeNewParagraph) operation;
+            //assume position == 0
+            final Element p = com.google.gwt.dom.client.Document.get().createElement("p");
+            p.appendChild(com.google.gwt.dom.client.Document.get().createBRElement());
+
+            Node parentNode = targetNode.getParentElement();
+            if (path.length == 1 && path[0] == 0) {
+                parentNode.insertBefore(p, targetNode);
+            } else {
+                parentNode.getParentNode().insertBefore(p, parentNode);
+            }
         } else if (operation instanceof TreeMergeParagraph) {
             Node p = targetNode.getParentElement();
             Node pPreviousSibling = p.getPreviousSibling();

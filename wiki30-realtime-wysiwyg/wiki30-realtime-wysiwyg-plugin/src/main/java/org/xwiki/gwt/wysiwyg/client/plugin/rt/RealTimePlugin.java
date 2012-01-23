@@ -187,8 +187,13 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                     op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
                 }
             } else if (keyCode == 13) { //enter
-                op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
-                //todo: enter on empty document
+                if (pos == 0 && !isNoteworthyPath(path.subList(1, path.size()))) {//enter on empty document
+                    op = new TreeNewParagraph(clientJupiter.getSiteId(), path.get(0));
+                    op.setPath(convertPath(path));
+                } else {
+                    op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
+                }
+
             }
             if (op != null) {
                 clientJupiter.generate(op);
@@ -286,6 +291,10 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
         clientJupiter.disconnect();
     }
 
+    /**
+     * @param path the path to be checked
+     * @return true if there is one element different than 0, false otherwise
+     */
     private boolean isNoteworthyPath(List<Integer> path) {
         boolean noteworthy = false;
         for (Integer i : path) {
