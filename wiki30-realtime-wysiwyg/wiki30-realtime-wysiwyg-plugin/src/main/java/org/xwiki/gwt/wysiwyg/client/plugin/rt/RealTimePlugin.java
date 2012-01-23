@@ -19,10 +19,11 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Text;
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.user.client.Element;
 import fr.loria.score.client.ClientJupiterAlg;
 import fr.loria.score.client.CommunicationService;
 import fr.loria.score.client.Converter;
@@ -85,6 +86,14 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
 
         getTextArea().getCommandManager().addCommandListener(this);
         bodyNode = textArea.getDocument().getBody();
+
+        // for Jupiter algo's correctness insert a new paragraph on an empty text area
+        final Element p = Document.get().createElement("p");
+        if (bodyNode.getChildCount() == 0) {
+            bodyNode.insertFirst(p);
+        } else if (bodyNode.getChildCount() == 1 && bodyNode.getFirstChild().getNodeName().equalsIgnoreCase("br")) {
+            bodyNode.insertBefore(bodyNode.getFirstChild(), p);
+        }
 
         Tree t = Converter.fromNativeToCustom(Element.as(bodyNode));
         clientJupiter = new ClientJupiterAlg(new TreeDocument(t));
@@ -179,6 +188,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                 }
             } else if (keyCode == 13) { //enter
                 op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
+                //todo: enter on empty document
             }
             if (op != null) {
                 clientJupiter.generate(op);

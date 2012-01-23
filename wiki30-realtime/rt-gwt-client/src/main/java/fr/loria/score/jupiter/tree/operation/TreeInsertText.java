@@ -19,8 +19,8 @@ public class TreeInsertText extends TreeOperation {
 
     public void execute(Tree root) {
         Tree tree = root.getChildFromPath(path);
-        if (tree == root) {
-            // path is empty so add a new text node child
+        if ((tree == root) || (path.length == 1 && path[0] == 0 && position == 0)) {
+            // path is empty or path[0]=0 (browser stuff) so add a new text node child
             tree.addChild(TreeFactory.createTextTree(String.valueOf(text)));
         } else {
             tree.addChar(text, position);
