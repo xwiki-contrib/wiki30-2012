@@ -20,21 +20,10 @@
   </modules>
 
   <dependencies>
-    <!-- GWT core dependencies -->
+    <!-- Dependencies used in all submodules. -->
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>${gwt.version}</version>
-    </dependency>
-     <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-dev</artifactId>
-      <version>${gwt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit-dep</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
