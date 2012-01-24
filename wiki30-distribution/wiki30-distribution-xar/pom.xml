@@ -26,6 +26,12 @@
       <artifactId>xwiki-manager-ui-all</artifactId>
       <type>xar</type>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib</groupId>
+      <artifactId>xwiki-ratings-application</artifactId>
+      <version>${ratings.version}</version>
+      <type>xar</type>
+    </dependency>
 
     <!-- Runtime dependencies, just for the record. -->
     <dependency>
@@ -35,6 +41,7 @@
       <type>war</type>
       <scope>runtime</scope>
     </dependency>
+
   </dependencies>
 
   <build>
@@ -96,7 +103,7 @@
                   <parameters>
                     <parameter>
                       <name>translations</name>
-                      <value>XWiki.RtI18N</value>
+                      <value>XWiki.RtI18N, XWiki.RatingsTranslations</value>
                     </parameter>
                     <parameter>
                       <name>skin</name>

@@ -25,9 +25,8 @@
       <version>${project.version}</version>
       <type>war</type>
     </dependency>
-    <!-- Add the database JAR since the default XE/XEM war has only hsqldb 
-      included. The Hibernate config file is automatically added by the remote 
-      resources plugin -->
+    <!-- Add the database JAR since the default XE/XEM war has only hsqldb included. The Hibernate config file is automatically
+      added by the remote resources plugin -->
     <dependency>
       <groupId>${xwiki.db.jdbc.groupId}</groupId>
       <artifactId>${xwiki.db.jdbc.artifactId}</artifactId>
@@ -40,6 +39,11 @@
       <version>${platform.version}</version>
       <classifier>wiki30</classifier>
       <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib</groupId>
+      <artifactId>xwiki-ratings-plugin</artifactId>
+      <version>${ratings.version}</version>
     </dependency>
   </dependencies>
 
@@ -65,21 +69,19 @@
               <artifactId>xwiki-manager-web</artifactId>
               <type>war</type>
               <excludes>
-                <!-- Exclude the generated GWT wysiwyg files coming from the original platform wysiwyg.
-                     This is necessary because GWT compilation generates file names with hash codes depending on the build.
-                     If we don't exclude what is in the original XWiki Manager Web WAR will cohexist with what comes from the Wiki30 wysiwyg.
-                -->
+                <!-- Exclude the generated GWT wysiwyg files coming from the original platform wysiwyg. This is necessary
+                  because GWT compilation generates file names with hash codes depending on the build. If we don't exclude what is in the original
+                  XWiki Manager Web WAR will cohexist with what comes from the Wiki30 wysiwyg. -->
                 <exclude>resources/js/xwiki/wysiwyg/xwe/*</exclude>
-                <!-- Remove duplicated JARs coming from the original WAR.
-                     This is necessary because Wiki30 JARs have the wiki30 classifiers. -->
+                <!-- Remove duplicated JARs coming from the original WAR. This is necessary because Wiki30 JARs have the
+                  wiki30 classifiers. -->
                 <exclude>WEB-INF/lib/xwiki-platform-wysiwyg-*</exclude>
               </excludes>
             </overlay>
           </overlays>
           <webResources>
-            <!-- Include Configuration resources that have been re-configured, 
-              based on the active profile. They will override the ones already existing 
-              in the XEM war. -->
+            <!-- Include Configuration resources that have been re-configured, based on the active profile. They will override
+              the ones already existing in the XEM war. -->
             <resource>
               <directory>${project.build.directory}/maven-shared-archive-resources</directory>
               <targetPath>WEB-INF</targetPath>
