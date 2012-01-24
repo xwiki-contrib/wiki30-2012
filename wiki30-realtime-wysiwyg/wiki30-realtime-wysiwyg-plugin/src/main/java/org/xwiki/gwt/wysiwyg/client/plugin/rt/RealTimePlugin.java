@@ -19,10 +19,7 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Node;
-import com.google.gwt.dom.client.Text;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.*;
 import fr.loria.score.client.ClientJupiterAlg;
 import fr.loria.score.client.CommunicationService;
@@ -92,7 +89,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
         if (bodyNode.getChildCount() == 0) {
             bodyNode.insertFirst(p);
         } else if (bodyNode.getChildCount() == 1 && bodyNode.getFirstChild().getNodeName().equalsIgnoreCase("br")) {
-            bodyNode.insertBefore(bodyNode.getFirstChild(), p);
+            bodyNode.insertBefore(p, bodyNode.getFirstChild());
         }
 
         Tree t = Converter.fromNativeToCustom(Element.as(bodyNode));
@@ -126,7 +123,6 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
      */
     public boolean onBeforeCommand(CommandManager sender, Command command, String param)
     {
-        log.finest("onBeforeCommand: " + command + ", param: " + param);
         commandOperationCall = null;
         if (getTextArea().isAttached() && getTextArea().isEnabled() && !IGNORED_COMMANDS.contains(command)) {
             Selection selection = getTextArea().getDocument().getSelection();
@@ -147,7 +143,6 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
      */
     public void onCommand(CommandManager sender, final Command command, final String param)
     {
-        log.finest("onCommand: " + command + ", param: " + param);
         if (commandOperationCall != null) {
         }
     }
@@ -188,7 +183,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                 }
             } else if (keyCode == 13) { //enter
                 if (pos == 0 && !isNoteworthyPath(path.subList(1, path.size()))) {//enter on empty document
-                    op = new TreeNewParagraph(clientJupiter.getSiteId(), path.get(0));
+                    op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
                     op.setPath(convertPath(path));
                 } else {
                     op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
@@ -219,8 +214,8 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             if (selection.getRangeCount() > 0) {
                 Range range = selection.getRangeAt(0);
                 OperationTarget target = getTarget(range);
+                log.info("onKeyPress Range: " + target);
                 List<Integer> path = target.getStartContainer();
-
                 clientJupiter.generate(new TreeInsertText(clientJupiter.getSiteId(), target.getStartOffset(), convertPath(path), new String(new int[]{event.getUnicodeCharCode()}, 0, 1).charAt(0)));
             }
         }
