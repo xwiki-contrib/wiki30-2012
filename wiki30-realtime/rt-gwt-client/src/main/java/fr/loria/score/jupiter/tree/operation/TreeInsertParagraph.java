@@ -45,38 +45,42 @@ public class TreeInsertParagraph extends TreeOperation {
         Tree tree = root;
         Tree pTree = TreeFactory.createParagraphTree();
         Tree tTree = pTree;
-        tree = tree.getChild(path[0]);
-        Tree r;
-        for (int i = 0; i < path.length - 1; i++) {
-            while ((r = tree.removeChild(path[i + 1] + 1)) != null) {
-                tTree.addChild(r);
-            }
-            if (i != path.length - 2) {
-                tTree.addChild(tree.getChild(path[i + 1]).cloneNode(), 0);
-                tTree = tTree.getChild(0);
-                tree = tree.getChild(path[i + 1]);
-            } else {
-                if (!splitLeft) {
-
-                    tTree.addChild(tree.removeChild(path[i + 1]), 0);
-                    int j = 0;
-                    while ((i + 1 - j != 0) && (path[i + 1 - j] == 0)) {
-                        tree = tree.getParent();
-                        tree.removeChild(path[i - j]);
-                        j = j + 1;
-                    }
-                    if (i + 1 - j == 0) {
-                        d = 0;
-                    }
-                } else {
+        if (path.length > 0) {
+            tree = tree.getChild(path[0]);
+            Tree r;
+            for (int i = 0; i < path.length - 1; i++) {
+                while ((r = tree.removeChild(path[i + 1] + 1)) != null) {
+                    tTree.addChild(r);
+                }
+                if (i != path.length - 2) {
+                    tTree.addChild(tree.getChild(path[i + 1]).cloneNode(), 0);
+                    tTree = tTree.getChild(0);
                     tree = tree.getChild(path[i + 1]);
-                    String str = tree.split(position);
+                } else {
+                    if (!splitLeft) {
 
-                    tTree.addChild(TreeFactory.createTextTree(str), 0);
+                        tTree.addChild(tree.removeChild(path[i + 1]), 0);
+                        int j = 0;
+                        while ((i + 1 - j != 0) && (path[i + 1 - j] == 0)) {
+                            tree = tree.getParent();
+                            tree.removeChild(path[i - j]);
+                            j = j + 1;
+                        }
+                        if (i + 1 - j == 0) {
+                            d = 0;
+                        }
+                    } else {
+                        tree = tree.getChild(path[i + 1]);
+                        String str = tree.split(position);
+
+                        tTree.addChild(TreeFactory.createTextTree(str), 0);
+                    }
                 }
             }
+            root.addChild(pTree, path[0] + d);
+        } else {
+            root.addChild(TreeFactory.createParagraphTree());
         }
-        root.addChild(pTree, path[0] + d);
         logger.info("Done executing " + toString() + " root is: " + root);
     }
 

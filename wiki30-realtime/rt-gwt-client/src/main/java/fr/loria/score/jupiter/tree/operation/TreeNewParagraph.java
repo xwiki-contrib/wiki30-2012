@@ -15,10 +15,6 @@ public class TreeNewParagraph extends TreeOperation {
 
     public void execute(Tree root) {
         Tree paragraph = TreeFactory.createParagraphTree();
-        Tree t3 = TreeFactory.createTextTree("");
-
-        paragraph.addChild(t3);
-
         root.addChild(paragraph, position);
     }
 

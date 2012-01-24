@@ -1,7 +1,8 @@
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
-import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Text;
 import com.google.gwt.user.client.DOM;
 import fr.loria.score.client.ClientCallback;
@@ -27,6 +28,7 @@ public class TreeClientCallback implements ClientCallback {
         if (updateUI) {
             log.finest("Updating UI for WYSIWYG. Replacing native node: " + Element.as(nativeNode).getString());
             Node newNode = Converter.fromCustomToNative(((TreeDocument) document).getRoot());
+            insertBrInEmptyParagraphs(newNode);
             nativeNode.getParentNode().replaceChild(newNode, nativeNode);
             nativeNode = newNode;
             log.finest("New native node: " + Element.as(nativeNode).getString());
@@ -57,7 +59,7 @@ public class TreeClientCallback implements ClientCallback {
             Node brElement = targetNode.getChild(0);
             if (brElement != null && brElement.getNodeName().equalsIgnoreCase("br")) {
                 targetNode.replaceChild(newTextNode, brElement);
-            } else if (path.length == 1 && path[0] == 0) {
+            } else if (path.length == 1 && position == 0) {
                 targetNode.appendChild(newTextNode);
             } else {
                 Text.as(targetNode).insertData(position, txt);
@@ -143,5 +145,22 @@ public class TreeClientCallback implements ClientCallback {
             Element p = DOM.createElement("p");
             p.setInnerText(actualText.substring(position));
             n.getParentElement().insertAfter(p, n);
+    }
+
+    /**
+     * Inserts BR elements into the empty P elements
+     * @param node the root node to start inserting
+     */
+    private void insertBrInEmptyParagraphs(Node node) {
+        if (node == null || !Element.is(node)) {
+            return;
+        }
+        if (node.getNodeName().equalsIgnoreCase("p") && node.getChildCount() == 0) {
+            node.appendChild(com.google.gwt.dom.client.Document.get().createBRElement());
+        }
+        NodeList children = node.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            insertBrInEmptyParagraphs(children.getItem(i));
+        }
     }
 }

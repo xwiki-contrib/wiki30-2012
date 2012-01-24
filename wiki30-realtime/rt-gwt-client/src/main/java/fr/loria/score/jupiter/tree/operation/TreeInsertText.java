@@ -19,12 +19,16 @@ public class TreeInsertText extends TreeOperation {
 
     public void execute(Tree root) {
         Tree tree = root.getChildFromPath(path);
-        if ((tree == root) || (path.length == 1 && path[0] == 0 && position == 0)) {
-            // path is empty or path[0]=0 (browser stuff) so add a new text node child
-            tree.addChild(TreeFactory.createTextTree(String.valueOf(text)));
-        } else {
-            tree.addChar(text, position);
+        if ((tree == root) || (path.length == 1 && position == 0)) {
+            if (tree.getChild(0) == null) {
+                // path is empty or path has 1 element (browser stuff) so add a new text node child
+                tree.addChild(TreeFactory.createTextTree(String.valueOf(text)));
+                return;
+            } else {
+                tree = tree.getChild(0);
+            }
         }
+        tree.addChar(text, position);
     }
 
     public char getText() {
