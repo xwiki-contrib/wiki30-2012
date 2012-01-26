@@ -158,10 +158,10 @@ public class TreeMergeParagraph extends TreeOperation {
         }
         int[] tab = TreeUtils.addP(op1.path, -1);
         if (op1.path[0] > position) {
-            return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
+            return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
         }
         tab[1] = op1.path[1] + leftSiblingChildrenNr;
-        return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
+        return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
     }
 
     public TreeOperation handleTreeMoveParagraph(TreeMoveParagraph op1) {

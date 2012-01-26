@@ -213,24 +213,24 @@ public class TreeInsertParagraph extends TreeOperation {
 				return new TreeStyle(tab,op1.start-position,op1.end-position,op1.param,op1.value,op1.siteId,op1.addStyle,op1.splitLeft,op1.sr);
 			}*/
             if (op1.start > position) {
-                return new TreeStyle(op1.getSiteId(), tab, op1.start - position, op1.end - position, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
+                return new TreeStyle(op1.getSiteId(), tab, op1.start - position, op1.end - position, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
             }
             if (op1.start == position) {
-                return new TreeStyle(op1.getSiteId(), tab, op1.start - position, op1.end - position, op1.param, op1.value, op1.addStyle, false, op1.sr);
+                return new TreeStyle(op1.getSiteId(), tab, op1.start - position, op1.end - position, op1.param, op1.value, op1.addStyle, false, op1.splitRight);
             }
             //paragraphe entre start et end
             return new TreeCompositeOperation(
                     new TreeStyle(op1.getSiteId(), op1.path, op1.start, position, op1.param, op1.value, op1.addStyle, op1.splitLeft, false),
-                    new TreeStyle(op1.getSiteId(), tab, 0, op1.end - position, op1.param, op1.value, op1.addStyle, false, op1.sr)
+                    new TreeStyle(op1.getSiteId(), tab, 0, op1.end - position, op1.param, op1.value, op1.addStyle, false, op1.splitRight)
             );
         }
         //TreeUtils.inf(path,op1.path)
         if (op1.path[0] > path[0]) {
             int[] tab = TreeUtils.addP(op1.path, 1);
-            return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
+            return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
         }
         int[] tab = TreeUtils.reference(op1.path, path);
-        return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
+        return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
     }
 
     protected TreeOperation handleTreeMoveParagraph(TreeMoveParagraph op1) {

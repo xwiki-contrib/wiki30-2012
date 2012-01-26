@@ -5,7 +5,10 @@ import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeFactory;
 import fr.loria.score.jupiter.tree.TreeUtils;
 
+import java.util.logging.Logger;
+
 public class TreeInsertText extends TreeOperation {
+    private static transient Logger logger = Logger.getLogger(TreeInsertText.class.getName());
 
     public char text; //text to insert
 
@@ -92,13 +95,13 @@ public class TreeInsertText extends TreeOperation {
         }
         if (op1.start >= position) {
             return new TreeStyle(op1.getSiteId(), op1.path, op1.start == position ? op1.start : op1.start + 1, op1.end + 1,
-                    op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
+                    op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
         }
         if (op1.end < position) {
             return new TreeStyle(op1.getSiteId(), op1.path, op1.start, op1.end,
-                    op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
+                    op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
         }
-        return new TreeStyle(op1.getSiteId(), op1.path, op1.start, op1.end + 1, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
+        return new TreeStyle(op1.getSiteId(), op1.path, op1.start, op1.end + 1, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
     }
 
     public TreeOperation handleTreeMoveParagraph(TreeMoveParagraph op1) {

@@ -13,9 +13,9 @@ public class TreeStyle extends TreeOperation {
     public int end; //exclusive index
     public String param;
     public String value;
-    public boolean addStyle; //true if adding a <style> node is needed, false if it already exixts
-    public boolean splitLeft;//split left : true if start<>0 (generation)  // todo: I dont understand this
-    public boolean sr;//split right : true if end= end of the string (generation)
+    public boolean addStyle; //true if adding a <style> node is needed, false if it already exists
+    public boolean splitLeft;//split left : false if start == 0 (generation), true otherwise
+    public boolean splitRight;//split right : false if end == length of the string (generation), true otherwise
 
     public TreeStyle() {}
 
@@ -28,7 +28,7 @@ public class TreeStyle extends TreeOperation {
         this.siteId = siteId;
         this.addStyle = addStyle;
         this.splitLeft = splitLeft;
-        sr = splitRight;
+        this.splitRight = splitRight;
     }
 
     public void execute(Tree root) {
@@ -38,7 +38,7 @@ public class TreeStyle extends TreeOperation {
         }
         //last==tree.getChild(path[path.length-1]).getValue.length;
         if/*(start==0)*/ (!splitLeft) {
-            if/*(end==last)*/ (!sr) {//whole String
+            if/*(end==last)*/ (!splitRight) {//whole String
                 if/*(tree.getValue().toString().equals("style"))*/ (!addStyle) {//suppose one child
                     tree.setAttribute(param, value);
                 } else {
@@ -80,7 +80,7 @@ public class TreeStyle extends TreeOperation {
                 }
             }
         } else {
-            if/*(end==last)*/ (!sr) {//Style applied to the right side
+            if/*(end==last)*/ (!splitRight) {//Style applied to the right side
                 if/*(tree.getValue().toString().equals("style"))*/ (!addStyle) {//suppose one child
                     Tree tc = TreeFactory.createTextTree(tree.getChild(path[path.length - 1]).split(start));
                     Tree ts = tree.cloneNode();
@@ -175,7 +175,7 @@ public class TreeStyle extends TreeOperation {
         if (splitLeft) {
             d++;
         }
-        if (sr) {
+        if (splitRight) {
             d++;
         }
         int[] tab = TreeUtils.addC(op1.path, 1, d);
@@ -211,7 +211,7 @@ public class TreeStyle extends TreeOperation {
         if (splitLeft) {
             d++;
         }
-        if (sr) {
+        if (splitRight) {
             d++;
         }
         int[] tab = TreeUtils.addC(op1.path, 1, d);
@@ -228,7 +228,7 @@ public class TreeStyle extends TreeOperation {
             if (splitLeft) {
                 d++;
             }
-            if (sr) {
+            if (splitRight) {
                 d++;
             }
             return new TreeMergeParagraph(op1.getPosition(), op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr + d);
@@ -238,7 +238,7 @@ public class TreeStyle extends TreeOperation {
             if (splitLeft) {
                 d++;
             }
-            if (sr) {
+            if (splitRight) {
                 d++;
             }
             return new TreeMergeParagraph(op1.getPosition(), op1.leftSiblingChildrenNr + d, op1.rightSiblingChildrenNr);
@@ -287,7 +287,7 @@ public class TreeStyle extends TreeOperation {
         if (splitLeft) {
             d++;
         }
-        if (sr) {
+        if (splitRight) {
             d++;
         }
         int[] tab = TreeUtils.addC(op1.path, 1, d);
@@ -308,7 +308,7 @@ public class TreeStyle extends TreeOperation {
         if (splitLeft) {
             d++;
         }
-        if (sr) {
+        if (splitRight) {
             d++;
         }
         if (op1.path[1] > path[1]) {
@@ -337,12 +337,12 @@ public class TreeStyle extends TreeOperation {
         if (splitLeft) {
             d++;
         }
-        if (sr) {
+        if (splitRight) {
             d++;
         }
         if (op1.path[1] > path[1]) {
             int[] tab = TreeUtils.addC(op1.path, 1, d);
-            return new TreeStyle(op1.siteId, tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.sr);
+            return new TreeStyle(op1.siteId, tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
         }
         //op1.path=path
         //utilisation de l'ID pour l'édition du même paramètre
@@ -362,7 +362,7 @@ public class TreeStyle extends TreeOperation {
                 }
                 if (op1.end != end) {
                     list.add(new TreeStyle(op1.siteId, TreeUtils.addC(op1.path, 1, op1.splitLeft ? 3 : 2), 0, op1.end - end, op1.param, op1.value,
-                            op1.addStyle, false, op1.sr));
+                            op1.addStyle, false, op1.splitRight));
                 }
                 return new TreeCompositeOperation(list);
             }
@@ -388,7 +388,7 @@ public class TreeStyle extends TreeOperation {
             }
             if (op1.end > end) {
                 list.add(new TreeStyle(op1.siteId, TreeUtils.addC(op1.path, 1, op1.splitLeft ? 2 : 1), 0, op1.end - end, op1.param, op1.value,
-                        op1.addStyle, false, op1.sr));
+                        op1.addStyle, false, op1.splitRight));
             }
             if (list.size() == 1) {
                 return list.get(0);
@@ -398,7 +398,7 @@ public class TreeStyle extends TreeOperation {
         //op1.start>start
         if (op1.start >= end) {//style1 after style2
             return new TreeStyle(op1.siteId, TreeUtils.addC(op1.path, 1, splitLeft ? 2 : 1), op1.start - end, op1.end - end,
-                    op1.param, op1.value, op1.addStyle, op1.start == end ? false : true, op1.sr);
+                    op1.param, op1.value, op1.addStyle, op1.start == end ? false : true, op1.splitRight);
         }
         if (op1.end <= end) {//style1 between style 2
             if (!(op1.param.equals(param)) || op1.siteId < siteId) {//no conflict between s1 and s2, or s1 win
@@ -419,7 +419,7 @@ public class TreeStyle extends TreeOperation {
             list.add(new TreeStyle(op1.siteId, !addStyle ? TreeUtils.addC(op1.path, 1, splitLeft ? 1 : 0) : TreeUtils.addLevel(TreeUtils.addC(op1.path, 1, splitLeft ? 1 : 0)),
                     op1.start - start, end - start, op1.param, value, false, true, false));
         }
-        list.add(new TreeStyle(op1.siteId, TreeUtils.addC(op1.path, 1, splitLeft ? 3 : 2), 0, op1.end - end, op1.param, op1.value, op1.addStyle, false, op1.sr));
+        list.add(new TreeStyle(op1.siteId, TreeUtils.addC(op1.path, 1, splitLeft ? 3 : 2), 0, op1.end - end, op1.param, op1.value, op1.addStyle, false, op1.splitRight));
         return new TreeCompositeOperation(list);
     }
 
