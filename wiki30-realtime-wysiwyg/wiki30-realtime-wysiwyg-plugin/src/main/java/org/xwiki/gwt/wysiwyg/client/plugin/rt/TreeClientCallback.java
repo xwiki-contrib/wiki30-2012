@@ -1,14 +1,10 @@
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Node;
-import com.google.gwt.dom.client.NodeList;
-import com.google.gwt.dom.client.Text;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.user.client.DOM;
 import fr.loria.score.client.ClientCallback;
 import fr.loria.score.client.ClientDTO;
 import fr.loria.score.client.Converter;
-import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.operation.*;
@@ -24,7 +20,7 @@ public class TreeClientCallback implements ClientCallback {
     }
 
     @Override
-    public void onConnected(ClientDTO dto, Document document, boolean updateUI) {
+    public void onConnected(ClientDTO dto, fr.loria.score.jupiter.model.Document document, boolean updateUI) {
         if (updateUI) {
             log.finest("Updating UI for WYSIWYG. Replacing native node: " + Element.as(nativeNode).getString());
             Node newNode = Converter.fromCustomToNative(((TreeDocument) document).getRoot());
@@ -48,32 +44,31 @@ public class TreeClientCallback implements ClientCallback {
         final int position = operation.getPosition();
         final int[] path = operation.getPath();
         final Node targetNode = TreeHelper.getChildNodeFromLocator(nativeNode, path);
+        final short targetNodeType = targetNode.getNodeType();
 
         if (operation instanceof TreeInsertText) {
             //operates on a text node
             TreeInsertText insertText = (TreeInsertText) operation;
             String txt = String.valueOf(insertText.getText());
-            Node newTextNode = com.google.gwt.dom.client.Document.get().createTextNode(txt);
 
-            //some browsers insert a br element on an empty text area, so remove it
-            Node brElement = targetNode.getChild(0);
-            if (brElement != null && brElement.getNodeName().equalsIgnoreCase("br")) {
-                targetNode.replaceChild(newTextNode, brElement);
-            } else if (path.length == 1 && position == 0) {
-                targetNode.appendChild(newTextNode);
-            } else {
+            if (Node.ELEMENT_NODE == targetNodeType) {
+                Node newTextNode = Document.get().createTextNode(txt);
+                Node node = targetNode.getChild(position);
+                targetNode.insertBefore(newTextNode, node);
+            } else if (Node.TEXT_NODE == targetNodeType) {
                 Text.as(targetNode).insertData(position, txt);
             }
         } else if (operation instanceof TreeDeleteText) {
             TreeDeleteText deleteText = (TreeDeleteText) operation;
-
-            Text textNode = (Text) targetNode;
-            textNode.deleteData(position, 1); //delete 1 char
+            if (Node.TEXT_NODE == targetNodeType) {
+                Text textNode = Text.as(targetNode);
+                textNode.deleteData(position, 1); //delete 1 char
+            }
         } else if (operation instanceof TreeInsertParagraph) {
             TreeInsertParagraph treeInsertParagraph = (TreeInsertParagraph) operation;
             // cases
             //1 hit enter on empty text area
-            final Element p = com.google.gwt.dom.client.Document.get().createElement("p");
+            final Element p = Document.get().createElement("p");
             if (nativeNode.getChildCount() == 0) {
                 targetNode.insertFirst(p);
             } else if (nativeNode.getChildCount() == 1 && nativeNode.getFirstChild().getNodeName().equalsIgnoreCase("br")) {
@@ -83,7 +78,7 @@ public class TreeClientCallback implements ClientCallback {
             } else if (position == 0) {
                 //2.1 enter at the start of the text
                 // pull down all lines below
-                p.appendChild(com.google.gwt.dom.client.Document.get().createBRElement());
+                p.appendChild(Document.get().createBRElement());
                 Node parentNode = targetNode.getParentElement();
                 if (path.length == 1 && path[0] == 0) {
                     parentNode.insertBefore(p, targetNode);
@@ -113,8 +108,8 @@ public class TreeClientCallback implements ClientCallback {
         } else if (operation instanceof TreeNewParagraph) {
             TreeNewParagraph treeNewParagraph = (TreeNewParagraph) operation;
             //assume position == 0
-            final Element p = com.google.gwt.dom.client.Document.get().createElement("p");
-            p.appendChild(com.google.gwt.dom.client.Document.get().createBRElement());
+            final Element p = Document.get().createElement("p");
+            p.appendChild(Document.get().createBRElement());
 
             Node parentNode = targetNode.getParentElement();
             if (path.length == 1 && path[0] == 0) {
@@ -130,8 +125,14 @@ public class TreeClientCallback implements ClientCallback {
             p.removeFromParent();
 
             Node oldTextNode = pPreviousSibling.getChild(0);
-            Text newTextNode = com.google.gwt.dom.client.Document.get().createTextNode(oldTextNode.getNodeValue() + targetNode.getNodeValue());
+            Text newTextNode = Document.get().createTextNode(oldTextNode.getNodeValue() + targetNode.getNodeValue());
             pPreviousSibling.replaceChild(newTextNode, oldTextNode);
+        } else if (operation instanceof TreeStyle) {
+            TreeStyle style = (TreeStyle) operation;
+            Node parentElement = targetNode.getParentElement();
+            Element styleElement = DOM.createElement(style.param);
+            styleElement.appendChild(targetNode);
+            parentElement.replaceChild(styleElement, targetNode);
         }
         log.fine("Native node is after: " + Element.as(nativeNode).getString());
     }
@@ -156,7 +157,7 @@ public class TreeClientCallback implements ClientCallback {
             return;
         }
         if (node.getNodeName().equalsIgnoreCase("p") && node.getChildCount() == 0) {
-            node.appendChild(com.google.gwt.dom.client.Document.get().createBRElement());
+            node.appendChild(Document.get().createBRElement());
         }
         NodeList children = node.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {

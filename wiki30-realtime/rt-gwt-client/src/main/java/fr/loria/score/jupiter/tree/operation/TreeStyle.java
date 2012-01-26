@@ -142,7 +142,8 @@ public class TreeStyle extends TreeOperation {
     }
 
     public String toString() {
-        return "TreeStyle(" + super.toString() + ", start: " + start + ", end: " + end + ", param: " + param + ", value: " + value + ")";
+        return "TreeStyle(" + super.toString() + ", start: " + start + ", end: " + end + ", param: " + param +
+                ", value: " + value +", addStyle: " + addStyle + ", sL: " + splitLeft + ", sR: " + splitRight + ")";
     }
 
     //OT pour Style

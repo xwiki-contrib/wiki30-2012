@@ -22,16 +22,13 @@ public class TreeInsertText extends TreeOperation {
 
     public void execute(Tree root) {
         Tree tree = root.getChildFromPath(path);
-        if ((tree == root) || (path.length == 1 && position == 0)) {
-            if (tree.getChild(0) == null) {
-                // path is empty or path has 1 element (browser stuff) so add a new text node child
-                tree.addChild(TreeFactory.createTextTree(String.valueOf(text)));
-                return;
-            } else {
-                tree = tree.getChild(0);
-            }
+        final Integer treeType = Integer.valueOf(tree.getAttribute(Tree.NODE_TYPE));
+        if (Tree.ELEMENT_NODE == treeType) {
+            // path is empty or path has 1 element (browser stuff) so add a new text node child
+            tree.addChild(TreeFactory.createTextTree(String.valueOf(text)), position);
+        } else if (Tree.TEXT_NODE == treeType) {
+            tree.addChar(text, position);
         }
-        tree.addChar(text, position);
     }
 
     public char getText() {

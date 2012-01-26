@@ -131,6 +131,45 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                 Range range = selection.getRangeAt(0);
                 commandOperationCall = new OperationCall(command.toString(), param, getTarget(range));
                 log.info(commandOperationCall.toString());
+
+                String realTag = "unsupported";
+                if ("bold".equals(command.toString())) {
+                    realTag = "strong";
+                } else if ("italic".equals(command.toString())) {
+                    realTag = "em";
+                } else if ("underline".equals(command.toString())) {
+                    realTag = "ins";
+                } else if ("strikethrough".equals(command.toString())) {
+                    realTag = "del";
+                }
+
+                final OperationTarget target = getTarget(range);
+                int[] path = convertPath(target.getStartContainer());
+                boolean addStyle = true;
+                if (path.length == 2) {
+                    addStyle = true;
+                } else { // path.length == 3 ??
+                    addStyle = false;
+                }
+                int start = range.getStartOffset();
+                boolean splitLeft;
+                if (start == 0) {
+                    splitLeft = false;
+                } else {
+                    splitLeft = true;
+                }
+
+                Text textNode = Text.as(TreeHelper.getChildNodeFromLocator(bodyNode, convertPath(target.getStartContainer())));
+                boolean splitRight;
+                int end = range.getEndOffset();
+                if (end == textNode.getLength()) {
+                    splitRight = false;
+                } else {
+                    splitRight = true;
+                }
+                //todo: detect when same style is depressed and change value to false
+                TreeOperation op = new TreeStyle(clientJupiter.getSiteId(), path, start, end, realTag, "true", addStyle, splitLeft, splitRight);
+                clientJupiter.generate(op);
             }
         }
         return false;
@@ -154,10 +193,27 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
         Selection selection = getTextArea().getDocument().getSelection();
         if (selection.getRangeCount() > 0) {
             Range range = selection.getRangeAt(0);
-            OperationTarget t = getTarget(range);
-            log.fine("Range: " + t);
+            doStuff(range);
 
-            int pos = t.getStartOffset();
+            Node startContainer = range.getStartContainer();
+            int pos = 0;
+
+            if (Node.TEXT_NODE == startContainer.getNodeType()) {
+                log.info("Text node");
+                //startOffset is the position in the text
+                Text textNode = Text.as(startContainer);
+                pos = range.getStartOffset();
+            }
+
+            Node endContainer = range.getEndContainer();
+            if (Node.ELEMENT_NODE == endContainer.getNodeType() || Node.DOCUMENT_NODE == endContainer.getNodeType()) {
+                log.info("Element node");
+                //endOffset is the position between the child nodes
+                pos = range.getEndOffset();
+            }
+
+            OperationTarget t = getTarget(range);
+
             List<Integer> path = t.getStartContainer();
             //make case
             TreeOperation op = null;
@@ -204,7 +260,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
     public void onKeyPress(KeyPressEvent event)
     {
         log.info("onKeyPress: " + getTextArea().getHTML());
-        log.info("onKeyPress: " + event.getCharCode() + ", native keyCode" + event.getNativeEvent().getKeyCode() + ", unicodeCharCode: " + event.getUnicodeCharCode());
+        log.fine("onKeyPress: " + event.getCharCode() + ", native keyCode" + event.getNativeEvent().getKeyCode() + ", unicodeCharCode: " + event.getUnicodeCharCode());
         //todo: test with French keyboard
         boolean isAltControlOrMetaDown = event.isAltKeyDown() || event.isControlKeyDown() || event.isMetaKeyDown();
         boolean isNoteworthyKeyPressed = event.getCharCode() != '\u0000';
@@ -213,8 +269,9 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             Selection selection = getTextArea().getDocument().getSelection();
             if (selection.getRangeCount() > 0) {
                 Range range = selection.getRangeAt(0);
+                doStuff(range);
+
                 OperationTarget target = getTarget(range);
-                log.info("onKeyPress Range: " + target);
                 List<Integer> path = target.getStartContainer();
                 clientJupiter.generate(new TreeInsertText(clientJupiter.getSiteId(), target.getStartOffset(), convertPath(path), new String(new int[]{event.getUnicodeCharCode()}, 0, 1).charAt(0)));
             }
@@ -299,5 +356,18 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             }
         }
         return noteworthy;
+    }
+
+    private void doStuff(Range r) {
+        log.info("RANGE");
+        log.info("Start container: " + r.getStartContainer().getNodeName() + ", " + r.getStartContainer().getNodeType());
+        log.info("Start offset: " + r.getStartOffset());
+        log.info("Start locator: " + getLocator(r.getStartContainer()));
+
+        log.info("End container: " + r.getEndContainer().getNodeName() + ", " + r.getEndContainer().getNodeType());
+        log.info("End offset: " + r.getEndOffset());
+        log.info("End locator: " + getLocator(r.getStartContainer()));
+        log.info("--- RANGE ---");
+
     }
 }
