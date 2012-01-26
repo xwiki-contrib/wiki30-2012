@@ -7,11 +7,6 @@ package fr.loria.score.jupiter.tree;
  * @author Bogdan.Flueras@inria.fr
  */
 public class TreeFactory {
-    /**
-     * Avoiding explicit dependency on 3rd party libs/classes (ex: GWT)
-     */
-    public static final short TEXT_NODE = 3;
-    public static final short ELEMENT_NODE = 1;
 
     /**
      * @return an empty tree
@@ -35,7 +30,7 @@ public class TreeFactory {
      */
     public static Tree createTextTree(String text) {
         Tree t = createEmptyTree();
-        t.setAttribute(Tree.NODE_TYPE, String.valueOf(TEXT_NODE));
+        t.setAttribute(Tree.NODE_TYPE, String.valueOf(Tree.TEXT_NODE));
         t.setNodeName("#text");
         t.setValue(text);
         return t;
@@ -43,7 +38,7 @@ public class TreeFactory {
 
     public static Tree createElementTree(String tagName) {
         Tree t = createEmptyTree();
-        t.setAttribute(Tree.NODE_TYPE, String.valueOf(ELEMENT_NODE));
+        t.setAttribute(Tree.NODE_TYPE, String.valueOf(Tree.ELEMENT_NODE));
         t.setNodeName(tagName);
         return t;
     }

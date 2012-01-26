@@ -15,9 +15,15 @@ public class Tree implements Serializable {
     public static final String NODE_VALUE = "nodeValue";
 
     /**
-     * Node type: same as for native DOM elements
+     * Node type: same as for native DOM elements: see below constants
      */
     public static final String NODE_TYPE = "nodeType";
+
+    /**
+     * Avoiding explicit dependency on 3rd party libs/classes (ex: GWT)
+     */
+    public static final short TEXT_NODE = 3;
+    public static final short ELEMENT_NODE = 1;
 
     /**
      * The attributes for this Tree.
