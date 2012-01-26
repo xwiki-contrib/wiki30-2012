@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.xwiki.manager</groupId>
     <artifactId>xwiki-manager</artifactId>
-    <version>3.4-SNAPSHOT</version>
+    <version>3.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.xwiki.contrib</groupId>
@@ -74,8 +74,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <enterprise.version>3.4-SNAPSHOT</enterprise.version>
-    <manager.version>3.4-SNAPSHOT</manager.version>
+    <enterprise.version>3.5-SNAPSHOT</enterprise.version>
+    <manager.version>3.5-SNAPSHOT</manager.version>
 
     <gwt.version>2.4.0</gwt.version>
     <gwt.maven.plugin.version>2.4.0</gwt.maven.plugin.version>
