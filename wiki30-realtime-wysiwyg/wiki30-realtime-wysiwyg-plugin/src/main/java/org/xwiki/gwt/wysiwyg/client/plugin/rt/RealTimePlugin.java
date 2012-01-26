@@ -204,7 +204,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
     public void onKeyPress(KeyPressEvent event)
     {
         log.info("onKeyPress: " + getTextArea().getHTML());
-        log.info("onKeyPress: " + event.getCharCode() + ", native evt.keyCode" + event.getNativeEvent().getKeyCode());
+        log.info("onKeyPress: " + event.getCharCode() + ", native keyCode" + event.getNativeEvent().getKeyCode() + ", unicodeCharCode: " + event.getUnicodeCharCode());
         //todo: test with French keyboard
         boolean isAltControlOrMetaDown = event.isAltKeyDown() || event.isControlKeyDown() || event.isMetaKeyDown();
         boolean isNoteworthyKeyPressed = event.getCharCode() != '\u0000';
