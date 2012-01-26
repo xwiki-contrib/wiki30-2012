@@ -234,6 +234,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                     //line merge
                     path.set(0, path.get(0) + 1);
                     op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
+                    op.setPath(convertPath(path));
                 } else {
                     op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
                 }
