@@ -124,7 +124,7 @@ public class TreeClientCallback implements ClientCallback {
             targetNode.removeFromParent();
             p.removeFromParent();
 
-            Node oldTextNode = pPreviousSibling.getChild(0);
+            Node oldTextNode = pPreviousSibling.getLastChild();
             Text newTextNode = Document.get().createTextNode(oldTextNode.getNodeValue() + targetNode.getNodeValue());
             pPreviousSibling.replaceChild(newTextNode, oldTextNode);
         } else if (operation instanceof TreeStyle) {
