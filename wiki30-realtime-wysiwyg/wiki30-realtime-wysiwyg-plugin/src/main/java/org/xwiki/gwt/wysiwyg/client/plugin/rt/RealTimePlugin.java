@@ -230,26 +230,20 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                 }
             } else if (keyCode == 46) { //delete
                 final Node node = TreeHelper.getChildNodeFromLocator(TreeClientCallback.getUpdatedNativeNode(), convertPath(t.getStartContainer()));
-                log.info("0: " + node.getNodeName() + ", " + node.getNodeValue() + ", " + node.getNodeType());
                 if (Node.TEXT_NODE == node.getNodeType()) {
                     Text textNode = Text.as(node);
-                    log.info("1: text Node: " + textNode.getData() + ", " + textNode.getNodeType());
                     if (textNode.getLength() == t.getStartOffset()) { // perhaps a line merge
-                        log.info("2");
                         Element sibling = textNode.getParentElement().getNextSiblingElement();
                         if ((sibling != null) && (!sibling.getClassName().toLowerCase().contains("firebug"))) {
-                            log.info("3 sibling:" + sibling.getNodeName() + ", " + sibling.getNodeValue() + ", " + sibling.getInnerHTML());
                             //line merge only if there is something to merge: the text node's parent has siblings
                             path.set(0, path.get(0) + 1);
                             op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
                             op.setPath(convertPath(path));
                         }
                     } else {
-                        log.info("4");
                         op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
                     }
                 } else if (Node.ELEMENT_NODE == node.getNodeType()) {
-                    log.info("5: Element type");
                     path.set(0, path.get(0) + 1);
                     op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
                     op.setPath(convertPath(path));
