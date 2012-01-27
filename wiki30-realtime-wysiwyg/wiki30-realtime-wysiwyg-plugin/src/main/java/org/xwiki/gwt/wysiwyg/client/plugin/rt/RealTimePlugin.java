@@ -244,9 +244,11 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                         op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
                     }
                 } else if (Node.ELEMENT_NODE == node.getNodeType()) {
-                    path.set(0, path.get(0) + 1);
-                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
-                    op.setPath(convertPath(path));
+                    if (node.getNextSibling() != null) {
+                        path.set(0, path.get(0) + 1);
+                        op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
+                        op.setPath(convertPath(path));
+                    }
                 }
             } else if (keyCode == 13) { //enter
                 if (pos == 0 && !isNoteworthyPath(path.subList(1, path.size()))) {//enter on empty document
