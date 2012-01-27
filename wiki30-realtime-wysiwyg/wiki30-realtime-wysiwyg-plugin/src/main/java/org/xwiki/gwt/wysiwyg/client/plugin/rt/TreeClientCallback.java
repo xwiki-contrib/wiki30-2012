@@ -13,7 +13,7 @@ import fr.loria.score.jupiter.tree.operation.*;
  * Callback for tree documents, wysiwyg editor
  */
 public class TreeClientCallback implements ClientCallback {
-    private Node nativeNode;
+    private static Node nativeNode;
 
     public TreeClientCallback(Node nativeNode) {
         this.nativeNode = nativeNode;
@@ -135,6 +135,13 @@ public class TreeClientCallback implements ClientCallback {
             parentElement.replaceChild(styleElement, targetNode);
         }
         log.fine("Native node is after: " + Element.as(nativeNode).getString());
+    }
+
+    /**
+     * @return the updated native DOM node needed for some of the tree operations
+     */
+    protected static Node getUpdatedNativeNode() {
+        return nativeNode;
     }
 
     private void handleNewParagraph(Node targetNode, int position) {

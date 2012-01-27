@@ -52,7 +52,6 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
 {
     private static Logger log = Logger.getLogger(RealTimePlugin.class.getName());
     private static ClientJupiterAlg clientJupiter;
-    private Node bodyNode;
 
     /**
      * The list of command that shouldn't be broadcasted.
@@ -82,7 +81,8 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
         saveRegistration(textArea.addKeyUpHandler(this));
 
         getTextArea().getCommandManager().addCommandListener(this);
-        bodyNode = textArea.getDocument().getBody();
+
+        Node bodyNode = textArea.getDocument().getBody();
 
         // for Jupiter algo's correctness insert a new paragraph on an empty text area
         final Element p = Document.get().createElement("p");
@@ -92,7 +92,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             bodyNode.insertBefore(p, bodyNode.getFirstChild());
         }
 
-        Tree t = Converter.fromNativeToCustom(Element.as(bodyNode));
+        Tree t = Converter.fromNativeToCustom(Element.as(bodyNode)); //tree should be returned from
         clientJupiter = new ClientJupiterAlg(new TreeDocument(t));
 
         //todo: I don't like this, move constants separate
@@ -159,7 +159,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                     splitLeft = true;
                 }
 
-                Text textNode = Text.as(TreeHelper.getChildNodeFromLocator(bodyNode, convertPath(target.getStartContainer())));
+                Text textNode = Text.as(TreeHelper.getChildNodeFromLocator(TreeClientCallback.getUpdatedNativeNode(), convertPath(target.getStartContainer())));
                 boolean splitRight;
                 int end = range.getEndOffset();
                 if (end == textNode.getLength()) {
@@ -229,14 +229,20 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                     op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
                 }
             } else if (keyCode == 46) { //delete
-                Text textNode = Text.as(TreeHelper.getChildNodeFromLocator(bodyNode, convertPath(t.getStartContainer())));
-                if ((t.getStartOffset() == t.getEndOffset()) &&(textNode.getLength() == t.getStartOffset()) ) {
-                    //line merge
-                    path.set(0, path.get(0) + 1);
-                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
-                    op.setPath(convertPath(path));
-                } else {
-                    op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
+                final Node node = TreeHelper.getChildNodeFromLocator(TreeClientCallback.getUpdatedNativeNode(), convertPath(t.getStartContainer()));
+                if (Text.is(node)) {
+                    Text textNode = Text.as(node);
+                    if (textNode.getLength() == t.getStartOffset()) { // perhaps a line merge
+                        Element sibling = textNode.getParentElement().getNextSiblingElement();
+                        if ((sibling != null) && (!sibling.getClassName().toLowerCase().contains("firebug"))) {
+                            //line merge only if there is something to merge: the text node's parent has siblings
+                            path.set(0, path.get(0) + 1);
+                            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
+                            op.setPath(convertPath(path));
+                        }
+                    } else {
+                        op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
+                    }
                 }
             } else if (keyCode == 13) { //enter
                 if (pos == 0 && !isNoteworthyPath(path.subList(1, path.size()))) {//enter on empty document
@@ -261,7 +267,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
     public void onKeyPress(KeyPressEvent event)
     {
         log.info("onKeyPress: " + getTextArea().getHTML());
-        log.fine("onKeyPress: " + event.getCharCode() + ", native keyCode" + event.getNativeEvent().getKeyCode() + ", unicodeCharCode: " + event.getUnicodeCharCode());
+//        log.fine("onKeyPress: " + event.getCharCode() + ", native keyCode" + event.getNativeEvent().getKeyCode() + ", unicodeCharCode: " + event.getUnicodeCharCode());
         //todo: test with French keyboard
         boolean isAltControlOrMetaDown = event.isAltKeyDown() || event.isControlKeyDown() || event.isMetaKeyDown();
         boolean isNoteworthyKeyPressed = event.getCharCode() != '\u0000';
