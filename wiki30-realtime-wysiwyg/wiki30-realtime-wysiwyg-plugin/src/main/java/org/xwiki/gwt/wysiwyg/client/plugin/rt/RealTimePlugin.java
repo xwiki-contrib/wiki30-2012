@@ -218,15 +218,27 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             //make case
             TreeOperation op = null;
             if (keyCode == 8) { // backspace
-                if (pos == 0) { // perhaps a line merge
-                    if (isNoteworthyPath(path)) {
-                        // definitively a line merge
-                        op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
-                        op.setPath(convertPath(path));
+                final Node node = TreeHelper.getChildNodeFromLocator(TreeClientCallback.getUpdatedNativeNode(), convertPath(t.getStartContainer()));
+                if (Node.TEXT_NODE == node.getNodeType()) {
+                    Text textNode = Text.as(node);
+                    if (pos == 0) { // perhaps a line merge
+                        if (textNode.getParentElement().getPreviousSibling() != null) {
+                            //definitively a line merge
+                            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
+                            op.setPath(convertPath(path));
+                        } else {
+                            //do nothing, we are on the first line
+                        }
+                    } else {
+                        pos = pos - 1;
+                        op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
                     }
-                } else {
-                    pos = pos - 1;
-                    op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
+                } else if (Node.ELEMENT_NODE == node.getNodeType()) {
+                    if (pos == 0) {
+                        if (node.getPreviousSibling() != null) {
+                        } else {
+                        }
+                    }
                 }
             } else if (keyCode == 46) { //delete
                 final Node node = TreeHelper.getChildNodeFromLocator(TreeClientCallback.getUpdatedNativeNode(), convertPath(t.getStartContainer()));
