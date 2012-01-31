@@ -300,15 +300,9 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             if (selection.getRangeCount() > 0) {
                 Range range = selection.getRangeAt(0);
                 doStuff(range);
-                Node endContainer = range.getEndContainer();
-                if (Node.ELEMENT_NODE == endContainer.getNodeType()) {
-                    // path is [1]
-                    //substract from position the nr of child nodes to get the position...  endOffset is the position between the nodes
-                }
 
-                OperationTarget target = getTarget(range);
-                List<Integer> path = target.getStartContainer();
-                clientJupiter.generate(new TreeInsertText(clientJupiter.getSiteId(), target.getStartOffset(), convertPath(path), new String(new int[]{event.getUnicodeCharCode()}, 0, 1).charAt(0)));
+                List<Integer> path = getLocator(range.getStartContainer());
+                clientJupiter.generate(new TreeInsertText(clientJupiter.getSiteId(), range.getStartOffset(), convertPath(path), new String(new int[]{event.getUnicodeCharCode()}, 0, 1).charAt(0)));
             }
         }
     }
