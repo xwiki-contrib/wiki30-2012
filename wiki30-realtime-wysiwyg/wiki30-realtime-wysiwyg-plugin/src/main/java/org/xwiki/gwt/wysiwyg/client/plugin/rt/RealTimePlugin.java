@@ -263,13 +263,28 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                     }
                 }
             } else if (keyCode == 13) { //enter
-                if (pos == 0 && !isNoteworthyPath(path.subList(1, path.size()))) {//enter on empty document
+                if (Node.TEXT_NODE == endContainer.getNodeType()) {
+                    Text textNode = Text.as(endContainer);
+
+                    boolean isNewParagraph = false;
+                    if (textNode.getPreviousSibling() == null && 0 == range.getEndOffset()) { // start of the text
+                        isNewParagraph = true;
+                        pos = path.get(0);
+                    }
+                    if (textNode.getNextSibling() == null && textNode.getLength() == range.getEndOffset()) { // end of text
+                        isNewParagraph = true;
+                        pos = path.get(0) + 1;
+                    }
+                    if (isNewParagraph) {
+                        op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
+                        op.setPath(convertPath(path));
+                    } else {
+                        op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
+                    }
+                } else if (Node.ELEMENT_NODE == endContainer.getNodeType()) {
                     op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
                     op.setPath(convertPath(path));
-                } else {
-                    op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
                 }
-
             }
             if (op != null) {
                 clientJupiter.generate(op);
@@ -295,6 +310,11 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             if (selection.getRangeCount() > 0) {
                 Range range = selection.getRangeAt(0);
                 doStuff(range);
+                Node endContainer = range.getEndContainer();
+                if (Node.ELEMENT_NODE == endContainer.getNodeType()) {
+                    // path is [1]
+                    //substract from position the nr of child nodes to get the position...  endOffset is the position between the nodes
+                }
 
                 OperationTarget target = getTarget(range);
                 List<Integer> path = target.getStartContainer();
@@ -366,21 +386,6 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
 
     private static void disconnect() {
         clientJupiter.disconnect();
-    }
-
-    /**
-     * @param path the path to be checked
-     * @return true if there is one element different than 0, false otherwise
-     */
-    private boolean isNoteworthyPath(List<Integer> path) {
-        boolean noteworthy = false;
-        for (Integer i : path) {
-            if (!i.equals(0)) {
-                noteworthy = true;
-                break;
-            }
-        }
-        return noteworthy;
     }
 
     private void doStuff(Range r) {
