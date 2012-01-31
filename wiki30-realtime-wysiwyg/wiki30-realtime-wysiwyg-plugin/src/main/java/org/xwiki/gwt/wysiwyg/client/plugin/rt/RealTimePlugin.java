@@ -195,24 +195,11 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             Range range = selection.getRangeAt(0);
             doStuff(range);
 
-            Node startContainer = range.getStartContainer();
             int pos = -1;
-
-            if (Node.TEXT_NODE == startContainer.getNodeType()) {
-                log.info("Text node");
-                //startOffset is the position in the text
-                Text textNode = Text.as(startContainer);
-                pos = range.getStartOffset();
-            }
-
+            Node startContainer = range.getStartContainer();
             Node endContainer = range.getEndContainer();
-            if (Node.ELEMENT_NODE == endContainer.getNodeType() || Node.DOCUMENT_NODE == endContainer.getNodeType()) {
-                log.info("Element node");
-                //endOffset is the position between the child nodes, pos = range.getEndOffset();
-            }
 
             OperationTarget t = getTarget(range);
-
             List<Integer> path = t.getStartContainer();
             //make case
             TreeOperation op = null;
