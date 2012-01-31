@@ -196,7 +196,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             doStuff(range);
 
             Node startContainer = range.getStartContainer();
-            int pos = 0;
+            int pos = -1;
 
             if (Node.TEXT_NODE == startContainer.getNodeType()) {
                 log.info("Text node");
@@ -208,8 +208,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             Node endContainer = range.getEndContainer();
             if (Node.ELEMENT_NODE == endContainer.getNodeType() || Node.DOCUMENT_NODE == endContainer.getNodeType()) {
                 log.info("Element node");
-                //endOffset is the position between the child nodes
-                pos = range.getEndOffset();
+                //endOffset is the position between the child nodes, pos = range.getEndOffset();
             }
 
             OperationTarget t = getTarget(range);
@@ -263,15 +262,18 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                     }
                 }
             } else if (keyCode == 13) { //enter
+                path = getLocator(range.getEndContainer());
+                pos = range.getEndOffset();
+
                 if (Node.TEXT_NODE == endContainer.getNodeType()) {
                     Text textNode = Text.as(endContainer);
 
                     boolean isNewParagraph = false;
-                    if (textNode.getPreviousSibling() == null && 0 == range.getEndOffset()) { // start of the text
+                    if (textNode.getPreviousSibling() == null && 0 == pos) { // start of the text
                         isNewParagraph = true;
                         pos = path.get(0);
                     }
-                    if (textNode.getNextSibling() == null && textNode.getLength() == range.getEndOffset()) { // end of text
+                    if (textNode.getNextSibling() == null && textNode.getLength() == pos) { // end of text
                         isNewParagraph = true;
                         pos = path.get(0) + 1;
                     }
@@ -282,6 +284,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                         op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
                     }
                 } else if (Node.ELEMENT_NODE == endContainer.getNodeType()) {
+                    pos = path.get(0);
                     op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
                     op.setPath(convertPath(path));
                 }
