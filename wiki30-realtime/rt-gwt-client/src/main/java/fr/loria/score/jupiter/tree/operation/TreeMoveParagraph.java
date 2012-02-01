@@ -104,10 +104,10 @@ public class TreeMoveParagraph extends TreeOperation {
             if (ep > sp) {
                 return new TreeCompositeOperation(
                         new TreeMoveParagraph(siteId, sp - 1, ep - 1),
-                        new TreeMergeParagraph(ep - 1, op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr)
+                        new TreeMergeParagraph(ep - 1, op1.leftSiblingChildrenNr, op1.childrenNr)
                 );
             } else {
-                return new TreeCompositeOperation(this, new TreeMergeParagraph(ep + 1, op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr));
+                return new TreeCompositeOperation(this, new TreeMergeParagraph(ep + 1, op1.leftSiblingChildrenNr, op1.childrenNr));
             }
         }
         if (sp == op1.getPosition() - 1) {//move du paragraphe de gauche du merge
@@ -117,11 +117,11 @@ public class TreeMoveParagraph extends TreeOperation {
             }
             //sinon deplacer la droite et fusionner
             if (ep > sp) {
-                return new TreeCompositeOperation(this, new TreeMergeParagraph(ep, op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr));
+                return new TreeCompositeOperation(this, new TreeMergeParagraph(ep, op1.leftSiblingChildrenNr, op1.childrenNr));
             } else {
                 return new TreeCompositeOperation(
                         new TreeMoveParagraph(siteId, sp + 1, ep + 1),
-                        new TreeMergeParagraph(ep + 1, op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr)
+                        new TreeMergeParagraph(ep + 1, op1.leftSiblingChildrenNr, op1.childrenNr)
                 );
             }
         }
@@ -134,15 +134,15 @@ public class TreeMoveParagraph extends TreeOperation {
                 return op1;
             }
             //op1.getPosition()>ep
-            return new TreeMergeParagraph(op1.getPosition() + 1, op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr);
+            return new TreeMergeParagraph(op1.getPosition() + 1, op1.leftSiblingChildrenNr, op1.childrenNr);
         }
         //op1.getPosition()>sp
         if (op1.getPosition() == ep) {
             //si destination du move entre les fusionnés, placer apres le resultat de la fusion
-            return new TreeCompositeOperation(new TreeMoveParagraph(siteId, ep - 1, ep + 1), new TreeMergeParagraph(op1.getPosition() - 1, op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr));
+            return new TreeCompositeOperation(new TreeMoveParagraph(siteId, ep - 1, ep + 1), new TreeMergeParagraph(op1.getPosition() - 1, op1.leftSiblingChildrenNr, op1.childrenNr));
         }
         if (op1.getPosition() < ep) {
-            return new TreeMergeParagraph(op1.getPosition() - 1, op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr);
+            return new TreeMergeParagraph(op1.getPosition() - 1, op1.leftSiblingChildrenNr, op1.childrenNr);
         }
         //op1.getPosition()>ep
         return op1;

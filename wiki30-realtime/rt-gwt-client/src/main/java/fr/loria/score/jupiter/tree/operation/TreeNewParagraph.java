@@ -59,7 +59,7 @@ public class TreeNewParagraph extends TreeOperation {
         if (op1.getPosition() < position) {
             return op1;
         }
-        return new TreeMergeParagraph(op1.getPosition() + 1, op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr);
+        return new TreeMergeParagraph(op1.getPosition() + 1, op1.leftSiblingChildrenNr, op1.childrenNr);
     }
 
     public TreeOperation handleTreeInsertParagraph(TreeInsertParagraph op1) {

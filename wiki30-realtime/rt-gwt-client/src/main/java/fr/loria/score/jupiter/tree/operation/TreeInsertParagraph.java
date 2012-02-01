@@ -141,12 +141,12 @@ public class TreeInsertParagraph extends TreeOperation {
             return new TreeMergeParagraph(op1.getPosition(), op1.leftSiblingChildrenNr, path[1] + (splitLeft ? 1 : 0));
         }
         if (op1.getPosition() == path[0] + 1) {
-            return new TreeMergeParagraph(op1.getPosition() + 1, op1.leftSiblingChildrenNr - path[1], op1.rightSiblingChildrenNr);
+            return new TreeMergeParagraph(op1.getPosition() + 1, op1.leftSiblingChildrenNr - path[1], op1.childrenNr);
         }
         if (op1.getPosition() < path[0]) {
             return op1;
         }
-        return new TreeMergeParagraph(op1.getPosition() + 1, op1.leftSiblingChildrenNr, op1.rightSiblingChildrenNr);
+        return new TreeMergeParagraph(op1.getPosition() + 1, op1.leftSiblingChildrenNr, op1.childrenNr);
     }
 
     protected TreeOperation handleTreeInsertParagraph(TreeInsertParagraph op1) {
