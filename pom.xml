@@ -81,12 +81,6 @@
     <gwt.maven.plugin.version>2.4.0</gwt.maven.plugin.version>
 
     <ratings.version>1.3-SNAPSHOT</ratings.version>
-
-    <wiki30.xwiki.cfg.plugins>${xem.xwiki.cfg.plugins},\
-  com.xpn.xwiki.plugin.ratings.RatingsPlugin\
-    </wiki30.xwiki.cfg.plugins>
-    <xwiki.cfg.plugins>${wiki30.xwiki.cfg.plugins}
-    </xwiki.cfg.plugins>
   </properties>
 
   <dependencies>
