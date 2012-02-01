@@ -76,6 +76,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
     {
         super.init(textArea, config);
 
+        saveRegistrations(new KeyboardHandler().addHandlers(textArea));
         saveRegistration(textArea.addKeyDownHandler(this));
         saveRegistration(textArea.addKeyPressHandler(this));
         saveRegistration(textArea.addKeyUpHandler(this));
