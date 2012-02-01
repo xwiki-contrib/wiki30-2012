@@ -94,8 +94,6 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
 
         Tree t = Converter.fromNativeToCustom(Element.as(bodyNode)); //tree should be returned from
         clientJupiter = new ClientJupiterAlg(new TreeDocument(t));
-
-        //todo: I don't like this, move constants separate
         clientJupiter.setEditingSessionId(Integer.parseInt(config.getParameter(RtApi.DOCUMENT_ID)));
         clientJupiter.setCommunicationService(CommunicationService.ServiceHelper.getCommunicationService());
         clientJupiter.setCallback(new TreeClientCallback(bodyNode));
@@ -199,11 +197,10 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             Node startContainer = range.getStartContainer();
             Node endContainer = range.getEndContainer();
 
-            OperationTarget t = getTarget(range);
-            List<Integer> path = t.getStartContainer();
+            List<Integer> path = getLocator(range.getStartContainer());
             //make case
             TreeOperation op = null;
-            if (keyCode == 8) { // backspace
+            if (keyCode == KeyCodes.KEY_BACKSPACE) {
                 pos = range.getStartOffset();
                 log.info("Position is: " + pos);
 
@@ -227,15 +224,16 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                 } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
                     if (pos == 0) {
                         if (startContainer.getPreviousSibling() != null) {
+                            // nothing for now
                         } else {
-
+                            // nothing for now
                         }
                     }
                 }
-            } else if (keyCode == 46) { //delete
+            } else if (keyCode == KeyCodes.KEY_DELETE) {
                 if (Node.TEXT_NODE == startContainer.getNodeType()) {
                     Text textNode = Text.as(startContainer);
-                    if (textNode.getLength() == t.getStartOffset()) { // perhaps a line merge
+                    if (textNode.getLength() == range.getStartOffset()) { // perhaps a line merge
                         Element sibling = textNode.getParentElement().getNextSiblingElement();
                         if ((sibling != null) && (!sibling.getClassName().toLowerCase().contains("firebug"))) {
                             //line merge only if there is something to merge: the text node's parent has siblings
@@ -253,7 +251,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                         op.setPath(convertPath(path));
                     }
                 }
-            } else if (keyCode == 13) { //enter
+            } else if (keyCode == KeyCodes.KEY_ENTER) {
                 path = getLocator(range.getEndContainer());
                 pos = range.getEndOffset();
 
