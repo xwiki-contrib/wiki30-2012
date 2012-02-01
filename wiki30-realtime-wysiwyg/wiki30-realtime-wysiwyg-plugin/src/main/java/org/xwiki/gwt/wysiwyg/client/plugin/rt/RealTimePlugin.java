@@ -200,85 +200,98 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             List<Integer> path = getLocator(range.getStartContainer());
             //make case
             TreeOperation op = null;
-            if (keyCode == KeyCodes.KEY_BACKSPACE) {
-                pos = range.getStartOffset();
-                log.info("Position is: " + pos);
+            switch (keyCode) {
+                case KeyCodes.KEY_BACKSPACE: {
+                    pos = range.getStartOffset();
+                    log.info("Position is: " + pos);
 
-                if (Node.TEXT_NODE == startContainer.getNodeType()) {
-                    Text textNode = Text.as(startContainer);
-                    if (pos == 0) { // perhaps a line merge
-                        log.info("1");
-                        if (textNode.getParentElement().getPreviousSibling() != null) {
-                            log.info("1 - line merge");
-                            //definitively a line merge
-                            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
-                            op.setPath(convertPath(path));
+                    if (Node.TEXT_NODE == startContainer.getNodeType()) {
+                        Text textNode = Text.as(startContainer);
+                        if (pos == 0) { // perhaps a line merge
+                            log.info("1");
+                            if (textNode.getParentElement().getPreviousSibling() != null) {
+                                log.info("1 - line merge");
+                                //definitively a line merge
+                                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
+                                op.setPath(convertPath(path));
+                            } else {
+                                log.info("2 - nothing");
+                            }
                         } else {
-                            log.info("2 - nothing");
+                            log.info("3 - delete");
+                            pos = pos - 1;
+                            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
                         }
-                    } else {
-                        log.info("3 - delete");
-                        pos = pos - 1;
-                        op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
-                    }
-                } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
-                    if (pos == 0) {
-                        if (startContainer.getPreviousSibling() != null) {
-                            // nothing for now
-                        } else {
-                            // nothing for now
+                    } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
+                        if (pos == 0) {
+                            if (startContainer.getPreviousSibling() != null) {
+                                // nothing for now
+                            } else {
+                                // nothing for now
+                            }
                         }
                     }
                 }
-            } else if (keyCode == KeyCodes.KEY_DELETE) {
-                if (Node.TEXT_NODE == startContainer.getNodeType()) {
-                    Text textNode = Text.as(startContainer);
-                    if (textNode.getLength() == range.getStartOffset()) { // perhaps a line merge
-                        Element sibling = textNode.getParentElement().getNextSiblingElement();
-                        if ((sibling != null) && (!sibling.getClassName().toLowerCase().contains("firebug"))) {
-                            //line merge only if there is something to merge: the text node's parent has siblings
+                break;
+
+                case KeyCodes.KEY_DELETE: {
+                    if (Node.TEXT_NODE == startContainer.getNodeType()) {
+                        Text textNode = Text.as(startContainer);
+                        if (textNode.getLength() == range.getStartOffset()) { // perhaps a line merge
+                            Element sibling = textNode.getParentElement().getNextSiblingElement();
+                            if ((sibling != null) && (!sibling.getClassName().toLowerCase().contains("firebug"))) {
+                                //line merge only if there is something to merge: the text node's parent has siblings
+                                path.set(0, path.get(0) + 1);
+                                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
+                                op.setPath(convertPath(path));
+                            }
+                        } else {
+                            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
+                        }
+                    } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
+                        if (startContainer.getNextSibling() != null) {
                             path.set(0, path.get(0) + 1);
                             op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
                             op.setPath(convertPath(path));
                         }
-                    } else {
-                        op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
-                    }
-                } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
-                    if (startContainer.getNextSibling() != null) {
-                        path.set(0, path.get(0) + 1);
-                        op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
-                        op.setPath(convertPath(path));
                     }
                 }
-            } else if (keyCode == KeyCodes.KEY_ENTER) {
-                path = getLocator(range.getEndContainer());
-                pos = range.getEndOffset();
+                break;
 
-                if (Node.TEXT_NODE == endContainer.getNodeType()) {
-                    Text textNode = Text.as(endContainer);
+                case KeyCodes.KEY_ENTER: {
+                    path = getLocator(range.getEndContainer());
+                    pos = range.getEndOffset();
 
-                    boolean isNewParagraph = false;
-                    if (textNode.getPreviousSibling() == null && 0 == pos) { // start of the text
-                        isNewParagraph = true;
+                    if (Node.TEXT_NODE == endContainer.getNodeType()) {
+                        Text textNode = Text.as(endContainer);
+
+                        boolean isNewParagraph = false;
+                        if (textNode.getPreviousSibling() == null && 0 == pos) { // start of the text
+                            isNewParagraph = true;
+                            pos = path.get(0);
+                        }
+                        if (textNode.getNextSibling() == null && textNode.getLength() == pos) { // end of text
+                            isNewParagraph = true;
+                            pos = path.get(0) + 1;
+                        }
+                        if (isNewParagraph) {
+                            op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
+                            op.setPath(convertPath(path));
+                        } else {
+                            op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
+                        }
+                    } else if (Node.ELEMENT_NODE == endContainer.getNodeType()) {
                         pos = path.get(0);
-                    }
-                    if (textNode.getNextSibling() == null && textNode.getLength() == pos) { // end of text
-                        isNewParagraph = true;
-                        pos = path.get(0) + 1;
-                    }
-                    if (isNewParagraph) {
                         op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
                         op.setPath(convertPath(path));
-                    } else {
-                        op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
                     }
-                } else if (Node.ELEMENT_NODE == endContainer.getNodeType()) {
-                    pos = path.get(0);
-                    op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
-                    op.setPath(convertPath(path));
                 }
+                break;
+
+                default:
+                break;
             }
+
             if (op != null) {
                 clientJupiter.generate(op);
             }
