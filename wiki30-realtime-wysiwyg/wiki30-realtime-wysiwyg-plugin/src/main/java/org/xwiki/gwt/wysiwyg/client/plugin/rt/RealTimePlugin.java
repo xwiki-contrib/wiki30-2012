@@ -193,7 +193,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
         Selection selection = getTextArea().getDocument().getSelection();
         if (selection.getRangeCount() > 0) {
             Range range = selection.getRangeAt(0);
-            doStuff(range);
+            logRange(range);
 
             int pos = -1;
             Node startContainer = range.getStartContainer();
@@ -204,32 +204,37 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             //make case
             TreeOperation op = null;
             if (keyCode == 8) { // backspace
-                final Node node = TreeHelper.getChildNodeFromLocator(TreeClientCallback.getUpdatedNativeNode(), convertPath(t.getStartContainer()));
-                if (Node.TEXT_NODE == node.getNodeType()) {
-                    Text textNode = Text.as(node);
+                pos = range.getStartOffset();
+                log.info("Position is: " + pos);
+
+                if (Node.TEXT_NODE == startContainer.getNodeType()) {
+                    Text textNode = Text.as(startContainer);
                     if (pos == 0) { // perhaps a line merge
+                        log.info("1");
                         if (textNode.getParentElement().getPreviousSibling() != null) {
+                            log.info("1 - line merge");
                             //definitively a line merge
                             op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
                             op.setPath(convertPath(path));
                         } else {
-                            //do nothing, we are on the first line
+                            log.info("2 - nothing");
                         }
                     } else {
+                        log.info("3 - delete");
                         pos = pos - 1;
                         op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
                     }
-                } else if (Node.ELEMENT_NODE == node.getNodeType()) {
+                } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
                     if (pos == 0) {
-                        if (node.getPreviousSibling() != null) {
+                        if (startContainer.getPreviousSibling() != null) {
                         } else {
+
                         }
                     }
                 }
             } else if (keyCode == 46) { //delete
-                final Node node = TreeHelper.getChildNodeFromLocator(TreeClientCallback.getUpdatedNativeNode(), convertPath(t.getStartContainer()));
-                if (Node.TEXT_NODE == node.getNodeType()) {
-                    Text textNode = Text.as(node);
+                if (Node.TEXT_NODE == startContainer.getNodeType()) {
+                    Text textNode = Text.as(startContainer);
                     if (textNode.getLength() == t.getStartOffset()) { // perhaps a line merge
                         Element sibling = textNode.getParentElement().getNextSiblingElement();
                         if ((sibling != null) && (!sibling.getClassName().toLowerCase().contains("firebug"))) {
@@ -241,8 +246,8 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                     } else {
                         op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
                     }
-                } else if (Node.ELEMENT_NODE == node.getNodeType()) {
-                    if (node.getNextSibling() != null) {
+                } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
+                    if (startContainer.getNextSibling() != null) {
                         path.set(0, path.get(0) + 1);
                         op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
                         op.setPath(convertPath(path));
@@ -299,7 +304,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
             Selection selection = getTextArea().getDocument().getSelection();
             if (selection.getRangeCount() > 0) {
                 Range range = selection.getRangeAt(0);
-                doStuff(range);
+                logRange(range);
 
                 List<Integer> path = getLocator(range.getStartContainer());
                 clientJupiter.generate(new TreeInsertText(clientJupiter.getSiteId(), range.getStartOffset(), convertPath(path), new String(new int[]{event.getUnicodeCharCode()}, 0, 1).charAt(0)));
@@ -372,7 +377,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
         clientJupiter.disconnect();
     }
 
-    private void doStuff(Range r) {
+    private void logRange(Range r) {
         log.info("RANGE");
         log.info("Start container: " + r.getStartContainer().getNodeName() + ", " + r.getStartContainer().getNodeType());
         log.info("Start offset: " + r.getStartOffset());
