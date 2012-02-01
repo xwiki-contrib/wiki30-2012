@@ -156,18 +156,20 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                 } else {
                     splitLeft = true;
                 }
-
-                Text textNode = Text.as(TreeHelper.getChildNodeFromLocator(TreeClientCallback.getUpdatedNativeNode(), convertPath(target.getStartContainer())));
-                boolean splitRight;
-                int end = range.getEndOffset();
-                if (end == textNode.getLength()) {
-                    splitRight = false;
-                } else {
-                    splitRight = true;
+                Node startNode = range.getStartContainer();
+                if (Node.TEXT_NODE == startNode.getNodeType()) {
+                    Text textNode = Text.as(startNode);
+                    boolean splitRight;
+                    int end = range.getEndOffset();
+                    if (end == textNode.getLength()) {
+                        splitRight = false;
+                    } else {
+                        splitRight = true;
+                    }
+                    //todo: detect when same style is depressed and change value to false
+                    TreeOperation op = new TreeStyle(clientJupiter.getSiteId(), path, start, end, realTag, "true", addStyle, splitLeft, splitRight);
+                    clientJupiter.generate(op);
                 }
-                //todo: detect when same style is depressed and change value to false
-                TreeOperation op = new TreeStyle(clientJupiter.getSiteId(), path, start, end, realTag, "true", addStyle, splitLeft, splitRight);
-                clientJupiter.generate(op);
             }
         }
         return false;
