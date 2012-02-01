@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Logs DOM mutations generated inside the rich text area.
+ * Broadcasts DOM mutations generated inside the rich text area.
  * 
  * @version $Id: 4e19fb82c1f5869f4850b80c3b5f5d3b3d319483 $
  */
