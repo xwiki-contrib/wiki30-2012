@@ -43,7 +43,7 @@ public class TreeClientCallback implements ClientCallback {
     public void beforeSend(Message message) {
         AbstractOperation op = message.getOperation();
         if (op instanceof TreeOperation) {
-            log.finest("Before send");
+            log.fine("Before send");
             TreeOperation treeOperation = (TreeOperation) op;
             int index = treeOperation.getPath()[0];
             boolean update = true;
