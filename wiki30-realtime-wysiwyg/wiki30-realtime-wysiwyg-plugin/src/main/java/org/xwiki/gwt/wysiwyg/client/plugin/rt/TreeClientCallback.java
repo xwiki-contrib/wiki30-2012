@@ -19,8 +19,8 @@ import fr.loria.score.jupiter.tree.operation.TreeOperation;
  * Callback for tree documents, wysiwyg editor
  */
 public class TreeClientCallback implements ClientCallback {
-    private static Node nativeNode;
-    private Tree root;
+    private Node nativeNode;
+    private Tree customNode;
 
     public TreeClientCallback(Node nativeNode) {
         this.nativeNode = nativeNode;
@@ -28,7 +28,7 @@ public class TreeClientCallback implements ClientCallback {
 
     @Override
     public void onConnected(ClientDTO dto, fr.loria.score.jupiter.model.Document document, boolean updateUI) {
-        root = ((TreeDocument) document).getRoot();
+        customNode = ((TreeDocument) document).getRoot();
         if (updateUI) {
             log.finest("Updating UI for WYSIWYG");
             updateDOM();
@@ -67,17 +67,10 @@ public class TreeClientCallback implements ClientCallback {
 
     @Override
     public void afterReceive(Message receivedMessage) {
-        log.finest("Root is before: " + root);
+        log.finest("Root is before: " + customNode);
         updateDOM();
-        log.finest("Root is after: " + root);
+        log.finest("Root is after: " + customNode);
 
-    }
-
-    /**
-     * @return the updated native DOM node needed for some of the tree operations
-     */
-    protected static Node getUpdatedNativeNode() {
-        return nativeNode;
     }
 
     /**
@@ -102,18 +95,18 @@ public class TreeClientCallback implements ClientCallback {
 
     private void updateDOM() {
         log.fine("Native node is before: " + Element.as(nativeNode).getString());
-        nativeNode = replaceDOMNode(root, nativeNode);
+        nativeNode = replaceDOMNode(customNode, nativeNode);
         log.fine("Native node is after: " + Element.as(nativeNode).getString());
     }
 
     /**
      * Updates and replaces the DOM node (structurally) according to the tree node
-     * @param tree the model upon to update the DOM node
+     * @param custom the model upon to update the DOM node
      * @param node to be replaced
      * @return the replaced DOM node reflecting the structure of the tree
      */
-    private Node replaceDOMNode(Tree tree, Node node) {
-        Node newNode = Converter.fromCustomToNative(tree);
+    private Node replaceDOMNode(Tree custom, Node node) {
+        Node newNode = Converter.fromCustomToNative(custom);
         insertBrInEmptyParagraphs(newNode);
         node.getParentNode().replaceChild(newNode, node);
         return newNode;
