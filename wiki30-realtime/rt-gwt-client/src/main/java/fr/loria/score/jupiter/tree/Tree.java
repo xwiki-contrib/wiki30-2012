@@ -176,14 +176,14 @@ public class Tree implements Serializable {
         }
 
         StringBuilder sb = new StringBuilder();
-        final String tag = attributes.get(NODE_VALUE) != null ? attributes.get(NODE_VALUE) : attributes.get(NODE_NAME);
-        sb = sb.append("<").append(tag).append(":");
+        final String tag = attributes.get(NODE_TYPE).equals("1") ? attributes.get(NODE_NAME).toUpperCase() : attributes.get(NODE_VALUE);
+        sb = sb.append("<").append(tag).append(": ");
 
         for (Iterator<Map.Entry<String, String>> it = attributes.entrySet().iterator(); it.hasNext();) {
             Map.Entry<String, String> entry = it.next();
 
-            if (entry.getValue() != null && (!entry.getKey().equals(NODE_NAME) && !entry.getKey().equals(NODE_VALUE))) {
-                sb = sb.append(" ").append(entry.getKey()).append("=").append(entry.getValue());
+            if (entry.getValue() != null && (!entry.getKey().equals(NODE_NAME) && !entry.getKey().equals(NODE_VALUE) && !entry.getKey().equals(NODE_TYPE))) {
+                sb = sb.append(entry.getKey()).append("=").append(entry.getValue());
 
                 if (it.hasNext()) {
                     sb = sb.append(", ");
