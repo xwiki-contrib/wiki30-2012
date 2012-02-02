@@ -76,7 +76,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
     {
         super.init(textArea, config);
 
-        saveRegistrations(new KeyboardHandler().addHandlers(textArea));
+//        saveRegistrations(new KeyboardHandler().addHandlers(textArea));
         saveRegistration(textArea.addKeyDownHandler(this));
         saveRegistration(textArea.addKeyPressHandler(this));
         saveRegistration(textArea.addKeyUpHandler(this));
@@ -240,7 +240,8 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                 case KeyCodes.KEY_DELETE: {
                     if (Node.TEXT_NODE == startContainer.getNodeType()) {
                         Text textNode = Text.as(startContainer);
-                        if (textNode.getLength() == range.getStartOffset()) { // perhaps a line merge
+                        pos = range.getStartOffset();
+                        if (textNode.getLength() == pos) { // perhaps a line merge
                             Element sibling = textNode.getParentElement().getNextSiblingElement();
                             if ((sibling != null) && (!sibling.getClassName().toLowerCase().contains("firebug"))) {
                                 //line merge only if there is something to merge: the text node's parent has siblings
@@ -392,15 +393,12 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
     }
 
     private void logRange(Range r) {
-        log.info("RANGE");
-        log.info("Start container: " + r.getStartContainer().getNodeName() + ", " + r.getStartContainer().getNodeType());
-        log.info("Start offset: " + r.getStartOffset());
-        log.info("Start locator: " + getLocator(r.getStartContainer()));
+        log.info("Start container: " + r.getStartContainer().getNodeName() +
+                ", " + " locator: " + getLocator(r.getStartContainer()) + " offset: " + r.getStartOffset()
+                );
 
-        log.info("End container: " + r.getEndContainer().getNodeName() + ", " + r.getEndContainer().getNodeType());
-        log.info("End offset: " + r.getEndOffset());
-        log.info("End locator: " + getLocator(r.getStartContainer()));
-        log.info("--- RANGE ---");
-
+        log.info("End container: " + r.getEndContainer().getNodeName() +
+                ", " + " locator: " + getLocator(r.getStartContainer()) + " offset: " + r.getEndOffset()
+                );
     }
 }
