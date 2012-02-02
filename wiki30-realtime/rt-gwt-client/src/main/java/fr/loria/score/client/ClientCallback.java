@@ -27,10 +27,16 @@ public interface ClientCallback {
     void onDisconnected();
 
     /**
+     * Executed <strong>before</strong> each time the client sends the message to the server
+     * @param message the message to be sent
+     */
+    void beforeSend(Message message);
+
+    /**
      * Executed each time the client receives a new message from the server, <strong>after</strong> the original message was transformed
      * @param receivedMessage the transformed message
      */
-    void onExecute(Message receivedMessage);
+    void afterReceive(Message receivedMessage);
 
 
     /**
@@ -61,7 +67,10 @@ public interface ClientCallback {
         public void onDisconnected() {}
 
         @Override
-        public void onExecute(Message receivedMessage) {
+        public void beforeSend(Message message) {}
+
+        @Override
+        public void afterReceive(Message receivedMessage) {
             log.fine("Executing received: " + receivedMessage);
             int oldCaretPos = editor.getCaretPosition(); // the caret position in the editor's old document model
             editor.setOldCaretPos(oldCaretPos);

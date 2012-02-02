@@ -8,7 +8,6 @@ import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.transform.Transformation;
 
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
@@ -93,11 +92,13 @@ public class ClientJupiterAlg extends JupiterAlg {
     @Override
     protected void execute(Message receivedMsg) {
         logger.info("Executing message: " + receivedMsg);
-        callback.onExecute(receivedMsg);
+        callback.afterReceive(receivedMsg);
     }
 
     protected void send(Message m) {
         m.setEditingSessionId(this.editingSessionId);
+        callback.beforeSend(m);
+
         logger.fine(this + "\t Client sends to server: " + m);
 
         comService.serverReceive(m, new AsyncCallback<Void>() {
