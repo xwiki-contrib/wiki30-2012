@@ -26,5 +26,5 @@
   <inherits name='fr.loria.score.Rt' />
 
   <!--by default, set to FINEST. Other available values are: ALL, FINEST, FINER, FINE, CONFIG, INFO, WARNING, SEVERE-->
-  <set-property name="gwt.logging.logLevel" value="FINEST"/>
+  <set-property name="gwt.logging.logLevel" value="FINE"/>
 </module>
