@@ -13,6 +13,7 @@ import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
+import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 
 /**
@@ -32,6 +33,7 @@ public class TreeClientCallback implements ClientCallback {
         if (updateUI) {
             log.finest("Updating UI for WYSIWYG");
             updateDOM();
+            //todo: set the selection on first paragraph
         }
     }
 
@@ -44,18 +46,27 @@ public class TreeClientCallback implements ClientCallback {
         AbstractOperation op = message.getOperation();
         if (op instanceof TreeOperation) {
             log.fine("Before send");
-            TreeOperation treeOperation = (TreeOperation) op;
-            int index = treeOperation.getPath()[0];
+            TreeOperation treeOp = (TreeOperation) op;
+            int index;
             boolean update = true;
 
             if (op instanceof TreeInsertText || op instanceof TreeDeleteText) {
                 update = false;
             }
 
+            if (treeOp instanceof TreeNewParagraph) {
+                //todo: it doesn't work this way because the line plugin, default behaviour is executed afterwards
+                update = true;
+                log.fine("New Paragraph update DOM");
+                index = treeOp.getPosition();
+                Node newNode = Converter.fromCustomToNative(customNode.getChild(index)); // new paragraph
+                nativeNode.replaceChild(newNode, nativeNode.getChild(index)); //
+            }
+
             //modify DOM
             if (update) {
                 //todo: be smarter and update just some paragraph NOT all DOM
-//                Tree treeParagraph = root.getChild(index);
+//                Tree treeParagraph = customNode.getChild(index);
 //                Node nodeParagraph = nativeNode.getChild(index);
 //                log.info("New node is:" + Element.as(replaceDOMNode(treeParagraph, nodeParagraph)).getInnerHTML());
 
@@ -63,6 +74,22 @@ public class TreeClientCallback implements ClientCallback {
                 //todo:  set the selection
             }
         }
+    }
+
+    private void receiverNewParagraph(TreeOperation treeOp) {
+        int index;Element p = Document.get().createPElement();
+        p.appendChild(Document.get().createTextNode(""));
+        p.appendChild(Document.get().createBRElement());
+
+        index = treeOp.getPosition();
+        Node old = nativeNode.getChild(index);
+        if (old != null) {
+            old.getParentElement().insertBefore(p, old);
+        } else { // new paragraph on last line
+            log.info("was null :)");
+            nativeNode.appendChild(p);
+        }
+
     }
 
     @Override
@@ -108,7 +135,11 @@ public class TreeClientCallback implements ClientCallback {
     private Node replaceDOMNode(Tree custom, Node node) {
         Node newNode = Converter.fromCustomToNative(custom);
         insertBrInEmptyParagraphs(newNode);
-        node.getParentNode().replaceChild(newNode, node);
+        if (node != null) {
+            node.getParentNode().replaceChild(newNode, node);
+        } else {
+            log.severe("Node is null");
+        }
         return newNode;
     }
 }
