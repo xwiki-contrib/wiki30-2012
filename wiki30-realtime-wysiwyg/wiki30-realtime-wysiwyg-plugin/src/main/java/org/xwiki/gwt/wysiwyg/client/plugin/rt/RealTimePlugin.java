@@ -287,18 +287,22 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                         }
                     } else if (Node.ELEMENT_NODE == endContainer.getNodeType()) {
                         Element element = Element.as(endContainer);
-                        int brCount = element.getElementsByTagName(BR).getLength();
-                        int childCount = element.getChildCount();
-
-                        boolean isBeforeLastBrTag = ((pos == (childCount - brCount)) && (BR.equalsIgnoreCase(element.getLastChild().getNodeName())));
-                        boolean isAfterLastTag = (pos == childCount);
-                        if (isBeforeLastBrTag || isAfterLastTag) { //end of the line
-                            pos = path.get(0) + 1;
-                            op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
+                        if (pos == 0) { //start of line
+                            op = new TreeNewParagraph(clientJupiter.getSiteId(), path.get(0));
                             op.setPath(convertPath(path));
                         } else {
-                            pos = range.getEndOffset();
-                            op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
+                            int brCount = element.getElementsByTagName(BR).getLength();
+                            int childCount = element.getChildCount();
+                            boolean isBeforeLastBrTag = ((pos == (childCount - brCount)) && (BR.equalsIgnoreCase(element.getLastChild().getNodeName())));
+                            boolean isAfterLastTag = (pos == childCount);
+                            if (isBeforeLastBrTag || isAfterLastTag) { //end of the line
+                                pos = path.get(0) + 1;
+                                op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
+                                op.setPath(convertPath(path));
+                            } else { // somewhere in the middle of the line
+                                pos = range.getEndOffset();
+                                op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
+                            }
                         }
                     }
                 }
@@ -322,9 +326,10 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
     public void onKeyPress(KeyPressEvent event)
     {
         log.info("onKeyPress: " + getTextArea().getHTML());
-//        log.fine("onKeyPress: " + event.getCharCode() + ", native keyCode" + event.getNativeEvent().getKeyCode() + ", unicodeCharCode: " + event.getUnicodeCharCode());
+        log.fine("onKeyPress: " + event.getCharCode() + ", native keyCode" + event.getNativeEvent().getKeyCode() + ", unicodeCharCode: " + event.getUnicodeCharCode());
         boolean isAltControlOrMetaDown = event.isAltKeyDown() || event.isControlKeyDown() || event.isMetaKeyDown();
         boolean isNoteworthyKeyPressed = event.getCharCode() != '\u0000';
+        log.info("isNoteworthy:" + isNoteworthyKeyPressed);
 
         if (getTextArea().isAttached() && getTextArea().isEnabled() && !isAltControlOrMetaDown && isNoteworthyKeyPressed) {
             Selection selection = getTextArea().getDocument().getSelection();
