@@ -58,6 +58,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
      */
     private static final List<Command> IGNORED_COMMANDS = Arrays.asList(Command.UPDATE, Command.ENABLE, new Command(
         "submit"));
+    private static final String BR = "br";
 
     /**
      * The last operation call created from a rich text area command, before the command was executed. We don't support
@@ -89,7 +90,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
         final Element p = Document.get().createElement("p");
         if (bodyNode.getChildCount() == 0) {
             bodyNode.insertFirst(p);
-        } else if (bodyNode.getChildCount() == 1 && bodyNode.getFirstChild().getNodeName().equalsIgnoreCase("br")) {
+        } else if (bodyNode.getChildCount() == 1 && bodyNode.getFirstChild().getNodeName().equalsIgnoreCase(BR)) {
             bodyNode.insertBefore(p, bodyNode.getFirstChild());
         }
 
@@ -274,7 +275,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                             isNewParagraph = true;
                             pos = path.get(0);
                         }
-                        if (textNode.getNextSibling() == null && textNode.getLength() == pos) { // end of text
+                        if ((textNode.getNextSibling() == null || BR.equalsIgnoreCase(textNode.getNextSibling().getNodeName())) && textNode.getLength() == pos) { // end of text
                             isNewParagraph = true;
                             pos = path.get(0) + 1;
                         }
@@ -285,9 +286,20 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                             op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
                         }
                     } else if (Node.ELEMENT_NODE == endContainer.getNodeType()) {
-                        pos = path.get(0);
-                        op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
-                        op.setPath(convertPath(path));
+                        Element element = Element.as(endContainer);
+                        int brCount = element.getElementsByTagName(BR).getLength();
+                        int childCount = element.getChildCount();
+
+                        boolean isBeforeLastBrTag = ((pos == (childCount - brCount)) && (BR.equalsIgnoreCase(element.getLastChild().getNodeName())));
+                        boolean isAfterLastTag = (pos == childCount);
+                        if (isBeforeLastBrTag || isAfterLastTag) { //end of the line
+                            pos = path.get(0) + 1;
+                            op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
+                            op.setPath(convertPath(path));
+                        } else {
+                            pos = range.getEndOffset();
+                            op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
+                        }
                     }
                 }
                 break;
