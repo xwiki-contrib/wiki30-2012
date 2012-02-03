@@ -326,5 +326,50 @@ public class CommunicationServiceTest {
         }
     }
 
-    //todo: add unit tests for initClient method
+    @Test
+    public void initClients() {
+        Map<Integer, List<Integer>> editingSessions;
+        Map<Integer, ServerJupiterAlg> correspondents;
+
+        //add it
+        int siteId = 0;
+        int sessionId = -1874759369;
+        ClientDTO client = new ClientDTO("foo", siteId, sessionId);
+        ClientDTO client1 = new ClientDTO("", siteId + 1, sessionId);
+
+        client = communicationService.initClient(client);
+        client1 = communicationService.initClient(client1);
+        assertEquals("foo",client1.getDocument().getContent());
+
+		editingSessions = ClientServerCorrespondents.getInstance().getEditingSessions();
+        assertEquals("Invalid editing session size", 1, editingSessions.size());
+        assertTrue("Invalid editing session id", editingSessions.containsKey(sessionId));
+        assertEquals("Site id mapped for editing session:", 2, editingSessions.get(sessionId).size());
+        assertTrue("Site id exists for editing session:",  editingSessions.get(sessionId).contains(siteId));
+        assertTrue("Site id exists for editing session:",  editingSessions.get(sessionId).contains(siteId + 1));
+
+        correspondents = ClientServerCorrespondents.getInstance().getCorrespondents();
+        assertEquals("Invalid correspondents size", 2, correspondents.size());
+        assertTrue("Invalid siteId", correspondents.containsKey(siteId));
+        assertTrue("Invalid siteId", correspondents.containsKey(siteId+1));
+
+        //remove it
+        communicationService.removeServerPairForClient(client);
+        editingSessions = ClientServerCorrespondents.getInstance().getEditingSessions();
+        assertEquals("Invalid nr of editing sessions", 1, editingSessions.size());
+
+        correspondents = ClientServerCorrespondents.getInstance().getCorrespondents();
+        assertEquals("Invalid correspondents size", 1, correspondents.size());
+
+        communicationService.removeServerPairForClient(client1);
+        editingSessions = ClientServerCorrespondents.getInstance().getEditingSessions();
+        assertEquals("Invalid nr of editing sessions", 0, editingSessions.size());
+
+        correspondents = ClientServerCorrespondents.getInstance().getCorrespondents();
+        assertEquals("Invalid correspondents size", 0, correspondents.size());
+
+        ClientDTO client2 = new ClientDTO("", 5, sessionId);
+        client2 = communicationService.initClient(client2);
+        assertEquals("", client2.getDocument().getContent());
+    }
 }
