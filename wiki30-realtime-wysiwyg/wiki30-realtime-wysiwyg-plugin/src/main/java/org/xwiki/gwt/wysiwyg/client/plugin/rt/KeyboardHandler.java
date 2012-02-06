@@ -19,25 +19,14 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.xwiki.gwt.dom.client.DOMUtils;
-import org.xwiki.gwt.dom.client.Element;
-import org.xwiki.gwt.dom.client.Event;
-import org.xwiki.gwt.dom.client.Range;
-import org.xwiki.gwt.dom.client.Selection;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.shared.HandlerRegistration;
+import org.xwiki.gwt.dom.client.*;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
 
-import com.google.gwt.dom.client.Node;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Catches keyboard events and overwrites the default browser behavior in order to ensure that the effect of the
@@ -183,6 +172,7 @@ public class KeyboardHandler implements KeyDownHandler, KeyUpHandler, KeyPressHa
         if (!selection.isCollapsed()) {
             return;
         }
+        //todo: prevent default (removes the empty p) on empty text area ..
         Range caret = selection.getRangeAt(0);
         // Look for the nearest block-level element that contains the caret.
         Node container = domUtils.getNearestBlockContainer(caret.getStartContainer());
