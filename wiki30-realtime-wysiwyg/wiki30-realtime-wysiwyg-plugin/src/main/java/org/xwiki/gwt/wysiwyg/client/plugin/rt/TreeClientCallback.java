@@ -8,10 +8,7 @@ import fr.loria.score.jupiter.model.AbstractOperation;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
-import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
-import fr.loria.score.jupiter.tree.operation.TreeInsertText;
-import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
-import fr.loria.score.jupiter.tree.operation.TreeOperation;
+import fr.loria.score.jupiter.tree.operation.*;
 
 /**
  * Callback for tree documents, wysiwyg editor
@@ -68,7 +65,6 @@ public class TreeClientCallback implements ClientCallback {
 //                log.info("New node is:" + Element.as(replaceDOMNode(treeParagraph, nodeParagraph)).getInnerHTML());
 
                   updateDOM();
-                //todo:  set the selection
             }
         }
     }
@@ -121,14 +117,77 @@ public class TreeClientCallback implements ClientCallback {
                 // there is no delete text op generated on elements yet
             }
         }
-//        } else if (operation instanceof TreeInsertParagraph) {
-//            TreeInsertParagraph treeInsertParagraph = (TreeInsertParagraph) operation;
-//            // cases
-//            //1 hit enter on empty text area
-//            final Element p = Document.get().createElement("p");
+        else if (operation instanceof TreeInsertParagraph) {
+            log.info("Tree insert paragraph: native node is: " + Element.as(nativeNode).getInnerHTML());
+            // Todo: make a facade, an abstract factory so that this code is the same as for TreeInsParagraph
+            TreeInsertParagraph treeInsertParagraph = (TreeInsertParagraph) operation;
+            final Element newParagraph = Document.get().createElement("p");
+            if (Node.TEXT_NODE == targetNodeType) {
+                Text textNode = Text.as(targetNode);
+
+                int d = 1;
+                Node rootNode = nativeNode;
+                if (path.length > 0) {
+                    rootNode = rootNode.getChild(path[0]);
+                    Node tNode = newParagraph;
+                    for (int i = 0; i < path.length - 1; i++) {
+                        Node r;
+                        while ((r = rootNode.getChild(path[i + 1] + 1)) != null) {
+                            log.fine("Removing node: " + r.getNodeValue());
+                            r.removeFromParent();
+                            log.fine(">> Tree is:" + Element.as(rootNode).getInnerHTML());
+                            tNode.appendChild(r);
+                            log.fine(">> tTree is: " +Element.as(tNode).getInnerHTML());
+                        }
+                        log.fine("Tree is: " + Element.as(rootNode).getInnerHTML());
+                        log.fine("tTree is: " + Element.as(tNode).getInnerHTML());
+
+                        if (i != path.length - 2) {
+                            tNode.insertFirst(rootNode.getChild(path[i + 1]));
+                            tNode = tNode.getChild(0);
+                            rootNode = rootNode.getChild(path[i + 1]);
+                        } else {
+                            if (!treeInsertParagraph.splitLeft) {
+                                Node n = rootNode.getChild(path[i + 1]);
+                                tNode.insertFirst(n);
+                                rootNode.removeChild(n);
+                                int j = 0;
+                                while ((i + 1 - j != 0) && (path[i + 1 - j] == 0)) {
+                                    rootNode = rootNode.getParentNode();
+                                    Node n1 = rootNode.getChild(path[i - j]);
+                                    rootNode.removeChild(n1);
+                                    j = j + 1;
+                                }
+                                if (i + 1 - j == 0) {
+                                    d = 0;
+                                }
+                            } else {
+                                log.fine("Splitting...");
+                                rootNode = rootNode.getChild(path[i + 1]); // actually the textNode
+
+                                Text newTextNode = textNode.splitText(position);
+                                log.fine("New textNode is:" + newTextNode.getData());
+                                log.fine("TextNode is:" + textNode.getData());
+
+                                tNode.insertFirst(newTextNode);
+                                log.fine("tTree is: " + Element.as(tNode).getInnerHTML());
+                            }
+                        }
+                    }
+
+                    log.info("New Paragraph is:" + Element.as(newParagraph).getInnerHTML());
+                    nativeNode.insertBefore(newParagraph, nativeNode.getChild(path[0] + d));
+                    log.info("Native node is after:" + Element.as(nativeNode).getInnerHTML());
+                } else {  // path.len == 0
+                    nativeNode.insertFirst(newParagraph);
+                }
+            }
+            //2.3 enter at the end of the text. todo: not a TIP
+
 //            if (nativeNode.getChildCount() == 0) {
 //                targetNode.insertFirst(p);
-//            } else if (nativeNode.getChildCount() == 1 && nativeNode.getFirstChild().getNodeName().equalsIgnoreCase("br")) {
+//            } else
+// if (nativeNode.getChildCount() == 1 && nativeNode.getFirstChild().getNodeName().equalsIgnoreCase("br")) {
 //                log.info("3");
 //                nativeNode.replaceChild(nativeNode.getFirstChild(), p);
 //                //2 hit enter on first line
@@ -142,27 +201,12 @@ public class TreeClientCallback implements ClientCallback {
 //                } else {
 //                    parentNode.getParentNode().insertBefore(p, parentNode);
 //                }
-//            } else {
-//                log.info("5");
-//                //split the line, assume the targetNode is text
-//                String actualText = targetNode.getNodeValue();
-//                //2.2 enter in the middle of the text
-//                //2.3 enter at the end of the text
-//                //position < actualText.length()
-//                Text textNode = Text.as(targetNode);
-//                textNode.deleteData(0, position);
-//
-//                p.setInnerText(actualText.substring(0, position));
-//
-//                Node parentElement = targetNode.getParentElement();
-//                parentElement.getParentElement().insertBefore(p, parentElement);
 //            }
 //            //3 hit enter in between , not first line
 //            //4 hit enter at the end , nfl
-//
-//            //Get the actual text node
-//            //first remove from the textnode what was after caret position
-//        } else if (operation instanceof TreeNewParagraph) {
+        }
+// else if (operation instanceof TreeNewParagraph) {
+        //1 hit enter on empty text area.. todo: NOT a TIP
 //            TreeNewParagraph treeNewParagraph = (TreeNewParagraph) operation;
 //            //assume position == 0
 //            final Element p = Document.get().createElement("p");
@@ -223,6 +267,7 @@ public class TreeClientCallback implements ClientCallback {
         log.fine("Native node is before: " + Element.as(nativeNode).getString());
         nativeNode = replaceDOMNode(customNode, nativeNode);
         log.fine("Native node is after: " + Element.as(nativeNode).getString());
+        //todo:  set the selection
     }
 
     /**
