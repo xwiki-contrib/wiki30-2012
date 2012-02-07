@@ -1,6 +1,9 @@
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
-import com.google.gwt.dom.client.*;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.dom.client.Text;
 import fr.loria.score.client.ClientCallback;
 import fr.loria.score.client.ClientDTO;
 import fr.loria.score.client.Converter;
@@ -9,6 +12,10 @@ import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.operation.*;
+import org.xwiki.gwt.dom.client.DOMUtils;
+import org.xwiki.gwt.dom.client.Document;
+import org.xwiki.gwt.dom.client.Range;
+import org.xwiki.gwt.dom.client.Selection;
 
 /**
  * Callback for tree documents, wysiwyg editor
@@ -27,7 +34,27 @@ public class TreeClientCallback implements ClientCallback {
         if (updateUI) {
             log.finest("Updating UI for WYSIWYG");
             updateDOM();
-            //todo: set the selection on first paragraph
+
+            //set the selection on first paragraph
+            org.xwiki.gwt.dom.client.Document nativeOwnerDocument = (org.xwiki.gwt.dom.client.Document)nativeNode.getOwnerDocument();
+            Selection selection = nativeOwnerDocument.getSelection();
+            Range caret = nativeOwnerDocument.createRange();
+
+            Node firstLeaf = DOMUtils.getInstance().getFirstLeaf(nativeNode);
+            log.fine("First leaf" + firstLeaf.getNodeName() + "," + firstLeaf.getNodeValue());
+            log.fine("First leaf parent node" + firstLeaf.getParentElement().getInnerHTML());
+
+             // is either text node or it's an element which can have children: span, strong, em, p
+            if (DOMUtils.getInstance().canHaveChildren(firstLeaf) || Node.TEXT_NODE == firstLeaf.getNodeType()) {
+                log.fine("Can have children");
+                caret.setStart(firstLeaf, 0);
+            } else {
+                caret.setStartBefore(firstLeaf);
+            }
+            caret.collapse(true);
+
+            selection.removeAllRanges();
+            selection.addRange(caret);
         }
     }
 
