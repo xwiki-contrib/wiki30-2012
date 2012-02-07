@@ -255,8 +255,9 @@ public class TreeClientCallback implements ClientCallback {
     private void updateDOM() {
         log.fine("Native node is before: " + Element.as(nativeNode).getString());
         nativeNode = replaceDOMNode(customNode, nativeNode);
+        //it needs focus to be fully editable - browser specific hack (Firefox)
+        Element.as(nativeNode).focus();
         log.fine("Native node is after: " + Element.as(nativeNode).getString());
-        //todo:  set the selection
     }
 
     /**
