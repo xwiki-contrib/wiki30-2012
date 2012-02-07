@@ -133,11 +133,13 @@ public class TreeClientCallback implements ClientCallback {
                     for (int i = 0; i < path.length - 1; i++) {
                         Node r;
                         while ((r = rootNode.getChild(path[i + 1] + 1)) != null) {
-                            log.fine("Removing node: " + r.getNodeValue());
-                            r.removeFromParent();
+                            log.fine("Removing node: " + r.getNodeValue() +", " + r.getNodeName());
+                            if (!"br".equalsIgnoreCase(r.getNodeName())) {
+                                r.removeFromParent();
+                            }
                             log.fine(">> Tree is:" + Element.as(rootNode).getInnerHTML());
                             tNode.appendChild(r);
-                            log.fine(">> tTree is: " +Element.as(tNode).getInnerHTML());
+                            log.fine(">> tNode is: " +Element.as(tNode).getInnerHTML());
                         }
                         log.fine("Tree is: " + Element.as(rootNode).getInnerHTML());
                         log.fine("tTree is: " + Element.as(tNode).getInnerHTML());
@@ -148,9 +150,12 @@ public class TreeClientCallback implements ClientCallback {
                             rootNode = rootNode.getChild(path[i + 1]);
                         } else {
                             if (!treeInsertParagraph.splitLeft) {
+                                log.fine("split left false");
                                 Node n = rootNode.getChild(path[i + 1]);
                                 tNode.insertFirst(n);
-                                rootNode.removeChild(n);
+                                log.fine("tNode is: " + Element.as(n).getInnerHTML());
+                                n.removeFromParent();
+                                log.fine("n is: " + Element.as(n).getInnerHTML());
                                 int j = 0;
                                 while ((i + 1 - j != 0) && (path[i + 1 - j] == 0)) {
                                     rootNode = rootNode.getParentNode();
@@ -181,60 +186,17 @@ public class TreeClientCallback implements ClientCallback {
                 } else {  // path.len == 0
                     nativeNode.insertFirst(newParagraph);
                 }
+            } else if (Element.ELEMENT_NODE == targetNodeType) {
+                log.severe("Not yet handled on element nodes");
             }
-            //2.3 enter at the end of the text. todo: not a TIP
+        } else if (operation instanceof TreeNewParagraph) {
+            final Element p = Document.get().createElement("p");
+            p.addClassName("newParagraph");
+            p.appendChild(Document.get().createTextNode(""));
+            p.appendChild(Document.get().createBRElement());
 
-//            if (nativeNode.getChildCount() == 0) {
-//                targetNode.insertFirst(p);
-//            } else
-// if (nativeNode.getChildCount() == 1 && nativeNode.getFirstChild().getNodeName().equalsIgnoreCase("br")) {
-//                log.info("3");
-//                nativeNode.replaceChild(nativeNode.getFirstChild(), p);
-//                //2 hit enter on first line
-//            } else if (position == 0) {
-//                //2.1 enter at the start of the text
-//                // pull down all lines below
-//                p.appendChild(Document.get().createBRElement());
-//                Node parentNode = targetNode.getParentElement();
-//                if (path.length == 1 && path[0] == 0) {
-//                    parentNode.insertBefore(p, targetNode);
-//                } else {
-//                    parentNode.getParentNode().insertBefore(p, parentNode);
-//                }
-//            }
-//            //3 hit enter in between , not first line
-//            //4 hit enter at the end , nfl
+            nativeNode.insertBefore(p, nativeNode.getChild(position));
         }
-// else if (operation instanceof TreeNewParagraph) {
-        //1 hit enter on empty text area.. todo: NOT a TIP
-//            TreeNewParagraph treeNewParagraph = (TreeNewParagraph) operation;
-//            //assume position == 0
-//            final Element p = Document.get().createElement("p");
-//            p.appendChild(Document.get().createBRElement());
-//
-//            Node parentNode = targetNode.getParentElement();
-//            if (path.length == 1 && path[0] == 0) {
-//                parentNode.insertBefore(p, targetNode);
-//            } else {
-//                parentNode.getParentNode().insertBefore(p, parentNode);
-//            }
-//        } else if (operation instanceof TreeMergeParagraph) {
-//            Node p = targetNode.getParentElement();
-//            Node pPreviousSibling = p.getPreviousSibling();
-//
-//            targetNode.removeFromParent();
-//            p.removeFromParent();
-//
-//            Node oldTextNode = pPreviousSibling.getLastChild();
-//            Text newTextNode = Document.get().createTextNode(oldTextNode.getNodeValue() + targetNode.getNodeValue());
-//            pPreviousSibling.replaceChild(newTextNode, oldTextNode);
-//        } else if (operation instanceof TreeStyle) {
-//            TreeStyle style = (TreeStyle) operation;
-//            Node parentElement = targetNode.getParentElement();
-//            Element styleElement = DOM.createElement(style.param);
-//            styleElement.appendChild(targetNode);
-//            parentElement.replaceChild(styleElement, targetNode);
-//        }
         else {
             log.warning("Update all DOM");
             log.finest("Root is before: " + customNode);

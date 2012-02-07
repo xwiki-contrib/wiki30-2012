@@ -187,7 +187,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
         if (commandOperationCall != null) {
         }
     }
-
+    //todo: broadcast only if the caret was inside the RTA, not outside..
     @Override
     public void onKeyDown(KeyDownEvent event) {
         final int keyCode = event.getNativeKeyCode();
@@ -229,9 +229,11 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                     } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
                         if (pos == 0) {
                             if (startContainer.getPreviousSibling() != null) {
+                                log.severe("Delete text on element, pos = 0, prev sibling not null");
                                 // nothing for now
                             } else {
                                 // nothing for now
+                                log.severe("Delete text on element, pos = 0, prev sibling NULL");
                             }
                         }
                     }
