@@ -24,6 +24,10 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Text;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.ToggleButton;
 import fr.loria.score.client.ClientJupiterAlg;
 import fr.loria.score.client.CommunicationService;
 import fr.loria.score.client.Converter;
@@ -39,45 +43,77 @@ import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
 import org.xwiki.gwt.user.client.ui.rta.cmd.Command;
 import org.xwiki.gwt.user.client.ui.rta.cmd.CommandListener;
 import org.xwiki.gwt.user.client.ui.rta.cmd.CommandManager;
-import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractPlugin;
+import org.xwiki.gwt.wysiwyg.client.Images;
+import org.xwiki.gwt.wysiwyg.client.Strings;
+import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractStatefulPlugin;
+import org.xwiki.gwt.wysiwyg.client.plugin.internal.FocusWidgetUIExtension;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
  * Broadcasts DOM mutations generated inside the rich text area.
+ * It overrides nearly all plugin-based features of WYSIWYG: line, text aso.
  * 
  * @version $Id: 4e19fb82c1f5869f4850b80c3b5f5d3b3d319483 $
  */
-public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, KeyPressHandler, KeyUpHandler, CommandListener
+public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHandler, KeyPressHandler, KeyUpHandler, CommandListener, ClickHandler
 {
     private static Logger log = Logger.getLogger(RealTimePlugin.class.getName());
+    private static final String BR = "br";
     private static ClientJupiterAlg clientJupiter;
 
     /**
      * The list of command that shouldn't be broadcasted.
      */
     private static final List<Command> IGNORED_COMMANDS = Arrays.asList(Command.UPDATE, Command.ENABLE, new Command(
-        "submit"));
-    private static final String BR = "br";
+            "submit"));
+
+    /**
+     * The association between tool bar buttons and the commands that are executed when these buttons are clicked.
+     */
+    private final Map<ToggleButton, Command> buttons = new HashMap<ToggleButton, Command>();
+
+    /**
+     * User interface extension for the editor tool bar.
+     */
+    private final FocusWidgetUIExtension toolBarExtension = new FocusWidgetUIExtension("toolbar");
 
     /**
      * {@inheritDoc}
      * 
-     * @see AbstractPlugin#init(RichTextArea, Config)
+     * @see AbstractStatefulPlugin#init(RichTextArea, Config)
      */
     public void init(RichTextArea textArea, Config config)
     {
         super.init(textArea, config);
 
-//        saveRegistrations(new KeyboardHandler().addHandlers(textArea));
         saveRegistration(textArea.addKeyDownHandler(this));
         saveRegistration(textArea.addKeyPressHandler(this));
         saveRegistration(textArea.addKeyUpHandler(this));
 
         getTextArea().getCommandManager().addCommandListener(this);
+
+
+        // Register custom executables.
+        getTextArea().getCommandManager().registerCommand(Command.BOLD, null);
+        getTextArea().getCommandManager().registerCommand(Command.ITALIC, null);
+
+//        getTextArea().getCommandManager().registerCommand(Command.UNDERLINE,
+//            new ToggleInlineStyleExecutable(textArea, Style.TEXT_DECORATION, Style.TextDecoration.UNDERLINE, "ins"));
+//        getTextArea().getCommandManager().registerCommand(Command.STRIKE_THROUGH,
+//            new ToggleInlineStyleExecutable(textArea, Style.TEXT_DECORATION, Style.TextDecoration.LINE_THROUGH, "del"));
+
+        addFeature("bold", Command.BOLD, Images.INSTANCE.bold(), Strings.INSTANCE.bold());
+        addFeature("italic", Command.ITALIC, Images.INSTANCE.italic(), Strings.INSTANCE.italic());
+        addFeature("underline", Command.UNDERLINE, Images.INSTANCE.underline(), Strings.INSTANCE.underline());
+        addFeature("strikethrough", Command.STRIKE_THROUGH, Images.INSTANCE.strikeThrough(), Strings.INSTANCE.strikeThrough());
+
+
+        if (toolBarExtension.getFeatures().length > 0) {
+            registerTextAreaHandlers();
+            getUIExtensionList().add(toolBarExtension);
+        }
 
         Node bodyNode = textArea.getDocument().getBody();
 
@@ -102,7 +138,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
     /**
      * {@inheritDoc}
      * 
-     * @see AbstractPlugin#destroy()
+     * @see AbstractStatefulPlugin#destroy()
      */
     public void destroy()
     {
@@ -171,6 +207,25 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
      * @see CommandListener#onCommand(CommandManager, Command, String)
      */
     public void onCommand(CommandManager sender, final Command command, final String param) {}
+
+    @Override
+    public void onClick(ClickEvent event) {
+        Command command = buttons.get(event.getSource());
+        // We have to test if the text area is attached because this method can be called after the event was consumed.
+        if (command != null && getTextArea().isAttached() && ((FocusWidget) event.getSource()).isEnabled()) {
+            getTextArea().setFocus(true);
+            getTextArea().getCommandManager().execute(command);
+        }
+    }
+
+    @Override
+    public void update() {
+       for (Map.Entry<ToggleButton, Command> entry : buttons.entrySet()) {
+            if (entry.getKey().isEnabled()) {
+                entry.getKey().setDown(getTextArea().getCommandManager().isExecuted(entry.getValue()));
+            }
+        }
+    }
 
     //todo: broadcast only if the caret was inside the RTA, not outside..
     @Override
@@ -387,6 +442,28 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
         log.info("End container: " + r.getEndContainer().getNodeName() +
                 ", " + " locator: " + getLocator(r.getStartContainer()) + " offset: " + r.getEndOffset()
                 );
+    }
+
+    /**
+     * Creates a tool bar feature and adds it to the tool bar.
+     *
+     * @param name the feature name
+     * @param command the rich text area command that is executed by this feature
+     * @param imageResource the image displayed on the tool bar
+     * @param title the tool tip used on the tool bar button
+     * @return the tool bar button that exposes this feature
+     */
+    private ToggleButton addFeature(String name, Command command, ImageResource imageResource, String title)
+    {
+        ToggleButton button = null;
+        if (getTextArea().getCommandManager().isSupported(command)) {
+            button = new ToggleButton(new Image(imageResource));
+            saveRegistration(button.addClickHandler(this));
+            button.setTitle(title);
+            toolBarExtension.addFeature(name, button);
+            buttons.put(button, command);
+        }
+        return button;
     }
 
      /**
