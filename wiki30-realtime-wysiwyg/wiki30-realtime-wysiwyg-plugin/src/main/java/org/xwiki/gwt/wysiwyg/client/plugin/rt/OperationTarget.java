@@ -24,9 +24,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.List;
 
 /**
- * Represents the target of an operation, which is in fact a DOM range. Instances of this class are in fact range
- * serializations. We need this class because we can't send DOM ranges over the network.
- * 
+ * Represents the target for an operation, which is a representation of a DOM sub-range.
+ * Instances of this class are in fact intermediary ranges obtained from a DOM range.
+ * Ex: when selecting multiple lines, we have the general range which spans across many elements, but we are interested in all the intermediary ranges
+ *
  * @version $Id: 0cc81b445800614e657a9bce9585baedfbc42400 $
  */
 public class OperationTarget implements IsSerializable
@@ -42,14 +43,14 @@ public class OperationTarget implements IsSerializable
     private int startOffset;
 
     /**
-     * The locator for the DOM node where the range ends.
-     */
-    private List<Integer> endContainer;
-
-    /**
      * The offset within the end container.
      */
     private int endOffset;
+
+    /**
+     * The data length of the DOM node (text node)
+     */
+    private int dataLength;
 
     /**
      * Default constructor.
@@ -63,15 +64,14 @@ public class OperationTarget implements IsSerializable
      * 
      * @param startContainer the locator for the DOM node where the range starts
      * @param startOffset the offset within the start container
-     * @param endContainer the locator for the DOM node where the range ends
      * @param endOffset the offset within the end container
      */
-    public OperationTarget(List<Integer> startContainer, int startOffset, List<Integer> endContainer, int endOffset)
+    public OperationTarget(List<Integer> startContainer, int startOffset, int endOffset, int length)
     {
         this.startContainer = startContainer;
         this.startOffset = startOffset;
-        this.endContainer = endContainer;
         this.endOffset = endOffset;
+        this.dataLength = length;
     }
 
     /**
@@ -111,24 +111,6 @@ public class OperationTarget implements IsSerializable
     }
 
     /**
-     * @return the locator for the DOM node where the range ends
-     */
-    public List<Integer> getEndContainer()
-    {
-        return endContainer;
-    }
-
-    /**
-     * Sets the locator for the DOM node where the range ends.
-     * 
-     * @param endContainer the locator of the end node
-     */
-    public void setEndContainer(List<Integer> endContainer)
-    {
-        this.endContainer = endContainer;
-    }
-
-    /**
      * @return the offset within the end container
      */
     public int getEndOffset()
@@ -146,8 +128,23 @@ public class OperationTarget implements IsSerializable
         this.endOffset = endOffset;
     }
 
+    /**
+     * @return the data length of the node
+     */
+    public int getDataLength() {
+        return dataLength;
+    }
+
+    /**
+     * Set the data length of node
+     * @param dataLength data length
+     */
+    public void setDataLength(int dataLength) {
+        this.dataLength = dataLength;
+    }
+
     @Override
     public String toString() {
-        return "OperationTarget: startContainer " + startContainer + ", startOffset: " + startOffset + ", endContainer: " + endContainer + ", endOffset:" + endOffset;
+        return "OperationTarget: locator: " + startContainer + ", startOffset: " + startOffset + ", endOffset:" + endOffset;
     }
 }

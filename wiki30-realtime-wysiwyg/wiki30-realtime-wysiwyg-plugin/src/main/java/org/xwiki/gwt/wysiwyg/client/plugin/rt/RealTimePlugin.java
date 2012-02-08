@@ -19,7 +19,10 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
-import com.google.gwt.dom.client.*;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.Text;
 import com.google.gwt.event.dom.client.*;
 import fr.loria.score.client.ClientJupiterAlg;
 import fr.loria.score.client.CommunicationService;
@@ -127,11 +130,6 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
         if (getTextArea().isAttached() && getTextArea().isEnabled() && !IGNORED_COMMANDS.contains(command)) {
             Selection selection = getTextArea().getDocument().getSelection();
             if (selection.getRangeCount() > 0) {
-                // We have to save the selection before the command is executed.
-                Range range = selection.getRangeAt(0);
-                commandOperationCall = new OperationCall(command.toString(), param, getTarget(range));
-                log.info(commandOperationCall.toString());
-
                 String styleAttribute = "unsupported";
                 if ("bold".equals(command.toString())) {
                     styleAttribute = "font-weight:bold";
@@ -143,34 +141,33 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                     styleAttribute = "text-decoration:line-through";
                 }
 
-                final OperationTarget target = getTarget(range);
-                int[] path = convertPath(target.getStartContainer());
-                boolean addStyle = true;
-                if (path.length == 2) {
-                    addStyle = true;
-                } else { // path.length == 3 ??
-                    addStyle = false;
-                }
-                int start = range.getStartOffset();
-                boolean splitLeft;
-                if (start == 0) {
-                    splitLeft = false;
-                } else {
-                    splitLeft = true;
-                }
-                Node startNode = range.getStartContainer();
-                if (Node.TEXT_NODE == startNode.getNodeType()) {
-                    Text textNode = Text.as(startNode);
-                    boolean splitRight;
-                    int end = range.getEndOffset();
-                    if (end == textNode.getLength()) {
+                //Use this range to get all intermediary paths
+                Range range = selection.getRangeAt(0);
+                List<OperationTarget> targets = getIntermediaryTargets(range);
+                log.info(targets.toString());
+
+                for (OperationTarget target : targets) {
+                    int[] path = convertPath(target.getStartContainer());
+                    boolean addStyle = false;
+                    if (path.length == 2) {
+                        addStyle = true;
+                    }
+
+                    int start = target.getStartOffset();
+                    boolean splitLeft = true;
+                    if (start == 0) {
+                        splitLeft = false;
+                    }
+
+                    boolean splitRight = true;
+                    int end = target.getEndOffset();
+                    if (end == target.getDataLength()) {
                         splitRight = false;
-                    } else {
-                        splitRight = true;
                     }
                     //todo: detect when same style is depressed and change value to false
                     TreeOperation op = new TreeStyle(clientJupiter.getSiteId(), path, start, end, "style", styleAttribute, addStyle, splitLeft, splitRight);
                     clientJupiter.generate(op);
+
                 }
             }
         }
@@ -213,7 +210,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                         Text textNode = Text.as(startContainer);
                         if (pos == 0) { // perhaps a line merge
                             log.info("1");
-                            if (textNode.getParentElement().getPreviousSibling() != null) {
+                            if (textNode.getParentElement().getPreviousSibling() != null) { // todo: test it 8Feb12.eroare
                                 log.info("1 - line merge");
                                 //definitively a line merge
                                 op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
@@ -351,22 +348,6 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
     }
 
     /**
-     * Converts a DOM range to an operation target.
-     * 
-     * @param range a DOM range
-     * @return the corresponding operation target
-     */
-    private OperationTarget getTarget(Range range)
-    {
-        OperationTarget target = new OperationTarget();
-        target.setStartContainer(getLocator(range.getStartContainer()));
-        target.setStartOffset(range.getStartOffset());
-        target.setEndContainer(getLocator(range.getEndContainer()));
-        target.setEndOffset(range.getEndOffset());
-        return target;
-    }
-
-    /**
      * @param node a DOM node
      * @return a list of locator for the given node relative to the {@code BODY} element of the edited HTML document
      */
@@ -418,5 +399,68 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
         log.info("End container: " + r.getEndContainer().getNodeName() +
                 ", " + " locator: " + getLocator(r.getStartContainer()) + " offset: " + r.getEndOffset()
                 );
+    }
+
+     /**
+     * Converts a DOM range to an list of operation targets.
+     *
+     * @param range a DOM range
+     * @return the corresponding list of operation targets
+     */
+    private List<OperationTarget> getIntermediaryTargets(Range range) {
+        // Iterate through all the text nodes within the given range and extract the operation target
+        List<OperationTarget> operationTargets = new ArrayList<OperationTarget>();
+
+        List<Text> textNodes = getNonEmptyTextNodes(range);
+        for (int i = 0; i < textNodes.size(); i++) {
+            Text text = textNodes.get(i);
+            int startIndex = 0;
+            if (text == range.getStartContainer()) {
+                startIndex = range.getStartOffset();
+            }
+            int endIndex = text.getLength();
+            if (text == range.getEndContainer()) {
+                endIndex = range.getEndOffset();
+            }
+            operationTargets.add(new OperationTarget(getLocator(text), startIndex, endIndex, text.getLength()));
+        }
+        return operationTargets;
+    }
+
+     /**
+     * @param range a DOM range
+     * @return the list of non empty text nodes that are completely or partially (at least one character) included in
+     *         the given range
+     */
+    protected List<Text> getNonEmptyTextNodes(Range range) {
+        Node leaf = DOMUtils.getInstance().getFirstLeaf(range);
+        Node lastLeaf = DOMUtils.getInstance().getLastLeaf(range);
+        List<Text> textNodes = new ArrayList<Text>();
+        // If the range starts at the end of a text node we have to ignore that node.
+        if (isNonEmptyTextNode(leaf)
+                && (leaf != range.getStartContainer() || range.getStartOffset() < leaf.getNodeValue().length())) {
+            textNodes.add((Text) leaf);
+        }
+        while (leaf != lastLeaf) {
+            leaf = DOMUtils.getInstance().getNextLeaf(leaf);
+            if (isNonEmptyTextNode(leaf)) {
+                textNodes.add((Text) leaf);
+            }
+        }
+        // If the range ends at the start of a text node then we have to ignore that node.
+        int lastIndex = textNodes.size() - 1;
+        if (lastIndex >= 0 && range.getEndOffset() == 0 && textNodes.get(lastIndex) == range.getEndContainer()) {
+            textNodes.remove(lastIndex);
+        }
+        return textNodes;
+    }
+
+    /**
+     * @param node a DOM node
+     * @return {@code true} if the given node is of type {@link Node#TEXT_NODE} and it's not empty, {@code false}
+     *         otherwise
+     */
+    private boolean isNonEmptyTextNode(Node node) {
+        return node.getNodeType() == Node.TEXT_NODE && node.getNodeValue().length() > 0;
     }
 }
