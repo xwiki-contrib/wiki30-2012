@@ -32,7 +32,6 @@ import fr.loria.score.client.ClientJupiterAlg;
 import fr.loria.score.client.CommunicationService;
 import fr.loria.score.client.Converter;
 import fr.loria.score.client.RtApi;
-import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.operation.*;
 import org.xwiki.gwt.dom.client.DOMUtils;
@@ -94,30 +93,20 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
 
         getTextArea().getCommandManager().addCommandListener(this);
 
-
-        // Register custom executables.
-        getTextArea().getCommandManager().registerCommand(Command.BOLD, null);
-        getTextArea().getCommandManager().registerCommand(Command.ITALIC, null);
-
-//        getTextArea().getCommandManager().registerCommand(Command.UNDERLINE,
-//            new ToggleInlineStyleExecutable(textArea, Style.TEXT_DECORATION, Style.TextDecoration.UNDERLINE, "ins"));
-//        getTextArea().getCommandManager().registerCommand(Command.STRIKE_THROUGH,
-//            new ToggleInlineStyleExecutable(textArea, Style.TEXT_DECORATION, Style.TextDecoration.LINE_THROUGH, "del"));
-
+        // register the styling buttons and their actions
         addFeature("bold", Command.BOLD, Images.INSTANCE.bold(), Strings.INSTANCE.bold());
         addFeature("italic", Command.ITALIC, Images.INSTANCE.italic(), Strings.INSTANCE.italic());
         addFeature("underline", Command.UNDERLINE, Images.INSTANCE.underline(), Strings.INSTANCE.underline());
         addFeature("strikethrough", Command.STRIKE_THROUGH, Images.INSTANCE.strikeThrough(), Strings.INSTANCE.strikeThrough());
-
 
         if (toolBarExtension.getFeatures().length > 0) {
             registerTextAreaHandlers();
             getUIExtensionList().add(toolBarExtension);
         }
 
+        // Jupiter algo initializing
         Node bodyNode = textArea.getDocument().getBody();
-
-        // for Jupiter algo's correctness insert a new paragraph on an empty text area
+        // insert a new paragraph on an empty text area
         final Element p = Document.get().createElement("p");
         if (bodyNode.getChildCount() == 0) {
             bodyNode.insertFirst(p);
@@ -125,8 +114,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
             bodyNode.insertBefore(p, bodyNode.getFirstChild());
         }
 
-        Tree t = Converter.fromNativeToCustom(Element.as(bodyNode)); //tree should be returned from
-        clientJupiter = new ClientJupiterAlg(new TreeDocument(t));
+        clientJupiter = new ClientJupiterAlg(new TreeDocument(Converter.fromNativeToCustom(Element.as(bodyNode))));
         clientJupiter.setEditingSessionId(Integer.parseInt(config.getParameter(RtApi.DOCUMENT_ID)));
         clientJupiter.setCommunicationService(CommunicationService.ServiceHelper.getCommunicationService());
         clientJupiter.setCallback(new TreeClientCallback(bodyNode));
@@ -158,18 +146,19 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
             Selection selection = getTextArea().getDocument().getSelection();
             if (selection.getRangeCount() > 0) {
                 String styleAttribute = "unsupported";
-                if ("bold".equals(command.toString())) {
+                if (Command.BOLD.equals(command)) {
                     styleAttribute = "font-weight:bold";
-                } else if ("italic".equals(command.toString())) {
+                } else if (Command.ITALIC.equals(command)) {
                     styleAttribute = "font-style:italic";
-                } else if ("underline".equals(command.toString())) {
+                } else if (Command.UNDERLINE.equals(command)) {
                     styleAttribute = "text-decoration:underline";
-                } else if ("strikethrough".equals(command.toString())) {
+                } else if (Command.STRIKE_THROUGH.equals(command)) {
                     styleAttribute = "text-decoration:line-through";
                 }
 
                 //Use this range to get all intermediary paths
                 Range range = selection.getRangeAt(0);
+
                 List<OperationTarget> targets = getIntermediaryTargets(range);
                 log.info(targets.toString());
 
@@ -194,7 +183,6 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                     //todo: detect when same style is depressed and change value to false
                     TreeOperation op = new TreeStyle(clientJupiter.getSiteId(), path, start, end, "style", styleAttribute, addStyle, splitLeft, splitRight);
                     clientJupiter.generate(op);
-
                 }
             }
         }
