@@ -64,14 +64,6 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
     private static final String BR = "br";
 
     /**
-     * The last operation call created from a rich text area command, before the command was executed. We don't support
-     * nested commands because we can't distinguish between the case when a command is canceled (onCommand is not
-     * called) and the case case when a command is nested (consecutive onBeforeCommand calls). We would have used a
-     * stack otherwise.
-     */
-    private OperationCall commandOperationCall;
-
-    /**
      * {@inheritDoc}
      * 
      * @see AbstractPlugin#init(RichTextArea, Config)
@@ -126,7 +118,6 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
      */
     public boolean onBeforeCommand(CommandManager sender, Command command, String param)
     {
-        commandOperationCall = null;
         if (getTextArea().isAttached() && getTextArea().isEnabled() && !IGNORED_COMMANDS.contains(command)) {
             Selection selection = getTextArea().getDocument().getSelection();
             if (selection.getRangeCount() > 0) {
@@ -147,14 +138,14 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                 log.info(targets.toString());
 
                 for (OperationTarget target : targets) {
-                    int[] path = convertPath(target.getStartContainer());
                     boolean addStyle = false;
+                    int[] path = convertPath(target.getStartContainer());
                     if (path.length == 2) {
                         addStyle = true;
                     }
 
-                    int start = target.getStartOffset();
                     boolean splitLeft = true;
+                    int start = target.getStartOffset();
                     if (start == 0) {
                         splitLeft = false;
                     }
@@ -179,11 +170,8 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
      * 
      * @see CommandListener#onCommand(CommandManager, Command, String)
      */
-    public void onCommand(CommandManager sender, final Command command, final String param)
-    {
-        if (commandOperationCall != null) {
-        }
-    }
+    public void onCommand(CommandManager sender, final Command command, final String param) {}
+
     //todo: broadcast only if the caret was inside the RTA, not outside..
     @Override
     public void onKeyDown(KeyDownEvent event) {
