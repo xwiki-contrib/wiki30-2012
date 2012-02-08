@@ -343,6 +343,11 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
             }
 
             if (op != null) {
+                if (!(op instanceof TreeInsertText || op instanceof TreeDeleteText)) {
+                    // Prevent the default behavior because the DOM tree will be synchronized with the Tree model.
+                    event.preventDefault();
+                }
+
                 clientJupiter.generate(op);
             }
         }
