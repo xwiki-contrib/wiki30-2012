@@ -132,15 +132,15 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                 commandOperationCall = new OperationCall(command.toString(), param, getTarget(range));
                 log.info(commandOperationCall.toString());
 
-                String realTag = "unsupported";
+                String styleAttribute = "unsupported";
                 if ("bold".equals(command.toString())) {
-                    realTag = "strong";
+                    styleAttribute = "font-weight:bold";
                 } else if ("italic".equals(command.toString())) {
-                    realTag = "em";
+                    styleAttribute = "font-style:italic";
                 } else if ("underline".equals(command.toString())) {
-                    realTag = "ins";
+                    styleAttribute = "text-decoration:underline";
                 } else if ("strikethrough".equals(command.toString())) {
-                    realTag = "del";
+                    styleAttribute = "text-decoration:line-through";
                 }
 
                 final OperationTarget target = getTarget(range);
@@ -169,7 +169,7 @@ public class RealTimePlugin extends AbstractPlugin implements KeyDownHandler, Ke
                         splitRight = true;
                     }
                     //todo: detect when same style is depressed and change value to false
-                    TreeOperation op = new TreeStyle(clientJupiter.getSiteId(), path, start, end, realTag, "true", addStyle, splitLeft, splitRight);
+                    TreeOperation op = new TreeStyle(clientJupiter.getSiteId(), path, start, end, "style", styleAttribute, addStyle, splitLeft, splitRight);
                     clientJupiter.generate(op);
                 }
             }
