@@ -8,12 +8,16 @@ import fr.loria.score.jupiter.tree.TreeUtils;
 import java.util.ArrayList;
 
 public class TreeStyle extends TreeOperation {
+    /**
+     * Tag name (like DOM) used to mark a style
+     */
+    public static final String SPAN = "span";
 
     public int start; // inclusive index
     public int end; //exclusive index
     public String param;
     public String value;
-    public boolean addStyle; //true if adding a <style> node is needed, false if it already exists
+    public boolean addStyle; //true if adding a <span> node is needed, false if it already exists
     public boolean splitLeft;//split left : false if start == 0 (generation), true otherwise
     public boolean splitRight;//split right : false if end == length of the string (generation), true otherwise
 
@@ -21,8 +25,9 @@ public class TreeStyle extends TreeOperation {
 
     public TreeStyle(int siteId, int[] path, int start, int end, String param, String value, boolean addStyle, boolean splitLeft, boolean splitRight) {
         this.path = path;
-        this.start = start;
-        this.end = end;
+        //the selection could be from right to left, so make sure the semantics is the same
+        this.start = Math.min(start, end);
+        this.end = Math.max(start, end);
         this.param = param;
         this.value = value;
         this.siteId = siteId;
@@ -36,15 +41,14 @@ public class TreeStyle extends TreeOperation {
         for (int i = 0; i < path.length - 1; i++) {
             tree = tree.getChild(path[i]);
         }
-        //last==tree.getChild(path[path.length-1]).getValue.length;
-        if/*(start==0)*/ (!splitLeft) {
-            if/*(end==last)*/ (!splitRight) {//whole String
-                if/*(tree.getValue().toString().equals("style"))*/ (!addStyle) {//suppose one child
+        if (!splitLeft) {
+            if (!splitRight) {//whole String
+                if (!addStyle) {//suppose one child
                     tree.setAttribute(param, value);
                 } else {
                     //addStyle=true;
                     Tree tc = tree.removeChild(path[path.length - 1]);
-                    Tree ts = TreeFactory.createElementTree("style"); //todo: on native DOM this is an attribute !
+                    Tree ts = TreeFactory.createElementTree(SPAN);
                     ts.setAttribute(param, value);
                     ts.addChild(tc);
                     tree.addChild(ts, path[path.length - 1]);
@@ -53,7 +57,7 @@ public class TreeStyle extends TreeOperation {
                     }
                 }
             } else {//Style applied to the left side
-                if/*(tree.getValue().toString().equals("style"))*/ (!addStyle) {//suppose one child
+                if (!addStyle) {//suppose one child
                     String text = tree.getChild(path[path.length - 1]).split(end);
                     Tree tc = TreeFactory.createTextTree(text);
                     Tree ts = tree.cloneNode();
@@ -68,7 +72,7 @@ public class TreeStyle extends TreeOperation {
                     //addStyle=true;
                     Tree t = tree.getChild(path[path.length - 1]);
                     Tree tc = TreeFactory.createTextTree(t.split(end));
-                    Tree ts = TreeFactory.createElementTree("style");
+                    Tree ts = TreeFactory.createElementTree(SPAN);
                     ts.setAttribute(param, value);
                     ts.addChild(tree.removeChild(path[path.length - 1]));
                     tree.addChild(tc, path[path.length - 1]);
@@ -81,7 +85,7 @@ public class TreeStyle extends TreeOperation {
             }
         } else {
             if/*(end==last)*/ (!splitRight) {//Style applied to the right side
-                if/*(tree.getValue().toString().equals("style"))*/ (!addStyle) {//suppose one child
+                if (!addStyle) {//suppose one child
                     Tree tc = TreeFactory.createTextTree(tree.getChild(path[path.length - 1]).split(start));
                     Tree ts = tree.cloneNode();
                     ts.setAttribute(param, value);
@@ -95,7 +99,7 @@ public class TreeStyle extends TreeOperation {
                     //addStyle=true;
                     Tree t = tree.getChild(path[path.length - 1]);
                     Tree tc = TreeFactory.createTextTree(t.split(start));
-                    Tree ts = TreeFactory.createElementTree("style");
+                    Tree ts = TreeFactory.createElementTree(SPAN);
                     ts.setAttribute(param, value);
                     ts.addChild(tc);
                     tree.addChild(ts, path[path.length - 1] + 1);
@@ -105,7 +109,7 @@ public class TreeStyle extends TreeOperation {
                     }
                 }
             } else {//Style applied to the middle
-                if/*(tree.getValue().toString().equals("style"))*/ (!addStyle) {//suppose one child
+                if (!addStyle) {//suppose one child
                     Tree tc = TreeFactory.createTextTree(tree.getChild(path[path.length - 1]).split(start));
                     Tree tc2 = TreeFactory.createTextTree(tc.split(end - start));
                     Tree ts = tree.cloneNode();
@@ -124,8 +128,8 @@ public class TreeStyle extends TreeOperation {
                     //addStyle=true;
                     Tree t = tree.getChild(path[path.length - 1]);
                     Tree tc = TreeFactory.createTextTree(t.split(start));
-                    Tree tc2 = TreeFactory.createTextTree( tc.split(end - start));
-                    Tree ts = TreeFactory.createElementTree("style");
+                    Tree tc2 = TreeFactory.createTextTree(tc.split(end - start));
+                    Tree ts = TreeFactory.createElementTree(SPAN);
                     ts.setAttribute(param, value);
                     ts.addChild(tc);
                     tree.addChild(ts, path[path.length - 1] + 1);
