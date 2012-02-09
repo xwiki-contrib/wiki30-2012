@@ -19,12 +19,6 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.rt.dom.operation;
 
-import com.google.gwt.dom.client.SpanElement;
-import fr.loria.score.jupiter.tree.operation.TreeOperation;
-import fr.loria.score.jupiter.tree.operation.TreeStyle;
-import org.xwiki.gwt.dom.client.*;
-import org.xwiki.gwt.user.client.ui.rta.cmd.internal.ToggleInlineStyleExecutable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -39,6 +33,8 @@ import org.xwiki.gwt.dom.client.Text;
 import org.xwiki.gwt.dom.client.TextFragment;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
 import org.xwiki.gwt.user.client.ui.rta.cmd.internal.ToggleInlineStyleExecutable;
+
+import com.google.gwt.dom.client.SpanElement;
 
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import fr.loria.score.jupiter.tree.operation.TreeStyle;
