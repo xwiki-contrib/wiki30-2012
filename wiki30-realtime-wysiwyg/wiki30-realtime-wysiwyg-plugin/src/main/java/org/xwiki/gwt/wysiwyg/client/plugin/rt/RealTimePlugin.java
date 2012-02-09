@@ -163,7 +163,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                 log.info(targets.toString());
 
                 for (OperationTarget target : targets) {
-                    boolean addStyle = false;
+                    boolean addStyle = getTextArea().getCommandManager().isExecuted(command);
                     int[] path = convertPath(target.getStartContainer());
                     if (path.length == 2) {
                         addStyle = true;
@@ -180,7 +180,6 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                     if (end == target.getDataLength()) {
                         splitRight = false;
                     }
-                    //todo: detect when same style is depressed and change value to false
                     TreeOperation op = new TreeStyle(clientJupiter.getSiteId(), path, start, end, "style", styleAttribute, addStyle, splitLeft, splitRight);
                     clientJupiter.generate(op);
                 }
