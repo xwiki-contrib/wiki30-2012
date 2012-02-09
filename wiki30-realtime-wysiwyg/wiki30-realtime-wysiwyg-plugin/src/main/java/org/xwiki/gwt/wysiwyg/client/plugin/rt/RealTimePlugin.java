@@ -218,7 +218,6 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
     @Override
     public void onKeyDown(KeyDownEvent event) {
         final int keyCode = event.getNativeKeyCode();
-        log.fine("onKeyDown: " + keyCode + ", native evt.keyCode" + event.getNativeEvent().getKeyCode());
         Selection selection = getTextArea().getDocument().getSelection();
         if (selection.getRangeCount() > 0) {
             Range range = selection.getRangeAt(0);
@@ -363,7 +362,6 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
         log.fine("onKeyPress: " + event.getCharCode() + ", native keyCode" + event.getNativeEvent().getKeyCode() + ", unicodeCharCode: " + event.getUnicodeCharCode());
         boolean isAltControlOrMetaDown = event.isAltKeyDown() || event.isControlKeyDown() || event.isMetaKeyDown();
         boolean isNoteworthyKeyPressed = event.getCharCode() != '\u0000';
-        log.info("isNoteworthy:" + isNoteworthyKeyPressed);
 
         if (getTextArea().isAttached() && getTextArea().isEnabled() && !isAltControlOrMetaDown && isNoteworthyKeyPressed) {
             Selection selection = getTextArea().getDocument().getSelection();
