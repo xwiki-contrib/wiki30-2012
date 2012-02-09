@@ -103,6 +103,8 @@ public class DomStyle extends AbstractDomOperation
          */
         private static final String TAG_NAME = "";
 
+        private static final String SPAN = "span";
+
         /**
          * The document target
          */
@@ -186,16 +188,14 @@ public class DomStyle extends AbstractDomOperation
             // Make sure we apply the style only to the selected text.
             text.crop(firstCharIndex, lastCharIndex);
             Element element = (Element) text.getParentElement();
-            if ("span".equalsIgnoreCase(element.getNodeName())) {
+            if (SPAN.equalsIgnoreCase(element.getNodeName())) {
                 element.getStyle().setProperty(getProperty().getJSName(), propertyValue);
             } else {
-                text.removeFromParent();
-
                 SpanElement spanElement = Document.get().createSpanElement();
-                spanElement.setAttribute(getProperty().getJSName(), propertyValue);
-                spanElement.appendChild(text);
+                spanElement.getStyle().setProperty(getProperty().getJSName(), propertyValue);
 
-                element.appendChild(spanElement);
+                element.replaceChild(spanElement, text);
+                spanElement.appendChild(text);
             }
             return new TextFragment(text, 0, text.getLength());
         }
