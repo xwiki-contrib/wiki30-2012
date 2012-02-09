@@ -1,5 +1,5 @@
 #!/bin/sh
-version=3.4-SNAPSHOT
+version=3.5-SNAPSHOT
 curDir=`pwd`
 jettyDir=$curDir/wiki30-distribution/wiki30-distribution-zip/target/wiki30-distribution-zip-1.0-SNAPSHOT/webapps/xwiki/resources/js/xwiki
 libDir=$curDir/wiki30-distribution/wiki30-distribution-zip/target/wiki30-distribution-zip-1.0-SNAPSHOT/webapps/xwiki/WEB-INF/lib
