@@ -19,6 +19,12 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.rt.dom.operation;
 
+import com.google.gwt.dom.client.SpanElement;
+import fr.loria.score.jupiter.tree.operation.TreeOperation;
+import fr.loria.score.jupiter.tree.operation.TreeStyle;
+import org.xwiki.gwt.dom.client.*;
+import org.xwiki.gwt.user.client.ui.rta.cmd.internal.ToggleInlineStyleExecutable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -120,7 +126,6 @@ public class DomStyle extends AbstractDomOperation
             super(new RichTextArea(), propertyName, propertyValue, TAG_NAME);
             this.document = document;
             this.propertyValue = propertyValue;
-            log.info("Done creating");
 
         }
 
@@ -177,7 +182,6 @@ public class DomStyle extends AbstractDomOperation
          * @return a text fragment indicating what has been formatted
          */
         protected TextFragment addStyle(Text text, int firstCharIndex, int lastCharIndex) {
-            log.info("addStyle");
             if (matchesStyle(text)) {
                 // Already styled. Skip.
                 return new TextFragment(text, firstCharIndex, lastCharIndex);
@@ -186,7 +190,17 @@ public class DomStyle extends AbstractDomOperation
             // Make sure we apply the style only to the selected text.
             text.crop(firstCharIndex, lastCharIndex);
             Element element = (Element) text.getParentElement();
-            element.getStyle().setProperty(getProperty().getJSName(), propertyValue);
+            if ("span".equalsIgnoreCase(element.getNodeName())) {
+                element.getStyle().setProperty(getProperty().getJSName(), propertyValue);
+            } else {
+                text.removeFromParent();
+
+                SpanElement spanElement = Document.get().createSpanElement();
+                spanElement.setAttribute(getProperty().getJSName(), propertyValue);
+                spanElement.appendChild(text);
+
+                element.appendChild(spanElement);
+            }
             return new TextFragment(text, 0, text.getLength());
         }
     }
