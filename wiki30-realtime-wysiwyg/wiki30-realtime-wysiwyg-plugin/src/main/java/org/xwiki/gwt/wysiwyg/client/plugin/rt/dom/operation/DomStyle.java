@@ -78,7 +78,7 @@ public class DomStyle extends AbstractDomOperation
         } else if (vals[1].equalsIgnoreCase("line-through")) {
             realDomStyleExecutable = new DomStyleExecutable(document, Style.TEXT_DECORATION, Style.TextDecoration.LINE_THROUGH);
         }
-
+        //todo: create range from the op context
         if (document.getSelection().getRangeCount() > 0) {
             log.info("Range is: " + document.getSelection().getRangeAt(0));
             return realDomStyleExecutable.execute(document.getSelection().getRangeAt(0), vals[1]);
