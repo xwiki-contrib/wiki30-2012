@@ -20,6 +20,7 @@
 package org.xwiki.gwt.wysiwyg.client.plugin.rt.dom.operation;
 
 import org.xwiki.gwt.dom.client.Document;
+import org.xwiki.gwt.dom.client.Range;
 
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Text;
@@ -45,7 +46,7 @@ public class DomInsertText extends AbstractDomOperation
     }
 
     @Override
-    public void execute(Document document)
+    public Range execute(Document document)
     {
         TreeInsertText insertText = getOperation();
         String text = String.valueOf(insertText.getText());
@@ -59,5 +60,8 @@ public class DomInsertText extends AbstractDomOperation
             // Insert a character in the target text node.
             Text.as(targetNode).insertData(insertText.getPosition(), text);
         }
+
+        // No change to the selection.
+        return null;
     }
 }

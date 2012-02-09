@@ -21,6 +21,7 @@ package org.xwiki.gwt.wysiwyg.client.plugin.rt.dom.operation;
 
 import org.xwiki.gwt.dom.client.Document;
 import org.xwiki.gwt.dom.client.Element;
+import org.xwiki.gwt.dom.client.Range;
 
 import com.google.gwt.dom.client.Node;
 
@@ -45,7 +46,7 @@ public class DomMergeParagraph extends AbstractDomOperation
     }
 
     @Override
-    public void execute(Document document)
+    public Range execute(Document document)
     {
         int position = getOperation().getPosition();
         Node left = document.getBody().getChild(position - 1);
@@ -58,10 +59,17 @@ public class DomMergeParagraph extends AbstractDomOperation
             lastLeaf.removeFromParent();
         }
 
+        // The caret should be at the merging point.
+        Range caret = document.createRange();
+        caret.setStart(left, left.getChildCount());
+        caret.collapse(true);
+
         // Move the nodes from the right paragraph to the left paragraph.
         left.appendChild(Element.as(right).extractContents());
 
         // Remove the right paragraph.
         right.removeFromParent();
+
+        return caret;
     }
 }

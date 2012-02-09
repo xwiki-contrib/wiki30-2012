@@ -20,6 +20,7 @@
 package org.xwiki.gwt.wysiwyg.client.plugin.rt.dom.operation;
 
 import org.xwiki.gwt.dom.client.Document;
+import org.xwiki.gwt.dom.client.Range;
 
 /**
  * An operation that can be executed on a DOM tree.
@@ -32,6 +33,7 @@ public interface DomOperation
      * Executes the operation on the specified DOM tree
      * 
      * @param document the DOM tree to execute the operation on
+     * @return the expected selection state after the operation is executed
      */
-    void execute(Document document);
+    Range execute(Document document);
 }

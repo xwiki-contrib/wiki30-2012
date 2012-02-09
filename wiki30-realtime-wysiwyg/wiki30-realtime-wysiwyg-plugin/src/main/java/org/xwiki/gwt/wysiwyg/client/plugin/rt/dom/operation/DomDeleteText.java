@@ -20,6 +20,7 @@
 package org.xwiki.gwt.wysiwyg.client.plugin.rt.dom.operation;
 
 import org.xwiki.gwt.dom.client.Document;
+import org.xwiki.gwt.dom.client.Range;
 
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Text;
@@ -45,7 +46,7 @@ public class DomDeleteText extends AbstractDomOperation
     }
 
     @Override
-    public void execute(Document document)
+    public Range execute(Document document)
     {
         Node targetNode = getTargetNode(document);
         if (Node.TEXT_NODE == targetNode.getNodeType()) {
@@ -54,5 +55,7 @@ public class DomDeleteText extends AbstractDomOperation
         } else if (Node.ELEMENT_NODE == targetNode.getNodeType()) {
             // There is no delete text operation generated on elements yet.
         }
+        // No change to the selection.
+        return null;
     }
 }

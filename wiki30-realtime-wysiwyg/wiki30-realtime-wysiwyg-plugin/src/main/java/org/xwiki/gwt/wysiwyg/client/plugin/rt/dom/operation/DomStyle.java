@@ -19,14 +19,23 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.rt.dom.operation;
 
-import fr.loria.score.jupiter.tree.operation.TreeOperation;
-import fr.loria.score.jupiter.tree.operation.TreeStyle;
-import org.xwiki.gwt.dom.client.*;
-import org.xwiki.gwt.user.client.ui.rta.cmd.internal.ToggleInlineStyleExecutable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import org.xwiki.gwt.dom.client.Document;
+import org.xwiki.gwt.dom.client.Element;
+import org.xwiki.gwt.dom.client.Property;
+import org.xwiki.gwt.dom.client.Range;
+import org.xwiki.gwt.dom.client.Selection;
+import org.xwiki.gwt.dom.client.Style;
+import org.xwiki.gwt.dom.client.Text;
+import org.xwiki.gwt.dom.client.TextFragment;
+import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
+import org.xwiki.gwt.user.client.ui.rta.cmd.internal.ToggleInlineStyleExecutable;
+
+import fr.loria.score.jupiter.tree.operation.TreeOperation;
+import fr.loria.score.jupiter.tree.operation.TreeStyle;
 
 /**
  * Applies {@link TreeStyle} on a DOM tree.
@@ -53,7 +62,7 @@ public class DomStyle extends AbstractDomOperation
     }
 
     @Override
-    public void execute(Document document) {
+    public Range execute(Document document) {
         TreeStyle treeStyleOp = getOperation();
         String stylePropertyValue = treeStyleOp.value;
         String [] vals = stylePropertyValue.split(":");
@@ -70,8 +79,9 @@ public class DomStyle extends AbstractDomOperation
 
         if (document.getSelection().getRangeCount() > 0) {
             log.info("Range is: " + document.getSelection().getRangeAt(0));
-            realDomStyleExecutable.execute(document.getSelection().getRangeAt(0), vals[1]);
+            return realDomStyleExecutable.execute(document.getSelection().getRangeAt(0), vals[1]);
         }
+        return null;
     }
 
 
@@ -107,7 +117,7 @@ public class DomStyle extends AbstractDomOperation
          */
         public DomStyleExecutable(Document document, Property propertyName, String propertyValue) {
             // We don't use the RTA but the document, and override all methods that use the RTA
-            super(null, propertyName, propertyValue, TAG_NAME);
+            super(new RichTextArea(), propertyName, propertyValue, TAG_NAME);
             this.document = document;
             this.propertyValue = propertyValue;
             log.info("Done creating");

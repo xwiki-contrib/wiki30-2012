@@ -33,6 +33,8 @@ import fr.loria.score.client.ClientCallback;
 import fr.loria.score.client.ClientDTO;
 import fr.loria.score.client.Converter;
 import fr.loria.score.jupiter.model.Message;
+import fr.loria.score.jupiter.transform.Transformation;
+import fr.loria.score.jupiter.transform.TransformationFactory;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
@@ -62,6 +64,16 @@ public class TreeClientCallback implements ClientCallback
     private DomOperationFactory domOperationFactory = new DomOperationFactory();
 
     /**
+     * The object used to create the {@link TreeInsertText} operations used to preserve the selection.
+     */
+    private TreeOperationFactory treeOperationFactory = new TreeOperationFactory();
+
+    /**
+     * The object used to transform the text selection relative to the executed operation.
+     */
+    private Transformation transformation;
+
+    /**
      * Creates a new instance.
      * 
      * @param nativeNode the root of the DOM document that is synchronized with the Tree model
@@ -75,10 +87,10 @@ public class TreeClientCallback implements ClientCallback
     public void onConnected(ClientDTO dto, fr.loria.score.jupiter.model.Document document, boolean updateUI)
     {
         customNode = ((TreeDocument) document).getRoot();
+        transformation = TransformationFactory.createTransformation(document);
         if (updateUI) {
             log.finest("Updating UI for WYSIWYG");
             updateDOM();
-            applyDefaultSelection();
         }
     }
 
@@ -97,7 +109,7 @@ public class TreeClientCallback implements ClientCallback
         }
         DomOperation domOperation = domOperationFactory.createDomOperation(operation);
         if (domOperation != null) {
-            domOperation.execute((Document) nativeNode.getOwnerDocument());
+            applySelection(domOperation.execute((Document) nativeNode.getOwnerDocument()));
         } else {
             updateDOM();
         }
@@ -110,7 +122,9 @@ public class TreeClientCallback implements ClientCallback
         TreeOperation operation = (TreeOperation) receivedMessage.getOperation();
         DomOperation domOperation = domOperationFactory.createDomOperation(operation);
         if (domOperation != null) {
+            TreeInsertText[] selectionEndPoints = saveSelection();
             domOperation.execute((Document) nativeNode.getOwnerDocument());
+            restoreSelection(selectionEndPoints, operation);
         } else {
             log.warning("Update all DOM");
             log.finest("Root is before: " + customNode);
@@ -142,6 +156,67 @@ public class TreeClientCallback implements ClientCallback
     }
 
     /**
+     * Saves the current selection using two {@link TreeInsertText} operations.
+     * 
+     * @return two {@link TreeInsertText} operations that represent the start and end of the selection
+     * @see TreeClientCallback#restoreSelection(TreeInsertText[])
+     */
+    private TreeInsertText[] saveSelection()
+    {
+        TreeInsertText[] selection = new TreeInsertText[2];
+        Range start = ((Document) nativeNode.getOwnerDocument()).getSelection().getRangeAt(0);
+        Range end = start.cloneRange();
+        start.collapse(true);
+        end.collapse(false);
+        selection[0] = treeOperationFactory.createTreeInsertText(0, start, '\u0000');
+        selection[1] = treeOperationFactory.createTreeInsertText(0, end, '\u0000');
+        return selection;
+    }
+
+    /**
+     * Transforms the selection end points relative to the executed operation and restores them.
+     * 
+     * @param selectionEndPoints two {@link TreeInsertText} operations that mark the start and end points of the
+     *            selection
+     * @param operation the operation that has been executed
+     * @see #saveSelection()
+     */
+    private void restoreSelection(TreeInsertText[] selectionEndPoints, TreeOperation operation)
+    {
+        // Transform the selection relative to the executed operation.
+        selectionEndPoints[0] = (TreeInsertText) transformation.transform(selectionEndPoints[0], operation);
+        selectionEndPoints[1] = (TreeInsertText) transformation.transform(selectionEndPoints[1], operation);
+
+        // Place the caret at the updated position.
+        Document document = (Document) nativeNode.getOwnerDocument();
+        Selection selection = document.getSelection();
+        Range caret = document.createRange();
+
+        Node startContainer = TreeHelper.getChildNodeFromLocator(document.getBody(), selectionEndPoints[0].getPath());
+        caret.setStart(startContainer, selectionEndPoints[0].getPosition());
+
+        Node endContainer = TreeHelper.getChildNodeFromLocator(document.getBody(), selectionEndPoints[1].getPath());
+        caret.setEnd(endContainer, selectionEndPoints[1].getPosition());
+
+        selection.removeAllRanges();
+        selection.addRange(caret);
+    }
+
+    /**
+     * Selects the given DOM range.
+     * 
+     * @param range the DOM range to be selected
+     */
+    private void applySelection(Range range)
+    {
+        if (range != null) {
+            Selection selection = ((Document) nativeNode.getOwnerDocument()).getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+    }
+
+    /**
      * Synchronizes the DOM document with the Tree model.
      */
     private void updateDOM()
@@ -152,6 +227,9 @@ public class TreeClientCallback implements ClientCallback
         // have to focus the rich text area in order to make it editable on Firefox.
         Element.as(nativeNode).focus();
         log.fine("Native node is after: " + Element.as(nativeNode).getString());
+
+        // Place the caret at the start of the DOM document.
+        applyDefaultSelection();
     }
 
     /**

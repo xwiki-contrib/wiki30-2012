@@ -63,6 +63,11 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
     private static ClientJupiterAlg clientJupiter;
 
     /**
+     * The object used to create tree operations.
+     */
+    private TreeOperationFactory treeOperationFactory = new TreeOperationFactory();
+
+    /**
      * The list of command that shouldn't be broadcasted.
      */
     private static final List<Command> IGNORED_COMMANDS = Arrays.asList(Command.UPDATE, Command.ENABLE, new Command(
@@ -164,7 +169,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
 
                 for (OperationTarget target : targets) {
                     boolean addStyle = getTextArea().getCommandManager().isExecuted(command);
-                    int[] path = convertPath(target.getStartContainer());
+                    int[] path = treeOperationFactory.toIntArray(target.getStartContainer());
                     if (path.length == 2) {
                         addStyle = true;
                     }
@@ -183,6 +188,8 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                     TreeOperation op = new TreeStyle(clientJupiter.getSiteId(), path, start, end, "style", styleAttribute, addStyle, splitLeft, splitRight);
                     clientJupiter.generate(op);
                 }
+                // Block the command because it's already handled in DomStyle operation.
+                return true;
             }
         }
         return false;
@@ -227,7 +234,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
             Node startContainer = range.getStartContainer();
             Node endContainer = range.getEndContainer();
 
-            List<Integer> path = getLocator(range.getStartContainer());
+            List<Integer> path = treeOperationFactory.getLocator(range.getStartContainer());
             //make case
             TreeOperation op = null;
             switch (keyCode) {
@@ -243,14 +250,14 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                                 log.info("1 - line merge");
                                 //definitively a line merge
                                 op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
-                                op.setPath(convertPath(path));
+                                op.setPath(treeOperationFactory.toIntArray(path));
                             } else {
                                 log.info("2 - nothing");
                             }
                         } else {
                             log.info("3 - delete");
                             pos = pos - 1;
-                            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
+                            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, treeOperationFactory.toIntArray(path));
                         }
                     } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
                         if (pos == 0) {
@@ -276,23 +283,23 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                                 //line merge only if there is something to merge: the text node's parent has siblings
                                 path.set(0, path.get(0) + 1);
                                 op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
-                                op.setPath(convertPath(path));
+                                op.setPath(treeOperationFactory.toIntArray(path));
                             }
                         } else {
-                            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, convertPath(path));
+                            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, treeOperationFactory.toIntArray(path));
                         }
                     } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
                         if (startContainer.getNextSibling() != null) {
                             path.set(0, path.get(0) + 1);
                             op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
-                            op.setPath(convertPath(path));
+                            op.setPath(treeOperationFactory.toIntArray(path));
                         }
                     }
                 }
                 break;
 
                 case KeyCodes.KEY_ENTER: {
-                    path = getLocator(range.getEndContainer());
+                    path = treeOperationFactory.getLocator(range.getEndContainer());
                     pos = range.getEndOffset();
 
                     if (Node.TEXT_NODE == endContainer.getNodeType()) {
@@ -309,15 +316,15 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                         }
                         if (isNewParagraph) {
                             op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
-                            op.setPath(convertPath(path));
+                            op.setPath(treeOperationFactory.toIntArray(path));
                         } else {
-                            op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
+                            op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, treeOperationFactory.toIntArray(path));
                         }
                     } else if (Node.ELEMENT_NODE == endContainer.getNodeType()) {
                         Element element = Element.as(endContainer);
                         if (pos == 0) { //start of line
                             op = new TreeNewParagraph(clientJupiter.getSiteId(), path.get(0));
-                            op.setPath(convertPath(path));
+                            op.setPath(treeOperationFactory.toIntArray(path));
                         } else {
                             int brCount = element.getElementsByTagName(BR).getLength();
                             int childCount = element.getChildCount();
@@ -326,10 +333,10 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                             if (isBeforeLastBrTag || isAfterLastTag) { //end of the line
                                 pos = path.get(0) + 1;
                                 op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
-                                op.setPath(convertPath(path));
+                                op.setPath(treeOperationFactory.toIntArray(path));
                             } else { // somewhere in the middle of the line
                                 pos = range.getEndOffset();
-                                op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, convertPath(path));
+                                op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, treeOperationFactory.toIntArray(path));
                             }
                         }
                     }
@@ -369,8 +376,9 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                 Range range = selection.getRangeAt(0);
                 logRange(range);
 
-                List<Integer> path = getLocator(range.getStartContainer());
-                clientJupiter.generate(new TreeInsertText(clientJupiter.getSiteId(), range.getStartOffset(), convertPath(path), new String(new int[]{event.getUnicodeCharCode()}, 0, 1).charAt(0)));
+                char character = new String(new int[] {event.getUnicodeCharCode()}, 0, 1).charAt(0);
+                clientJupiter.generate(treeOperationFactory.createTreeInsertText(clientJupiter.getSiteId(), range,
+                    character));
             }
         }
     }
@@ -378,29 +386,6 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
     @Override
     public void onKeyUp(KeyUpEvent event) {
         //for now nothing
-    }
-
-    /**
-     * @param node a DOM node
-     * @return a list of locator for the given node relative to the {@code BODY} element of the edited HTML document
-     */
-    private List<Integer> getLocator(Node node)
-    {
-        List<Integer> locator = new ArrayList<Integer>();
-        Node ancestor = node;
-        while (ancestor != null && ancestor != getTextArea().getDocument().getBody()) {
-            locator.add(0, DOMUtils.getInstance().getNodeIndex(ancestor));
-            ancestor = ancestor.getParentNode();
-        }
-        return locator;
-    }
-
-    private int[] convertPath(List<Integer> path) {
-        int[] ppath = new int[path.size()];
-        for (int i = 0; i < path.size(); i++) {
-            ppath[i] = path .get(i);
-        }
-        return ppath;
     }
 
     /**
@@ -426,11 +411,11 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
 
     private void logRange(Range r) {
         log.info("Start container: " + r.getStartContainer().getNodeName() +
-                ", " + " locator: " + getLocator(r.getStartContainer()) + " offset: " + r.getStartOffset()
+                ", " + " locator: " + treeOperationFactory.getLocator(r.getStartContainer()) + " offset: " + r.getStartOffset()
                 );
 
         log.info("End container: " + r.getEndContainer().getNodeName() +
-                ", " + " locator: " + getLocator(r.getStartContainer()) + " offset: " + r.getEndOffset()
+                ", " + " locator: " + treeOperationFactory.getLocator(r.getStartContainer()) + " offset: " + r.getEndOffset()
                 );
     }
 
@@ -477,7 +462,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
             if (text == range.getEndContainer()) {
                 endIndex = range.getEndOffset();
             }
-            operationTargets.add(new OperationTarget(getLocator(text), startIndex, endIndex, text.getLength()));
+            operationTargets.add(new OperationTarget(treeOperationFactory.getLocator(text), startIndex, endIndex, text.getLength()));
         }
         return operationTargets;
     }
