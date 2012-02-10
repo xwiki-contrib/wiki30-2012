@@ -34,6 +34,7 @@ import org.xwiki.gwt.dom.client.TextFragment;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
 import org.xwiki.gwt.user.client.ui.rta.cmd.internal.ToggleInlineStyleExecutable;
 
+import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.SpanElement;
 
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
@@ -78,12 +79,20 @@ public class DomStyle extends AbstractDomOperation
         } else if (vals[1].equalsIgnoreCase("line-through")) {
             realDomStyleExecutable = new DomStyleExecutable(document, Style.TEXT_DECORATION, Style.TextDecoration.LINE_THROUGH);
         }
-        //todo: create range from the op context
-        if (document.getSelection().getRangeCount() > 0) {
-            log.info("Range is: " + document.getSelection().getRangeAt(0));
-            return realDomStyleExecutable.execute(document.getSelection().getRangeAt(0), vals[1]);
-        }
-        return null;
+
+        // Create range object from the op context
+        Range styleRange = document.createRange();
+        // Target node is the same for start and end because the style op is applied sequentially on every sub-range (text node) within the original selection range
+        Node targetNode = getTargetNode(document);
+        styleRange.setStart(targetNode, treeStyleOp.start);
+        styleRange.setEnd(targetNode, treeStyleOp.end);
+        log.info("Style range: " + styleRange.toString());
+
+        //todo: what happens when remote user has selection?
+        Range localRange = document.getSelection().getRangeAt(0);
+        log.info("Local range: " + localRange.toString());
+
+        return realDomStyleExecutable.execute(styleRange, vals[1]);
     }
 
 
