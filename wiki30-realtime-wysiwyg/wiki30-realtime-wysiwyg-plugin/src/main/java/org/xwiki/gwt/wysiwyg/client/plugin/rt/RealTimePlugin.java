@@ -19,21 +19,13 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Node;
-import com.google.gwt.dom.client.Text;
-import com.google.gwt.event.dom.client.*;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.ToggleButton;
-import fr.loria.score.client.ClientJupiterAlg;
-import fr.loria.score.client.CommunicationService;
-import fr.loria.score.client.Converter;
-import fr.loria.score.client.RtApi;
-import fr.loria.score.jupiter.tree.TreeDocument;
-import fr.loria.score.jupiter.tree.operation.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import org.xwiki.gwt.dom.client.DOMUtils;
 import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.dom.client.Selection;
@@ -47,8 +39,36 @@ import org.xwiki.gwt.wysiwyg.client.Strings;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractStatefulPlugin;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.FocusWidgetUIExtension;
 
-import java.util.*;
-import java.util.logging.Logger;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.Text;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.ToggleButton;
+
+import fr.loria.score.client.ClientJupiterAlg;
+import fr.loria.score.client.CommunicationService;
+import fr.loria.score.client.Converter;
+import fr.loria.score.client.RtApi;
+import fr.loria.score.jupiter.tree.TreeDocument;
+import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
+import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
+import fr.loria.score.jupiter.tree.operation.TreeInsertText;
+import fr.loria.score.jupiter.tree.operation.TreeMergeParagraph;
+import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
+import fr.loria.score.jupiter.tree.operation.TreeOperation;
+import fr.loria.score.jupiter.tree.operation.TreeStyle;
 
 /**
  * Broadcasts DOM mutations generated inside the rich text area.
@@ -168,7 +188,9 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                 log.info(targets.toString());
 
                 for (OperationTarget target : targets) {
-                    boolean addStyle = getTextArea().getCommandManager().isExecuted(command);
+                    // the isExecuted tells you if the command was executed before the call to the method, and not after
+                    boolean addStyle = !getTextArea().getCommandManager().isExecuted(command);
+                    log.fine("Command " + command + " is executed: " + addStyle);
                     int[] path = treeOperationFactory.toIntArray(target.getStartContainer());
                     if (path.length == 2) {
                         addStyle = true;
@@ -265,8 +287,8 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                                 log.severe("Delete text on element, pos = 0, prev sibling not null");
                                 // nothing for now
                             } else {
-                                // nothing for now
-                                log.severe("Delete text on element, pos = 0, prev sibling NULL");
+                                // prevent default, otherwise it would remove the paragraph element
+                                event.preventDefault();
                             }
                         }
                     }
