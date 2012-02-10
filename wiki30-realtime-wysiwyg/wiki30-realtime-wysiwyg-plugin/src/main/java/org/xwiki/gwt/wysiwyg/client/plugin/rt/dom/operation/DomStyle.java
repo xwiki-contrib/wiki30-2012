@@ -34,6 +34,7 @@ import org.xwiki.gwt.dom.client.TextFragment;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
 import org.xwiki.gwt.user.client.ui.rta.cmd.internal.ToggleInlineStyleExecutable;
 
+import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.SpanElement;
 
@@ -151,7 +152,7 @@ public class DomStyle extends AbstractDomOperation
         }
 
         @Override
-        protected Range execute(Range range, String parameter) {
+        public Range execute(Range range, String parameter) {
             return super.execute(range, parameter);
         }
 
@@ -171,15 +172,20 @@ public class DomStyle extends AbstractDomOperation
 
         @Override
         public boolean isExecuted() {
-            Selection selection = document.getSelection();
-            for (int i = 0; i < selection.getRangeCount(); i++) {
-                if (!isExecuted(selection.getRangeAt(i))) {
-                    return false;
-                }
-            }
-            return selection.getRangeCount() > 0;
+            return ((TreeStyle)DomStyle.this.getOperation()).addStyle;
         }
 
+            /**
+     * {@inheritDoc}
+     *
+     * @see InlineStyleExecutable#execute(Text, int, int, String)
+     */
+    protected TextFragment execute(Text text, int startIndex, int endIndex, String parameter)
+    {
+        boolean wasExecuted = isExecuted();
+        log.info("Deciding what to do: wasExecuted " + wasExecuted);
+        return wasExecuted ? removeStyle(text, startIndex, endIndex) : addStyle(text, startIndex, endIndex);
+    }
         /**
          * Adds the underlying style to the given text node.
          *
@@ -208,5 +214,67 @@ public class DomStyle extends AbstractDomOperation
             }
             return new TextFragment(text, 0, text.getLength());
         }
+
+
+        /**
+     * Removes the underlying style from the given text node.
+     *
+     * @param text the target text node
+     * @param firstCharIndex the first character on which we remove the style
+     * @param lastCharIndex the last character on which we remove the style
+     * @return a text fragment indicating what has been unformatted
+     */
+    protected TextFragment removeStyle(Text text, int firstCharIndex, int lastCharIndex)
+    {
+        log.info("Removing style");
+        // Make sure we remove the style only from the selected text.
+        text.crop(firstCharIndex, lastCharIndex);
+
+        // Look for the element ancestor that has the underlying style.
+        Node child = text;
+        Node parent = child.getParentNode();
+        while (parent != null && matchesStyle(parent) && domUtils.isInline(parent)) {
+            domUtils.isolate(child);
+            child = child.getParentNode();
+            parent = child.getParentNode();
+        }
+
+        if (SPAN.equalsIgnoreCase(child.getNodeName())) {
+            log.info("Rem style: child is span");
+            // The style is enforced by a formatting element. We have to remove or rename it.
+            Element element = (Element) child;
+            if (element.hasAttributes()) {
+                log.info("Rem style: hasAttributes");
+                // We must keep the attributes. Let's rename the element.
+                Element replacement = element.getOwnerDocument().createSpanElement().cast();
+                JsArrayString attributes = element.getAttributeNames();
+                for (int i = 0; i < attributes.length(); i++) {
+                    replacement.setAttribute(attributes.get(i), element.getAttribute(attributes.get(i)));
+                }
+                replacement.appendChild(element.extractContents());
+                element.getParentNode().replaceChild(replacement, element);
+            } else {
+                // We remove the element but keep its child nodes.
+                element.unwrap();
+                log.info("Rem style: unwrap");
+            }
+        } else {
+            if (child.getNodeType() != Node.ELEMENT_NODE) {
+                log.info("Rem style: child is not ELEMENT");
+                // Wrap the child with a span element.
+                Node wrapper = child.getOwnerDocument().createSpanElement();
+                child.getParentNode().replaceChild(wrapper, child);
+                wrapper.appendChild(child);
+
+                child = wrapper;
+            }
+            // The style is enforced using CSS. Let's reset the style property to its default value.
+            ((Element) child).getStyle().setProperty(getProperty().getJSName(), getProperty().getDefaultValue());
+            log.info("Child is: " + child.getNodeName() + ", " + child.getNodeValue() + ", " + ((Element) child).getInnerHTML() + "," + ((Element) child).getAttributeNames());
+            log.info("Child property:" + getProperty().getJSName() + " value is: " + ((Element) child).getStyle().getProperty(getProperty().getJSName()));
+        }
+        log.info("Text is:" + text.getData());
+        return new TextFragment(text, 0, text.getLength());
+    }
     }
 }
