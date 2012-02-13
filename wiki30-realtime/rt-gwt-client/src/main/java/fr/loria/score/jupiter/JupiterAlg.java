@@ -1,16 +1,16 @@
 package fr.loria.score.jupiter;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Logger;
+
 import fr.loria.score.jupiter.model.AbstractOperation;
 import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.model.State;
 import fr.loria.score.jupiter.transform.Transformation;
 import fr.loria.score.jupiter.transform.TransformationFactory;
-
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Base class which uses the Jupiter algorithm for achieving convergence across divergent copies of document.
@@ -74,13 +74,13 @@ public abstract class JupiterAlg {
      */
     public void receive(Message receivedMsg) {
         logger.info(this + "\tReceive: " + receivedMsg);
-        logger.fine("Queue is: " + queue);
+        logger.finest("Queue is: " + queue);
 
         // Discard acknowledged messages
         for (Iterator<Message> it = queue.iterator(); it.hasNext();) {
             Message m = it.next();
             if (m.getState().getGeneratedMsgs() < receivedMsg.getState().getReceivedMsgs()) {
-                logger.fine(this + "\tRemove " + m);
+                logger.finest("\tRemove " + m);
                 it.remove();
             }
         }
@@ -93,10 +93,10 @@ public abstract class JupiterAlg {
 
             AbstractOperation localOperation = m.getOperation();
             receivedOperation = xform.transform(receivedOperation, localOperation);
-            logger.fine(this + "\tTransformed op1 = " + receivedOperation);
+            logger.finest(this + "\tTransformed op1 = " + receivedOperation);
 
             AbstractOperation op2 = xform.transform(localOperation, originallyReceivedOperation);
-            logger.fine(this + "\tTransformed op2 = " + op2);
+            logger.finest(this + "\tTransformed op2 = " + op2);
 
             m.setOperation(op2);
         }
