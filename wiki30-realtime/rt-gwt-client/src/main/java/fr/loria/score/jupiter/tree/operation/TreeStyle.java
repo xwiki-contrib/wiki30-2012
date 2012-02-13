@@ -170,10 +170,6 @@ public class TreeStyle extends TreeOperation {
                 return new TreeInsertText(op1.getSiteId(), op1.getPosition() - start, tab, op1.text);
             }
             int[] tab = TreeUtils.addC(op1.path, 1, splitLeft ? 2 : 1);
-// todo: @Luc please review
-//            if (addStyle) {
-//                tab = TreeUtils.addLevel(tab);
-//            }
             return new TreeInsertText(op1.getSiteId(), op1.getPosition() - end, tab, op1.text);
         }
         //op1.path[1]>path[1]
