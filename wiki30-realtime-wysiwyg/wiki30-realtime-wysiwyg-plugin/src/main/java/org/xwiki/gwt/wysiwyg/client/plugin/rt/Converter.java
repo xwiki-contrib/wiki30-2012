@@ -1,17 +1,18 @@
-package fr.loria.score.client;
+package org.xwiki.gwt.wysiwyg.client.plugin.rt;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.logging.Logger;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Text;
+
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeFactory;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.logging.Logger;
 
 /**
  * Utility class to convert back and forth from a GWT DOM to a custom tree like object model.
@@ -259,7 +260,9 @@ public class Converter {
         int nodeType = Integer.valueOf(tree.getAttribute(Tree.NODE_TYPE));
         if (nodeType == Node.ELEMENT_NODE) {
             // nodeName == tagName for elements
-            Element element = Document.get().createElement(tree.getNodeName().trim().toLowerCase());
+            final String nodeName = tree.getNodeName().trim().toLowerCase();
+            final Element element = Document.get().createElement(nodeName);
+
             Map<String, String> attrs = tree.getAttributes();
             for (Map.Entry<String, String> entry : attrs.entrySet()) {
                 String entryKey = entry.getKey();
@@ -267,7 +270,11 @@ public class Converter {
                 if (entryKey.equals(Tree.NODE_NAME) || entryKey.equals(Tree.NODE_TYPE)) {
                     continue;
                 }
-                element.setAttribute(entryKey, entry.getValue());
+                if ("span".equalsIgnoreCase(nodeName)) {
+                    element.getStyle().setProperty(getJSStylePropertyName(entryKey), entry.getValue());
+                } else {
+                    element.setAttribute(entryKey, entry.getValue());
+                }
             }
             element.setNodeValue(tree.getValue());
 
@@ -293,6 +300,15 @@ public class Converter {
      */
     private static native JsArray<Node> getNodeAttributes(Node node) /*-{
         return node.attributes;
+    }-*/;
+
+    /**
+     * Returns the JS style property name corresponding to a CSS style property. Ex.: for font-weight returns fontWeight
+     * @param cssName the CSS style property name
+     * @return the JS style property name
+     */
+    private static native String getJSStylePropertyName(String cssName) /*-{
+        return cssName.replace(/(-.)/ig, function($0) {return $0.substring(1).toUpperCase();});
     }-*/;
 
     /**

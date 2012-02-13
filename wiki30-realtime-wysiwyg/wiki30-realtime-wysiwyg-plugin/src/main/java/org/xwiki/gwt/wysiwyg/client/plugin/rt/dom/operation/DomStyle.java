@@ -68,15 +68,14 @@ public class DomStyle extends AbstractDomOperation
     public Range execute(Document document) {
         TreeStyle treeStyleOp = getOperation();
         String stylePropertyValue = treeStyleOp.value;
-        String [] vals = stylePropertyValue.split(":");
 
-        if (vals[1].equalsIgnoreCase("bold")) {
+        if (stylePropertyValue.equalsIgnoreCase("bold")) {
             realDomStyleExecutable = new DomStyleExecutable(document, Style.FONT_WEIGHT, Style.FontWeight.BOLD);
-        } else if (vals[1].equalsIgnoreCase("italic")) {
+        } else if (stylePropertyValue.equalsIgnoreCase("italic")) {
              realDomStyleExecutable = new DomStyleExecutable(document, Style.FONT_STYLE, Style.FontStyle.ITALIC);
-        } else if (vals[1].equalsIgnoreCase("underline")) {
+        } else if (stylePropertyValue.equalsIgnoreCase("underline")) {
              realDomStyleExecutable = new DomStyleExecutable(document, Style.TEXT_DECORATION, Style.TextDecoration.UNDERLINE);
-        } else if (vals[1].equalsIgnoreCase("line-through")) {
+        } else if (stylePropertyValue.equalsIgnoreCase("line-through")) {
             realDomStyleExecutable = new DomStyleExecutable(document, Style.TEXT_DECORATION, Style.TextDecoration.LINE_THROUGH);
         }
 
@@ -92,7 +91,7 @@ public class DomStyle extends AbstractDomOperation
         Range localRange = document.getSelection().getRangeAt(0);
         log.info("Local range: " + localRange.toString());
 
-        return realDomStyleExecutable.execute(styleRange, vals[1]);
+        return realDomStyleExecutable.execute(styleRange, stylePropertyValue);
     }
 
 
@@ -171,13 +170,19 @@ public class DomStyle extends AbstractDomOperation
 
         @Override
         public boolean isExecuted() {
-            return ((TreeStyle)DomStyle.this.getOperation()).addStyle;
+            Selection selection = document.getSelection();
+            for (int i = 0; i < selection.getRangeCount(); i++) {
+                if (!isExecuted(selection.getRangeAt(i))) {
+                    return false;
+                }
+            }
+            return selection.getRangeCount() > 0;
         }
 
         @Override
         protected TextFragment execute(Text text, int startIndex, int endIndex, String parameter) {
             boolean addStyle = isExecuted();
-            return addStyle ? addStyle(text, startIndex, endIndex) : removeStyle(text, startIndex, endIndex);
+            return addStyle ? removeStyle(text, startIndex, endIndex) : addStyle(text, startIndex, endIndex);
         }
 
         /**
@@ -209,10 +214,10 @@ public class DomStyle extends AbstractDomOperation
             return new TextFragment(text, 0, text.getLength());
         }
 
-        @Override
         /**
          * Override because of a bug
          */
+        @Override
         protected boolean matchesInheritedStyle(Element element) {
             final com.google.gwt.dom.client.Style style = element.getStyle();
             String computedValue;

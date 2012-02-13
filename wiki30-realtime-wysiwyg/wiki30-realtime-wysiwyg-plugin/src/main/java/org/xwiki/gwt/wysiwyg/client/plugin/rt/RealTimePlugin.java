@@ -59,7 +59,6 @@ import com.google.gwt.user.client.ui.ToggleButton;
 
 import fr.loria.score.client.ClientJupiterAlg;
 import fr.loria.score.client.CommunicationService;
-import fr.loria.score.client.Converter;
 import fr.loria.score.client.RtApi;
 import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
@@ -169,16 +168,22 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
     {
         if (getTextArea().isAttached() && getTextArea().isEnabled() && !IGNORED_COMMANDS.contains(command)) {
             Selection selection = getTextArea().getDocument().getSelection();
+            log.severe("It should execute just 1 time !");
             if (selection.getRangeCount() > 0) {
-                String styleAttribute = "unsupported";
+                String styleKey = "unsupported";
+                String styleValue = "unsupported";
                 if (Command.BOLD.equals(command)) {
-                    styleAttribute = "font-weight:bold";
+                    styleKey = "font-weight";
+                    styleValue = "bold";
                 } else if (Command.ITALIC.equals(command)) {
-                    styleAttribute = "font-style:italic";
+                    styleKey = "font-style";
+                    styleValue = "italic";
                 } else if (Command.UNDERLINE.equals(command)) {
-                    styleAttribute = "text-decoration:underline";
+                    styleKey = "text-decoration";
+                    styleValue = "underline";
                 } else if (Command.STRIKE_THROUGH.equals(command)) {
-                    styleAttribute = "text-decoration:line-through";
+                    styleKey = "text-decoration";
+                    styleValue = "line-through";
                 }
 
                 //Use this range to get all intermediary paths
@@ -188,9 +193,8 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                 log.info(targets.toString());
 
                 for (OperationTarget target : targets) {
-                    // the isExecuted tells you if the command was executed before the call to the method, and not after
-                    boolean addStyle = !getTextArea().getCommandManager().isExecuted(command);
-                    log.fine("Command " + command + " is executed: " + addStyle);
+                    log.severe("Generate tree style op for :" + target.toString());
+                    boolean addStyle = false;
                     int[] path = treeOperationFactory.toIntArray(target.getStartContainer());
                     if (path.length == 2) {
                         addStyle = true;
@@ -207,7 +211,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                     if (end == target.getDataLength()) {
                         splitRight = false;
                     }
-                    TreeOperation op = new TreeStyle(clientJupiter.getSiteId(), path, start, end, "style", styleAttribute, addStyle, splitLeft, splitRight);
+                    TreeOperation op = new TreeStyle(clientJupiter.getSiteId(), path, start, end, styleKey, styleValue, addStyle, splitLeft, splitRight);
                     clientJupiter.generate(op);
                 }
                 // Block the command because it's already handled in DomStyle operation.
