@@ -148,11 +148,28 @@ public class Tree implements Serializable {
         return children.size();
     }
 
+    // todo: @Luc what do you want to do semantically? Clone all node or just the attributes?
     public Tree cloneNode() {
         Tree newTree = new Tree();
         for (Iterator<Map.Entry<String, String>> it = attributes.entrySet().iterator(); it.hasNext();) {
             Map.Entry<String, String> entry = it.next();
             newTree.setAttribute(entry.getKey(), entry.getValue());
+        }
+        return newTree;
+    }
+
+    /**
+     * @return a deep clone of this tree, including attributes and child clones
+     */
+    public Tree deepCloneNode() {
+        Tree newTree = new Tree();
+        newTree.invisible = this.invisible;
+        for (Iterator<Map.Entry<String, String>> it = attributes.entrySet().iterator(); it.hasNext();) {
+            Map.Entry<String, String> entry = it.next();
+            newTree.setAttribute(entry.getKey(), entry.getValue());
+        }
+        for (Tree child : children) {
+            newTree.addChild(child.cloneNode());
         }
         return newTree;
     }
@@ -176,7 +193,7 @@ public class Tree implements Serializable {
         }
 
         StringBuilder sb = new StringBuilder();
-        final String tag = attributes.get(NODE_TYPE).equals("1") ? attributes.get(NODE_NAME).toUpperCase() : attributes.get(NODE_VALUE);
+        final String tag = attributes.get(NODE_TYPE).equals(String.valueOf(ELEMENT_NODE)) ? attributes.get(NODE_NAME).toUpperCase() : attributes.get(NODE_VALUE);
         sb = sb.append("<").append(tag).append(": ");
 
         for (Iterator<Map.Entry<String, String>> it = attributes.entrySet().iterator(); it.hasNext();) {
@@ -220,6 +237,21 @@ public class Tree implements Serializable {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this) {
+            return true;
+        } else if (obj instanceof Tree) {
+            Tree other = (Tree) obj;
+            boolean equals = this.invisible == other.invisible;
+            equals = equals && (this.attributes.equals(other.attributes));
+            equals = equals && (this.children.equals(other.children));
+            return equals;
+        }
+        return false;
     }
 }
 

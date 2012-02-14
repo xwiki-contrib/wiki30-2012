@@ -12,7 +12,10 @@ public class TreeFactory {
      * @return an empty tree
      */
     public static Tree createEmptyTree() {
-        return new Tree();
+        Tree t = new Tree();
+        t.setNodeName("");
+        t.setAttribute(Tree.NODE_TYPE, String.valueOf(Tree.ELEMENT_NODE));
+        return t;
     }
 
     /**
@@ -38,7 +41,6 @@ public class TreeFactory {
 
     public static Tree createElementTree(String tagName) {
         Tree t = createEmptyTree();
-        t.setAttribute(Tree.NODE_TYPE, String.valueOf(Tree.ELEMENT_NODE));
         t.setNodeName(tagName);
         return t;
     }
