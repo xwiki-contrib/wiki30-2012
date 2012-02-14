@@ -46,7 +46,7 @@ public class TreeOperationsTest
         final Tree paragraphTree = TreeFactory.createParagraphTree();
         paragraphTree.addChild(TreeFactory.createTextTree("abcd"));
         root.addChild(paragraphTree);
-
+        
         TreeStyle bold = new TreeStyle(0, new int[] {0, 0}, 0, 4, "bold", "true", true, false, false);
         bold.execute(root);
 
@@ -56,6 +56,7 @@ public class TreeOperationsTest
         expectedSpan.addChild(TreeFactory.createTextTree("abcd"));
         expectedParagraph.addChild(expectedSpan);
         expectedRoot.addChild(expectedParagraph);
+        // expectRoot = <p><span bold>abcd</span></p>
         assertEquals("Invalid tree result", expectedRoot, root);
 
         TreeStyle style1 = new TreeStyle(0, new int[] {0, 0, 0}, 0, 2, "bold", "true", false, false, true);
@@ -69,7 +70,7 @@ public class TreeOperationsTest
         expectedSpan2.setAttribute("bold", "true");
         expectedSpan2.addChild(TreeFactory.createTextTree("cd"));
         expectedParagraph.addChild(expectedSpan2);
-
+        // expectedRoot = <p><span bold>ab</span><span bold>cd</span></p>
         assertEquals("Invalid tree result", expectedRoot, root);
 
         //TreeStyle style3 = new TreeStyle(0, new int[] {0, 0, 0}, 0, 2, "style", "bold", false, false, false);
