@@ -31,7 +31,6 @@ import com.google.gwt.dom.client.Node;
 
 import fr.loria.score.client.ClientCallback;
 import fr.loria.score.client.ClientDTO;
-import fr.loria.score.client.Converter;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.transform.Transformation;
 import fr.loria.score.jupiter.transform.TransformationFactory;
