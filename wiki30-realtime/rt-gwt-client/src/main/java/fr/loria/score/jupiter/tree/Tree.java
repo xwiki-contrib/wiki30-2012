@@ -171,12 +171,11 @@ public class Tree implements Serializable {
     }
 
     public String split(int p) {//new value of the String value : subString from 0 to position-1. Returns new String : from position to end.
-        String value = attributes.get(NODE_VALUE);
-        if (value != null) {
+        if (String.valueOf(TEXT_NODE).equals(attributes.get(NODE_TYPE))) {
+            String value = attributes.get(NODE_VALUE);
             String s1 = value.substring(0, p);
             String s2 = value.substring(p);
-            value = s1;
-            setValue(value);
+            setValue(s1);
             return s2;
         } else {
             return null; // todo: to check what it implies in TreeStyle usages
