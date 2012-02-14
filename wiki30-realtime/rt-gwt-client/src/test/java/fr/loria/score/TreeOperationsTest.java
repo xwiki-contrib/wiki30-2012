@@ -9,7 +9,6 @@ import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeStyle;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 /**
  * Test the effect of executing tree operations on the tree model.
@@ -143,4 +142,83 @@ public class TreeOperationsTest
         assertEquals("Invalid tree result", expectedRoot, root);        
     }
 
+    @Test
+    public void executeSplitParagraphContainingStylesWithSimpleInsertParagraphOperation()
+    {
+        final Tree paragraphTree = TreeFactory.createParagraphTree();
+        Tree span1 = TreeFactory.createElementTree("span");
+        span1.setAttribute("bold", "true");
+        span1.addChild(TreeFactory.createTextTree("ab"));
+        paragraphTree.addChild(span1);
+        Tree span2 = TreeFactory.createElementTree("span");
+        span2.setAttribute("bold", "true");
+        span2.addChild(TreeFactory.createTextTree("cd"));
+        paragraphTree.addChild(span2);
+        root.addChild(paragraphTree);
+
+        TreeInsertParagraph insertP = new TreeInsertParagraph(0, 1, new int[] {0, 0, 0});
+        insertP.execute(root);
+
+        final Tree expectedParagraph1 = TreeFactory.createParagraphTree();
+        Tree expectedSpan1 = TreeFactory.createElementTree("span");
+        expectedSpan1.setAttribute("bold", "true");
+        expectedSpan1.addChild(TreeFactory.createTextTree("a"));
+        expectedParagraph1.addChild(expectedSpan1);
+        expectedRoot.addChild(expectedParagraph1);
+
+        final Tree expectedParagraph2 = TreeFactory.createParagraphTree();
+        Tree expectedSpan12 = TreeFactory.createElementTree("span");
+        expectedSpan12.setAttribute("bold", "true");
+        expectedSpan12.addChild(TreeFactory.createTextTree("b"));
+        expectedParagraph2.addChild(expectedSpan12);
+
+        Tree expectedSpan2 = TreeFactory.createElementTree("span");
+        expectedSpan2.setAttribute("bold", "true");
+        expectedSpan2.addChild(TreeFactory.createTextTree("cd"));
+        expectedParagraph2.addChild(expectedSpan2);
+        expectedRoot.addChild(expectedParagraph2);
+        // expectRoot = <p><span bold=true>a</span></p><p><span bold=true>b</span><span bold=true>cd</span></p>
+
+        assertEquals("Invalid tree result", expectedRoot, root);
+    }
+
+    @Test
+    public void executeSplitParagraphContainingStylesWithSimpleInsertParagraphOperation1()
+    {
+        final Tree paragraphTree = TreeFactory.createParagraphTree();
+        Tree span1 = TreeFactory.createElementTree("span");
+        span1.setAttribute("bold", "true");
+        span1.addChild(TreeFactory.createTextTree("ab"));
+        paragraphTree.addChild(span1);
+        Tree span2 = TreeFactory.createElementTree("span");
+        span2.setAttribute("bold", "true");
+        span2.addChild(TreeFactory.createTextTree("cd"));
+        paragraphTree.addChild(span2);
+        root.addChild(paragraphTree);
+
+        TreeInsertParagraph insertP = new TreeInsertParagraph(0, 2, new int[] {0, 0, 0});
+        insertP.execute(root);
+
+        final Tree expectedParagraph1 = TreeFactory.createParagraphTree();
+        Tree expectedSpan1 = TreeFactory.createElementTree("span");
+        expectedSpan1.setAttribute("bold", "true");
+        expectedSpan1.addChild(TreeFactory.createTextTree("ab"));
+        expectedParagraph1.addChild(expectedSpan1);
+        expectedRoot.addChild(expectedParagraph1);
+
+        final Tree expectedParagraph2 = TreeFactory.createParagraphTree();
+        Tree expectedSpan12 = TreeFactory.createElementTree("span");
+        expectedSpan12.setAttribute("bold", "true");
+        expectedSpan12.addChild(TreeFactory.createTextTree(""));
+        expectedParagraph2.addChild(expectedSpan12);
+
+        Tree expectedSpan2 = TreeFactory.createElementTree("span");
+        expectedSpan2.setAttribute("bold", "true");
+        expectedSpan2.addChild(TreeFactory.createTextTree("cd"));
+        expectedParagraph2.addChild(expectedSpan2);
+        expectedRoot.addChild(expectedParagraph2);
+        // expectRoot = <p><span bold=true>ab</span></p><p><span bold=true></span><span bold=true>cd</span></p>
+
+        assertEquals("Invalid tree result", expectedRoot, root);
+    }
 }
