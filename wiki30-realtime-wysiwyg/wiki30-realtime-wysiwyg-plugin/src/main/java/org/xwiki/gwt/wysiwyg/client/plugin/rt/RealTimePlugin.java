@@ -68,6 +68,7 @@ import fr.loria.score.jupiter.tree.operation.TreeMergeParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import fr.loria.score.jupiter.tree.operation.TreeStyle;
+import sun.java2d.pipe.SpanClipRenderer;
 
 /**
  * Broadcasts DOM mutations generated inside the rich text area.
@@ -332,11 +333,15 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                         Text textNode = Text.as(endContainer);
 
                         boolean isNewParagraph = false;
-                        if (textNode.getPreviousSibling() == null && 0 == pos) { // start of the text
+
+                        // Start of the line
+                        if (textNode.getPreviousSibling() == null && 0 == pos) {
                             isNewParagraph = true;
                             pos = path.get(0);
                         }
-                        if ((textNode.getNextSibling() == null || BR.equalsIgnoreCase(textNode.getNextSibling().getNodeName())) && textNode.getLength() == pos) { // end of text
+
+                        // End of line
+                        if ((textNode.getNextSibling() == null || BR.equalsIgnoreCase(textNode.getNextSibling().getNodeName())) && textNode.getLength() == pos) {
                             isNewParagraph = true;
                             pos = path.get(0) + 1;
                         }
@@ -348,7 +353,9 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                         }
                     } else if (Node.ELEMENT_NODE == endContainer.getNodeType()) {
                         Element element = Element.as(endContainer);
-                        if (pos == 0) { //start of line
+
+                        // Start of the line
+                        if (element.getPreviousSibling() == null && 0 == pos) {
                             op = new TreeNewParagraph(clientJupiter.getSiteId(), path.get(0));
                             op.setPath(treeOperationFactory.toIntArray(path));
                         } else {
@@ -356,11 +363,13 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                             int childCount = element.getChildCount();
                             boolean isBeforeLastBrTag = ((pos == (childCount - brCount)) && (BR.equalsIgnoreCase(element.getLastChild().getNodeName())));
                             boolean isAfterLastTag = (pos == childCount);
-                            if (isBeforeLastBrTag || isAfterLastTag) { //end of the line
+                            // End of the line
+                            if (isBeforeLastBrTag || isAfterLastTag) {
                                 pos = path.get(0) + 1;
                                 op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
                                 op.setPath(treeOperationFactory.toIntArray(path));
-                            } else { // somewhere in the middle of the line
+                            } else {
+                                // Somewhere in the middle of the line
                                 pos = range.getEndOffset();
                                 op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, treeOperationFactory.toIntArray(path));
                             }
