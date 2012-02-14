@@ -162,14 +162,10 @@ public class Tree implements Serializable {
      * @return a deep clone of this tree, including attributes and child clones
      */
     public Tree deepCloneNode() {
-        Tree newTree = new Tree();
+        Tree newTree = cloneNode();
         newTree.invisible = this.invisible;
-        for (Iterator<Map.Entry<String, String>> it = attributes.entrySet().iterator(); it.hasNext();) {
-            Map.Entry<String, String> entry = it.next();
-            newTree.setAttribute(entry.getKey(), entry.getValue());
-        }
         for (Tree child : children) {
-            newTree.addChild(child.cloneNode());
+            newTree.addChild(child.deepCloneNode());
         }
         return newTree;
     }
@@ -192,6 +188,10 @@ public class Tree implements Serializable {
             return "";
         }
 
+        // simplify ouput for text-node
+        if (String.valueOf(Tree.TEXT_NODE).equals(attributes.get(NODE_TYPE)))
+            return "["+attributes.get(NODE_VALUE)+"]";        
+        
         StringBuilder sb = new StringBuilder();
         final String tag = attributes.get(NODE_TYPE).equals(String.valueOf(ELEMENT_NODE)) ? attributes.get(NODE_NAME).toUpperCase() : attributes.get(NODE_VALUE);
         sb = sb.append("<").append(tag).append(": ");
