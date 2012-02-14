@@ -179,7 +179,7 @@ public class Tree implements Serializable {
             setValue(value);
             return s2;
         } else {
-            return ""; // todo: this is not good.
+            return null; // todo: to check what it implies in TreeStyle usages
         }
     }
 

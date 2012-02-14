@@ -16,6 +16,7 @@ import static org.junit.Assert.fail;
  * It should test all Tree API
  *
  * @author Bogdan.Flueras@inria.fr
+ * @author Gerald.Oster@loria.fr
  */
 public class TreeOperationsTest
 {
@@ -40,6 +41,14 @@ public class TreeOperationsTest
         assertEquals("Invalid tree result", expectedRoot, root);
     }
 
+    
+    private static final boolean SPLIT_LEFT = true;
+    private static final boolean NO_SPLIT_LEFT = false;
+    private static final boolean SPLIT_RIGHT = true;
+    private static final boolean NO_SPLIT_RIGHT = false;
+    private static final boolean ADD_STYLE = true;
+    private static final boolean NO_ADD_STYLE = false;
+    
     @Test
     public void executeStyle()
     {
@@ -47,7 +56,7 @@ public class TreeOperationsTest
         paragraphTree.addChild(TreeFactory.createTextTree("abcd"));
         root.addChild(paragraphTree);
         
-        TreeStyle bold = new TreeStyle(0, new int[] {0, 0}, 0, 4, "bold", "true", true, false, false);
+        TreeStyle bold = new TreeStyle(0, new int[] {0, 0}, 0, 4, "bold", "true", ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
         bold.execute(root);
 
         Tree expectedParagraph = TreeFactory.createParagraphTree();
@@ -56,45 +65,82 @@ public class TreeOperationsTest
         expectedSpan.addChild(TreeFactory.createTextTree("abcd"));
         expectedParagraph.addChild(expectedSpan);
         expectedRoot.addChild(expectedParagraph);
-        // expectRoot = <p><span bold>abcd</span></p>
+        // expectRoot = <p><span bold=true>abcd</span></p>
         assertEquals("Invalid tree result", expectedRoot, root);
+        
+        Tree rootClone = root.deepCloneNode();
 
-        TreeStyle style1 = new TreeStyle(0, new int[] {0, 0, 0}, 0, 2, "bold", "true", false, false, true);
+        TreeStyle style1 = new TreeStyle(0, new int[] {0, 0, 0}, 0, 2, "bold", "true", NO_ADD_STYLE, NO_SPLIT_LEFT, SPLIT_RIGHT);
         style1.execute(root);
-
+        
         // now modify expectedRoot to mirror the change
         expectedSpan.removeChild(0);
         expectedSpan.addChild(TreeFactory.createTextTree("ab"));
-
         Tree expectedSpan2 = TreeFactory.createElementTree("span");
         expectedSpan2.setAttribute("bold", "true");
         expectedSpan2.addChild(TreeFactory.createTextTree("cd"));
         expectedParagraph.addChild(expectedSpan2);
         // expectedRoot = <p><span bold>ab</span><span bold>cd</span></p>
         assertEquals("Invalid tree result", expectedRoot, root);
-
-        //TreeStyle style3 = new TreeStyle(0, new int[] {0, 0, 0}, 0, 2, "style", "bold", false, false, false);
-        //style3.execute(t);
-
-        // todo fix
-        //TreeStyle style2 = new TreeStyle(0, new int[] {0, 0, 0}, 2, 4, "style", "bold", true, true, false);
-        //style2.execute(t);
-        fail("Fix style");
+        
+        TreeStyle style2 = new TreeStyle(0, new int[] {0, 0, 0}, 2, 4, "bold", "true", NO_ADD_STYLE, SPLIT_LEFT, NO_SPLIT_RIGHT);
+        style2.execute(rootClone);
+        assertEquals("Invalid tree result", root, rootClone);
     }
 
     @Test
-    public void executeInsertParagraph()
+    public void executeSplitParagraphContainingText()
     {
         final Tree paragraphTree = TreeFactory.createParagraphTree();
         paragraphTree.addChild(TreeFactory.createTextTree("abcd"));
         root.addChild(paragraphTree);
 
-        TreeStyle bold = new TreeStyle(0, new int[] {0, 0}, 0, 4, "bold", "true", true, false, false);
-        bold.execute(root);
-
-        TreeInsertParagraph p = new TreeInsertParagraph(0, 1, new int[] {0, 0});
-        p.execute(root);
-
-        fail("Fix the problem in InsertParagraph");
+        TreeInsertParagraph insertP = new TreeInsertParagraph(0, 2, new int[] {0, 0});
+        insertP.execute(root);
+        
+        Tree expectedParagraph1 = TreeFactory.createParagraphTree();
+        expectedParagraph1.addChild(TreeFactory.createTextTree("ab"));
+        expectedRoot.addChild(expectedParagraph1);
+        Tree expectedParagraph2 = TreeFactory.createParagraphTree();
+        expectedParagraph2.addChild(TreeFactory.createTextTree("cd"));
+        expectedRoot.addChild(expectedParagraph2);
+        // expectRoot = <p>ab</p><p>cd</p>
+        assertEquals("Invalid tree result", expectedRoot, root);
     }
+
+    @Test
+    public void executeSplitParagraphContainingStyles()
+    {
+        final Tree paragraphTree = TreeFactory.createParagraphTree();
+        Tree span1 = TreeFactory.createElementTree("span");
+        span1.setAttribute("bold", "true");
+        span1.addChild(TreeFactory.createTextTree("ab"));
+        paragraphTree.addChild(span1);
+        Tree span2 = TreeFactory.createElementTree("span");
+        span2.setAttribute("bold", "true");
+        span2.addChild(TreeFactory.createTextTree("cd"));
+        paragraphTree.addChild(span2);
+        root.addChild(paragraphTree);
+        
+        TreeInsertParagraph insertP = new TreeInsertParagraph(0, 1, new int[] {0, 0});
+        insertP.execute(root);
+        
+        final Tree expectedParagraph1 = TreeFactory.createParagraphTree();
+        Tree expectedSpan1 = TreeFactory.createElementTree("span");
+        expectedSpan1.setAttribute("bold", "true");
+        expectedSpan1.addChild(TreeFactory.createTextTree("ab"));
+        expectedParagraph1.addChild(expectedSpan1);
+        expectedRoot.addChild(expectedParagraph1);
+        
+        final Tree expectedParagraph2 = TreeFactory.createParagraphTree();
+        Tree expectedSpan2 = TreeFactory.createElementTree("span");
+        expectedSpan2.setAttribute("bold", "true");
+        expectedSpan2.addChild(TreeFactory.createTextTree("cd"));
+        expectedParagraph2.addChild(expectedSpan2);
+        expectedRoot.addChild(expectedParagraph2);
+        // expectRoot = <p><span bold=true>ab</span></p><p><span bold=true>cd</span></p>
+        
+        assertEquals("Invalid tree result", expectedRoot, root);        
+    }
+
 }
