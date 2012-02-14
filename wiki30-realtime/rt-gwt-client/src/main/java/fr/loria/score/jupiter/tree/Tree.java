@@ -245,10 +245,7 @@ public class Tree implements Serializable {
             return true;
         } else if (obj instanceof Tree) {
             Tree other = (Tree) obj;
-            boolean equals = this.invisible == other.invisible;
-            equals = equals && (this.attributes.equals(other.attributes));
-            equals = equals && (this.children.equals(other.children));
-            return equals;
+            return (this.invisible == other.invisible && this.attributes.equals(other.attributes) && this.children.equals(other.children)) ;
         }
         return false;
     }
