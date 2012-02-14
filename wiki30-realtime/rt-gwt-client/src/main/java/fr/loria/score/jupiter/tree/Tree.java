@@ -148,7 +148,9 @@ public class Tree implements Serializable {
         return children.size();
     }
 
-    // todo: @Luc what do you want to do semantically? Clone all node or just the attributes?
+    /**
+     * @return a new tree with just the cloned attributes
+     */
     public Tree cloneNode() {
         Tree newTree = new Tree();
         for (Iterator<Map.Entry<String, String>> it = attributes.entrySet().iterator(); it.hasNext();) {
