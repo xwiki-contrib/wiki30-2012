@@ -33,6 +33,14 @@ public class TreeOperationsTest
 
     private static final int SITE_ID = 0;
 
+    
+    private static Tree createStyledText(String text, String styleName, String styleValue) {
+        Tree span = TreeFactory.createElementTree("span");
+        span.setAttribute(styleName, styleValue);
+        span.addChild(TreeFactory.createTextTree(text));
+        return span;
+    }
+    
     @Before
     public void init()
     {
@@ -58,34 +66,29 @@ public class TreeOperationsTest
         paragraphTree.addChild(TreeFactory.createTextTree("abcd"));
         root.addChild(paragraphTree);
         
-        TreeStyle bold = new TreeStyle(0, new int[] {0, 0}, 0, 4, "bold", "true", ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
+        final TreeStyle bold = new TreeStyle(SITE_ID, new int[] {0, 0}, 0, 4, "bold", "true", ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
         bold.execute(root);
 
-        Tree expectedParagraph = TreeFactory.createParagraphTree();
-        Tree expectedSpan = TreeFactory.createElementTree("span");
-        expectedSpan.setAttribute("bold", "true");  // todo: make a builder
-        expectedSpan.addChild(TreeFactory.createTextTree("abcd"));
+        final Tree expectedParagraph = TreeFactory.createParagraphTree();
+        final Tree expectedSpan = createStyledText("abcd", "bold", "true");
         expectedParagraph.addChild(expectedSpan);
         expectedRoot.addChild(expectedParagraph);
         // expectRoot = <p><span bold=true>[abcd]</span></p>
         assertEquals("Invalid tree result", expectedRoot, root);
         
-        Tree rootClone = root.deepCloneNode();
+        final Tree rootClone = root.deepCloneNode();
 
-        TreeStyle style1 = new TreeStyle(0, new int[] {0, 0, 0}, 0, 2, "bold", "true", NO_ADD_STYLE, NO_SPLIT_LEFT, SPLIT_RIGHT);
+        final TreeStyle style1 = new TreeStyle(SITE_ID, new int[] {0, 0, 0}, 0, 2, "bold", "true", NO_ADD_STYLE, NO_SPLIT_LEFT, SPLIT_RIGHT);
         style1.execute(root);
         
         // now modify expectedRoot to mirror the change
         expectedSpan.removeChild(0);
         expectedSpan.addChild(TreeFactory.createTextTree("ab"));
-        Tree expectedSpan2 = TreeFactory.createElementTree("span");
-        expectedSpan2.setAttribute("bold", "true");
-        expectedSpan2.addChild(TreeFactory.createTextTree("cd"));
-        expectedParagraph.addChild(expectedSpan2);
+        expectedParagraph.addChild(createStyledText("cd", "bold", "true"));
         // expectedRoot = <p><span bold>[ab]</span><span bold>[cd]</span></p>
         assertEquals("Invalid tree result", expectedRoot, root);
         
-        TreeStyle style2 = new TreeStyle(0, new int[] {0, 0, 0}, 2, 4, "bold", "true", NO_ADD_STYLE, SPLIT_LEFT, NO_SPLIT_RIGHT);
+        final TreeStyle style2 = new TreeStyle(SITE_ID, new int[] {0, 0, 0}, 2, 4, "bold", "true", NO_ADD_STYLE, SPLIT_LEFT, NO_SPLIT_RIGHT);
         style2.execute(rootClone);
         assertEquals("Invalid tree result", root, rootClone);
     }
@@ -97,13 +100,13 @@ public class TreeOperationsTest
         paragraphTree.addChild(TreeFactory.createTextTree("abcd"));
         root.addChild(paragraphTree);
 
-        TreeInsertParagraph insertP = new TreeInsertParagraph(0, 2, new int[] {0, 0});
+        final TreeInsertParagraph insertP = new TreeInsertParagraph(SITE_ID, 2, new int[] {0, 0});
         insertP.execute(root);
         
-        Tree expectedParagraph1 = TreeFactory.createParagraphTree();
+        final Tree expectedParagraph1 = TreeFactory.createParagraphTree();
         expectedParagraph1.addChild(TreeFactory.createTextTree("ab"));
         expectedRoot.addChild(expectedParagraph1);
-        Tree expectedParagraph2 = TreeFactory.createParagraphTree();
+        final Tree expectedParagraph2 = TreeFactory.createParagraphTree();
         expectedParagraph2.addChild(TreeFactory.createTextTree("cd"));
         expectedRoot.addChild(expectedParagraph2);
         // expectRoot = <p>[ab]</p><p>[cd]</p>
@@ -114,31 +117,19 @@ public class TreeOperationsTest
     public void executeSplitParagraphContainingStyles()
     {
         final Tree paragraphTree = TreeFactory.createParagraphTree();
-        Tree span1 = TreeFactory.createElementTree("span");
-        span1.setAttribute("bold", "true");
-        span1.addChild(TreeFactory.createTextTree("ab"));
-        paragraphTree.addChild(span1);
-        Tree span2 = TreeFactory.createElementTree("span");
-        span2.setAttribute("bold", "true");
-        span2.addChild(TreeFactory.createTextTree("cd"));
-        paragraphTree.addChild(span2);
+        paragraphTree.addChild(createStyledText("ab", "bold", "true"));
+        paragraphTree.addChild(createStyledText("cd", "bold", "true"));
         root.addChild(paragraphTree);
         
-        TreeInsertParagraph insertP = new TreeInsertParagraph(0, 1, new int[] {0, 0});
+        final TreeInsertParagraph insertP = new TreeInsertParagraph(SITE_ID, 1, new int[] {0, 0});
         insertP.execute(root);
         
         final Tree expectedParagraph1 = TreeFactory.createParagraphTree();
-        Tree expectedSpan1 = TreeFactory.createElementTree("span");
-        expectedSpan1.setAttribute("bold", "true");
-        expectedSpan1.addChild(TreeFactory.createTextTree("ab"));
-        expectedParagraph1.addChild(expectedSpan1);
+        expectedParagraph1.addChild(createStyledText("ab", "bold", "true"));
         expectedRoot.addChild(expectedParagraph1);
         
         final Tree expectedParagraph2 = TreeFactory.createParagraphTree();
-        Tree expectedSpan2 = TreeFactory.createElementTree("span");
-        expectedSpan2.setAttribute("bold", "true");
-        expectedSpan2.addChild(TreeFactory.createTextTree("cd"));
-        expectedParagraph2.addChild(expectedSpan2);
+        expectedParagraph2.addChild(createStyledText("cd", "bold", "true"));
         expectedRoot.addChild(expectedParagraph2);
         // expectRoot = <p><span bold=true>[ab]</span></p><p><span bold=true>[cd]</span></p>
         assertEquals("Invalid tree result", expectedRoot, root);
@@ -148,36 +139,20 @@ public class TreeOperationsTest
     public void executeSplitParagraphContainingStylesWithSimpleInsertParagraphOperation()
     {
         final Tree paragraphTree = TreeFactory.createParagraphTree();
-        Tree span1 = TreeFactory.createElementTree("span");
-        span1.setAttribute("bold", "true");
-        span1.addChild(TreeFactory.createTextTree("ab"));
-        paragraphTree.addChild(span1);
-        Tree span2 = TreeFactory.createElementTree("span");
-        span2.setAttribute("bold", "true");
-        span2.addChild(TreeFactory.createTextTree("cd"));
-        paragraphTree.addChild(span2);
+        paragraphTree.addChild(createStyledText("ab", "bold", "true"));
+        paragraphTree.addChild(createStyledText("cd", "bold", "true"));
         root.addChild(paragraphTree);
 
-        TreeInsertParagraph insertP = new TreeInsertParagraph(0, 1, new int[] {0, 0, 0});
+        final TreeInsertParagraph insertP = new TreeInsertParagraph(SITE_ID, 1, new int[] {0, 0, 0});
         insertP.execute(root);
 
         final Tree expectedParagraph1 = TreeFactory.createParagraphTree();
-        Tree expectedSpan1 = TreeFactory.createElementTree("span");
-        expectedSpan1.setAttribute("bold", "true");
-        expectedSpan1.addChild(TreeFactory.createTextTree("a"));
-        expectedParagraph1.addChild(expectedSpan1);
+        expectedParagraph1.addChild(createStyledText("a", "bold", "true"));
         expectedRoot.addChild(expectedParagraph1);
 
         final Tree expectedParagraph2 = TreeFactory.createParagraphTree();
-        Tree expectedSpan12 = TreeFactory.createElementTree("span");
-        expectedSpan12.setAttribute("bold", "true");
-        expectedSpan12.addChild(TreeFactory.createTextTree("b"));
-        expectedParagraph2.addChild(expectedSpan12);
-
-        Tree expectedSpan2 = TreeFactory.createElementTree("span");
-        expectedSpan2.setAttribute("bold", "true");
-        expectedSpan2.addChild(TreeFactory.createTextTree("cd"));
-        expectedParagraph2.addChild(expectedSpan2);
+        expectedParagraph2.addChild(createStyledText("b", "bold", "true"));
+        expectedParagraph2.addChild(createStyledText("cd", "bold", "true"));
         expectedRoot.addChild(expectedParagraph2);
         // expectRoot = <p><span bold=true>[a]</span></p><p><span bold=true>[b]</span><span bold=true>[cd]</span></p>
         assertEquals("Invalid tree result", expectedRoot, root);
@@ -187,36 +162,20 @@ public class TreeOperationsTest
     public void executeSplitParagraphContainingStylesWithSimpleInsertParagraphOperation1()
     {
         final Tree paragraphTree = TreeFactory.createParagraphTree();
-        Tree span1 = TreeFactory.createElementTree("span");
-        span1.setAttribute("bold", "true");
-        span1.addChild(TreeFactory.createTextTree("ab"));
-        paragraphTree.addChild(span1);
-        Tree span2 = TreeFactory.createElementTree("span");
-        span2.setAttribute("bold", "true");
-        span2.addChild(TreeFactory.createTextTree("cd"));
-        paragraphTree.addChild(span2);
+        paragraphTree.addChild(createStyledText("ab", "bold", "true"));
+        paragraphTree.addChild(createStyledText("cd", "bold", "true"));
         root.addChild(paragraphTree);
 
-        TreeInsertParagraph insertP = new TreeInsertParagraph(0, 2, new int[] {0, 0, 0});
+        final TreeInsertParagraph insertP = new TreeInsertParagraph(SITE_ID, 2, new int[] {0, 0, 0});
         insertP.execute(root);
 
         final Tree expectedParagraph1 = TreeFactory.createParagraphTree();
-        Tree expectedSpan1 = TreeFactory.createElementTree("span");
-        expectedSpan1.setAttribute("bold", "true");
-        expectedSpan1.addChild(TreeFactory.createTextTree("ab"));
-        expectedParagraph1.addChild(expectedSpan1);
+        expectedParagraph1.addChild(createStyledText("ab", "bold", "true"));
         expectedRoot.addChild(expectedParagraph1);
 
         final Tree expectedParagraph2 = TreeFactory.createParagraphTree();
-        Tree expectedSpan12 = TreeFactory.createElementTree("span");
-        expectedSpan12.setAttribute("bold", "true");
-        expectedSpan12.addChild(TreeFactory.createTextTree(""));
-        expectedParagraph2.addChild(expectedSpan12);
-
-        Tree expectedSpan2 = TreeFactory.createElementTree("span");
-        expectedSpan2.setAttribute("bold", "true");
-        expectedSpan2.addChild(TreeFactory.createTextTree("cd"));
-        expectedParagraph2.addChild(expectedSpan2);
+        expectedParagraph2.addChild(createStyledText("", "bold", "true"));
+        expectedParagraph2.addChild(createStyledText("cd", "bold", "true"));
         expectedRoot.addChild(expectedParagraph2);
         // expectRoot = <p><span bold=true>[ab]</span></p><p><span bold=true>[]</span><span bold=true>[cd]</span></p>
         assertEquals("Invalid tree result", expectedRoot, root);
@@ -225,18 +184,18 @@ public class TreeOperationsTest
     @Test
     public void insertParagraphMiddleOfLine()
     {
-        Tree paragraph = TreeFactory.createParagraphTree();
+        final Tree paragraph = TreeFactory.createParagraphTree();
         paragraph.addChild(TreeFactory.createTextTree("ab"));
         root.addChild(paragraph);
         expectedRoot = root.deepCloneNode();
 
         // Split it at the middle of text
-        TreeInsertParagraph paragraphInMiddle = new TreeInsertParagraph(SITE_ID, 1, new int[] {0, 0});
+        final TreeInsertParagraph paragraphInMiddle = new TreeInsertParagraph(SITE_ID, 1, new int[] {0, 0});
         paragraphInMiddle.execute(root);
 
         expectedRoot.getChild(0).removeChild(0);
         expectedRoot.getChild(0).addChild(TreeFactory.createTextTree("a"));
-        Tree p = TreeFactory.createParagraphTree();
+        final Tree p = TreeFactory.createParagraphTree();
         p.addChild(TreeFactory.createTextTree("b"));
         expectedRoot.addChild(p);
         // expectedRoot = <p>[a]</p><p>[b]</p>
@@ -246,16 +205,16 @@ public class TreeOperationsTest
      @Test
     public void insertParagraphEndOfLine()
     {
-        Tree paragraph = TreeFactory.createParagraphTree();
+        final Tree paragraph = TreeFactory.createParagraphTree();
         paragraph.addChild(TreeFactory.createTextTree("ab"));
         root.addChild(paragraph);
         expectedRoot = root.deepCloneNode();
 
         // Split it at the end of text
-        TreeInsertParagraph paragraphAtEnd = new TreeInsertParagraph(SITE_ID, 2, new int[] {0, 0});
+        final TreeInsertParagraph paragraphAtEnd = new TreeInsertParagraph(SITE_ID, 2, new int[] {0, 0});
         paragraphAtEnd.execute(root);
 
-        Tree p = TreeFactory.createParagraphTree();
+        final Tree p = TreeFactory.createParagraphTree();
         p.addChild(TreeFactory.createTextTree(""));
         expectedRoot.addChild(p);
         // expectedRoot = <p>[ab]</p><p>[]</p>
@@ -265,21 +224,18 @@ public class TreeOperationsTest
     @Test
     public void insertParagraphStylingMiddle()
     {
-        Tree p = TreeFactory.createParagraphTree();
-        Tree bold = TreeFactory.createElementTree("span");
-        bold.setAttribute("bold", "true");
-        bold.addChild(TreeFactory.createTextTree("xy"));
-        p.addChild(bold);
+        final Tree p = TreeFactory.createParagraphTree();
+        p.addChild(createStyledText("xy", "bold", "true"));
         root.addChild(p);
         expectedRoot = root.deepCloneNode();
 
-        TreeInsertParagraph insertPMiddle = new TreeInsertParagraph(SITE_ID, 1, new int[] {0, 0, 0});
+        final TreeInsertParagraph insertPMiddle = new TreeInsertParagraph(SITE_ID, 1, new int[] {0, 0, 0});
         insertPMiddle.execute(root);
 
-        Tree text = expectedRoot.getChildFromPath(new int[] {0, 0, 0});
+        final Tree text = expectedRoot.getChildFromPath(new int[] {0, 0, 0});
         text.setValue("x");
 
-        Tree p1 = p.deepCloneNode();
+        final Tree p1 = p.deepCloneNode();
         Tree text1 = p1.getChildFromPath(new int[] {0, 0});
         text1.setValue("y");
         expectedRoot.addChild(p1, 1);
@@ -290,19 +246,16 @@ public class TreeOperationsTest
     @Test
     public void insertParagraphStylingEnd()
     {
-        Tree p = TreeFactory.createParagraphTree();
-        Tree bold = TreeFactory.createElementTree("span");
-        bold.setAttribute("bold", "true");
-        bold.addChild(TreeFactory.createTextTree("ab"));
-        p.addChild(bold);
+        final Tree p = TreeFactory.createParagraphTree();
+        p.addChild(createStyledText("ab", "bold", "true"));
         root.addChild(p);
         expectedRoot = root.deepCloneNode();
 
-        TreeInsertParagraph insertPEnd = new TreeInsertParagraph(SITE_ID, 2, new int[] {0, 0, 0});
+        final TreeInsertParagraph insertPEnd = new TreeInsertParagraph(SITE_ID, 2, new int[] {0, 0, 0});
         insertPEnd.execute(root);
 
-        Tree p1 = p.deepCloneNode();
-        Tree text1 = p1.getChildFromPath(new int[] {0, 0});
+        final Tree p1 = p.deepCloneNode();
+        final Tree text1 = p1.getChildFromPath(new int[] {0, 0});
         text1.setValue("");
         expectedRoot.addChild(p1, 1);
         // expectedRoot = <p><span: bold true>[ab]</span></p><p><span: bold true>[]</span></p>
@@ -312,10 +265,8 @@ public class TreeOperationsTest
     @Test
     public void insertParagraphStyleWith2ChildrenAtEndOfFirstChild()
     {
-        Tree p = TreeFactory.createParagraphTree();
-        Tree bold = TreeFactory.createElementTree("span");
-        bold.setAttribute("bold", "true");
-        bold.addChild(TreeFactory.createTextTree("ab"));
+        final Tree p = TreeFactory.createParagraphTree();
+        final Tree bold = createStyledText("ab", "bold", "true");
         bold.addChild(TreeFactory.createTextTree("cd"));
         p.addChild(bold);
         root.addChild(p);
@@ -323,12 +274,12 @@ public class TreeOperationsTest
         expectedRoot = root.deepCloneNode();
 
         // insert p after b
-        TreeInsertParagraph insertPAfterB = new TreeInsertParagraph(SITE_ID, 2, new int[] {0, 0, 0});
+        final TreeInsertParagraph insertPAfterB = new TreeInsertParagraph(SITE_ID, 2, new int[] {0, 0, 0});
         insertPAfterB.execute(root);
 
         expectedRoot.getChildFromPath(new int[] {0, 0}).removeChild(1); // remove text node cd from first span
-        Tree p1 = expectedRoot.getChild(0).deepCloneNode();
-        Tree span1 = p1.getChild(0);
+        final Tree p1 = expectedRoot.getChild(0).deepCloneNode();
+        final Tree span1 = p1.getChild(0);
         span1.getChild(0).setValue("cd");
         span1.addChild(TreeFactory.createTextTree(""), 0);
         expectedRoot.addChild(p1, 1);
@@ -339,10 +290,8 @@ public class TreeOperationsTest
     @Test
     public void insertParagraphStyleWith2ChildrenBeforeSecondChild()
     {
-        Tree p = TreeFactory.createParagraphTree();
-        Tree bold = TreeFactory.createElementTree("span");
-        bold.setAttribute("bold", "true");
-        bold.addChild(TreeFactory.createTextTree("ab"));
+        final Tree p = TreeFactory.createParagraphTree();
+        final Tree bold = createStyledText("ab", "bold", "true");
         bold.addChild(TreeFactory.createTextTree("cd"));
         p.addChild(bold);
         root.addChild(p);
@@ -350,12 +299,12 @@ public class TreeOperationsTest
         expectedRoot = root.deepCloneNode();
 
         // insert p before c
-        TreeInsertParagraph insertPBeforeSecondChild = new TreeInsertParagraph(SITE_ID, 0, new int[] {0, 0, 1});
+        final TreeInsertParagraph insertPBeforeSecondChild = new TreeInsertParagraph(SITE_ID, 0, new int[] {0, 0, 1});
         insertPBeforeSecondChild.execute(root);
 
         expectedRoot.getChildFromPath(new int[] {0, 0}).removeChild(1); // remove text node cd from first span
-        Tree p1 = expectedRoot.getChild(0).deepCloneNode();
-        Tree text = p1.getChildFromPath(new int[]{ 0, 0 });
+        final Tree p1 = expectedRoot.getChild(0).deepCloneNode();
+        final Tree text = p1.getChildFromPath(new int[]{ 0, 0 });
         text.setValue("cd");
         expectedRoot.addChild(p1);
         // expectedRoot = <p><span bold true>[ab]</span></p><p><span bold true>[cd]</span></p>
@@ -365,10 +314,8 @@ public class TreeOperationsTest
     @Test
     public void insertParagraphStyleWith2ChildrenMiddleOfSecondChild()
     {
-        Tree p = TreeFactory.createParagraphTree();
-        Tree bold = TreeFactory.createElementTree("span");
-        bold.setAttribute("bold", "true");
-        bold.addChild(TreeFactory.createTextTree("ab"));
+        final Tree p = TreeFactory.createParagraphTree();
+        final Tree bold = createStyledText("ab", "bold", "true");
         bold.addChild(TreeFactory.createTextTree("cd"));
         p.addChild(bold);
         root.addChild(p);
@@ -376,14 +323,12 @@ public class TreeOperationsTest
         expectedRoot = root.deepCloneNode();
 
         // insert p between c and d
-        TreeInsertParagraph insertPMiddleSecondChild = new TreeInsertParagraph(SITE_ID, 1, new int[] {0, 0, 1});
+        final TreeInsertParagraph insertPMiddleSecondChild = new TreeInsertParagraph(SITE_ID, 1, new int[] {0, 0, 1});
         insertPMiddleSecondChild.execute(root);
 
         expectedRoot.getChildFromPath(new int[] {0, 0, 1}).setValue("c"); // replace cd with c
-        Tree span1 = TreeFactory.createElementTree("span");
-        span1.setAttribute("bold", "true");
-        span1.addChild(TreeFactory.createTextTree("d"));
-        Tree p1 = TreeFactory.createParagraphTree();
+        final Tree span1 = createStyledText("d", "bold", "true");
+        final Tree p1 = TreeFactory.createParagraphTree();
         p1.addChild(span1);
         expectedRoot.addChild(p1, 1);
         // expectedRoot = <p><span bold true>[ab][c]</span></p><p><span bold true>[d]</span></p>
@@ -393,16 +338,16 @@ public class TreeOperationsTest
     @Test
     public void newParagraphStartOfLine()
     {
-        Tree paragraph = TreeFactory.createParagraphTree();
+        final Tree paragraph = TreeFactory.createParagraphTree();
         paragraph.addChild(TreeFactory.createTextTree("ab"));
         root.addChild(paragraph);
         expectedRoot = root.deepCloneNode();
 
         // Split it at the beginning of line
-        TreeNewParagraph paragraphAtStart = new TreeNewParagraph(SITE_ID, 0);
+        final TreeNewParagraph paragraphAtStart = new TreeNewParagraph(SITE_ID, 0);
         paragraphAtStart.execute(root);
 
-        Tree p1 = TreeFactory.createParagraphTree();
+        final Tree p1 = TreeFactory.createParagraphTree();
         p1.addChild(TreeFactory.createTextTree(""));
         expectedRoot.addChild(p1, 0);
         // expectedRoot = <p>[]</p><p>[ab]</p>
@@ -412,16 +357,16 @@ public class TreeOperationsTest
     @Test
     public void newParagraphEndOfLine()
     {
-        Tree paragraph = TreeFactory.createParagraphTree();
+        final Tree paragraph = TreeFactory.createParagraphTree();
         paragraph.addChild(TreeFactory.createTextTree("ab"));
         root.addChild(paragraph);
         expectedRoot = root.deepCloneNode();
 
         // Split it at the beginning of line
-        TreeNewParagraph paragraphAtStart = new TreeNewParagraph(SITE_ID, 1);
+        final TreeNewParagraph paragraphAtStart = new TreeNewParagraph(SITE_ID, 1);
         paragraphAtStart.execute(root);
 
-        Tree p1 = TreeFactory.createParagraphTree();
+        final Tree p1 = TreeFactory.createParagraphTree();
         p1.addChild(TreeFactory.createTextTree(""));
         expectedRoot.addChild(p1, 1);
         // expectedRoot = <p>[ab]</p><p>[]</p>
@@ -436,14 +381,11 @@ public class TreeOperationsTest
         root.addChild(paragraph);
         // SLeft: false if start == 0, SRight: false if end = text.len
         //TreeStyle(int siteId, int[] path, int start, int end, String param, String value, boolean addStyle, boolean splitLeft, boolean splitRight) {
-        TreeStyle styleOperation = new TreeStyle(SITE_ID, new int[] {0, 0}, 0, 4, "font-weight", "bold", true, false, false);
+        TreeStyle styleOperation = new TreeStyle(SITE_ID, new int[] {0, 0}, 0, 4, "font-weight", "bold", ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
         styleOperation.execute(root);
 
         Tree p1 = TreeFactory.createParagraphTree();
-        Tree boldSpan = TreeFactory.createElementTree("span");
-        boldSpan.setAttribute("font-weight", "bold");
-        boldSpan.addChild(TreeFactory.createTextTree("abcd"));
-        p1.addChild(boldSpan);
+        p1.addChild(createStyledText("abcd", "font-weight", "bold"));
         expectedRoot.addChild(p1);
         assertEquals("Invalid tree ", expectedRoot, root);
     }
@@ -455,15 +397,12 @@ public class TreeOperationsTest
         paragraph.addChild(TreeFactory.createTextTree("abcd"));
         root.addChild(paragraph);
 
-        TreeStyle styleOperation = new TreeStyle(SITE_ID, new int[] {0, 0}, 1, 3, "font-weight", "bold", true, true, true);
+        TreeStyle styleOperation = new TreeStyle(SITE_ID, new int[] {0, 0}, 1, 3, "font-weight", "bold", ADD_STYLE, SPLIT_LEFT, SPLIT_RIGHT);
         styleOperation.execute(root);
 
         Tree p1 = TreeFactory.createParagraphTree();
         p1.addChild(TreeFactory.createTextTree("a"));
-        Tree boldSpan = TreeFactory.createElementTree("span");
-        boldSpan.setAttribute("font-weight", "bold");
-        boldSpan.addChild(TreeFactory.createTextTree("bc"));
-        p1.addChild(boldSpan);
+        p1.addChild(createStyledText("bc", "font-weight", "bold"));
         p1.addChild(TreeFactory.createTextTree("d"));
         expectedRoot.addChild(p1);
         //expectedRoot = <p>[a]<span font bold>[bc]</span>[d]</p>
