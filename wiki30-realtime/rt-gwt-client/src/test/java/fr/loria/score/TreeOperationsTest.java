@@ -454,7 +454,7 @@ public class TreeOperationsTest
         paragraph.addChild(TreeFactory.createTextTree("abcd"));
         root.addChild(paragraph);
 
-        TreeStyle styleOperation = new TreeStyle(SITE_ID, new int[] {0, 0}, 1, 3, "font-weight", "bold", true, false, false);
+        TreeStyle styleOperation = new TreeStyle(SITE_ID, new int[] {0, 0}, 1, 3, "font-weight", "bold", true, true, true);
         styleOperation.execute(root);
 
         Tree p1 = TreeFactory.createParagraphTree();
