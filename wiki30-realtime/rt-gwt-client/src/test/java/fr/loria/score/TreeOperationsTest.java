@@ -7,6 +7,7 @@ import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeFactory;
 import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
+import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import fr.loria.score.jupiter.tree.operation.TreeStyle;
 
 import static org.junit.Assert.assertEquals;
@@ -469,6 +470,33 @@ public class TreeOperationsTest
         assertEquals("Invalid tree ", expectedRoot, root);
     }
 
+    @Test
+    public void addMultipleStylesOnSameRange()
+    {
+        Tree paragraph = TreeFactory.createParagraphTree();
+        paragraph.addChild(TreeFactory.createTextTree("abc"));
+        root.addChild(paragraph);
+
+        TreeOperation boldOp = new TreeStyle(SITE_ID, new int[] {0, 0}, 0, 3, "weight", "bold", true, false, false);
+        boldOp.execute(root);
+
+        TreeOperation italicOp = new TreeStyle(SITE_ID, new int[] {0, 0, 0}, 0, 1, "style", "italic", false, false, true);
+        italicOp.execute(root);
+
+        Tree p1 = TreeFactory.createParagraphTree();
+        Tree italicBold = TreeFactory.createElementTree("span");
+        italicBold.setAttribute("weight", "bold");
+        italicBold.setAttribute("style", "italic");
+        italicBold.addChild(TreeFactory.createTextTree("a"));
+        p1.addChild(italicBold);
+        Tree bold = TreeFactory.createElementTree("span");
+        bold.setAttribute("weight", "bold");
+        bold.addChild(TreeFactory.createTextTree("bc"));
+        p1.addChild(bold);
+        expectedRoot.addChild(p1);
+        //expectedRoot = <p><span weight bold, style italic>[a]</span><span weight bold>[bc]</span></p>
+        assertEquals("Invalid tree ", expectedRoot, root);
+    }
     /**
      * Applies styles to different selection ranges
      */
@@ -476,7 +504,30 @@ public class TreeOperationsTest
     public void addMultipleStylesOnDifferentRanges()
     {
         Tree paragraph = TreeFactory.createParagraphTree();
-        paragraph.addChild(TreeFactory.createTextTree("abcd"));
-        //todo
+        paragraph.addChild(TreeFactory.createTextTree("abc"));
+        root.addChild(paragraph);
+
+        TreeOperation boldOp = new TreeStyle(SITE_ID, new int[] {0, 0}, 0, 3, "weight", "bold", true, false, false);
+        boldOp.execute(root);
+
+        TreeOperation italicOp = new TreeStyle(SITE_ID, new int[] {0, 0, 0}, 1, 3, "style", "italic", false, true, false);
+        italicOp.execute(root);
+
+        Tree p1 = TreeFactory.createParagraphTree();
+        Tree bold = TreeFactory.createElementTree("span");
+        bold.setAttribute("weight", "bold");
+        bold.addChild(TreeFactory.createTextTree("a"));
+        p1.addChild(bold);
+
+        Tree italicBold = TreeFactory.createElementTree("span");
+        italicBold.setAttribute("weight", "bold");
+        italicBold.setAttribute("style", "italic");
+        italicBold.addChild(TreeFactory.createTextTree("bc"));
+        p1.addChild(italicBold);
+
+        expectedRoot.addChild(p1);
+        //expectedRoot = <p><span weight bold>[a]</span><span weight bold, style italic>[bc]</span></p>
+        assertEquals("Invalid tree ", expectedRoot, root);
+
     }
 }
