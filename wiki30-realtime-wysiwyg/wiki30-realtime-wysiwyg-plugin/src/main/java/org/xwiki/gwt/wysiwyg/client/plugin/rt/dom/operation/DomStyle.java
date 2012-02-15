@@ -120,6 +120,11 @@ public class DomStyle extends AbstractDomOperation
          */
         private Document document;
 
+        /**
+         * The actual range on which the style is applied
+         */
+        private Range styleRange;
+
         //todo: commit changes in gwt-user to have access to it
         private String propertyValue;
         /**
@@ -153,11 +158,12 @@ public class DomStyle extends AbstractDomOperation
 
         @Override
         public Range execute(Range range, String parameter) {
+            this.styleRange = range;
             return super.execute(range, parameter);
         }
 
         @Override
-        public String getParameter() {
+        public String getParameter() { // todo: investigate where it is used
             Selection selection = document.getSelection();
             String selectionParameter = null;
             for (int i = 0; i < selection.getRangeCount(); i++) {
@@ -172,13 +178,7 @@ public class DomStyle extends AbstractDomOperation
 
         @Override
         public boolean isExecuted() {
-            Selection selection = document.getSelection();
-            for (int i = 0; i < selection.getRangeCount(); i++) {
-                if (!isExecuted(selection.getRangeAt(i))) {
-                    return false;
-                }
-            }
-            return selection.getRangeCount() > 0;
+           return isExecuted(styleRange);
         }
 
         @Override
@@ -224,10 +224,8 @@ public class DomStyle extends AbstractDomOperation
             final com.google.gwt.dom.client.Style style = element.getStyle();
             String computedValue;
             if (style != null && style.getProperty(getProperty().getJSName()).length() > 0) {
-                log.fine("computing existing property");
                 computedValue = style.getProperty(getProperty().getJSName());
             } else {
-                log.fine("computing style property");
                 computedValue = element.getComputedStyleProperty(getProperty().getJSName());
             }
             log.fine("Computed value is: " + computedValue);
