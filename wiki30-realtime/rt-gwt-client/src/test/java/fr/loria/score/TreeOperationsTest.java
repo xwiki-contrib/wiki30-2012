@@ -371,4 +371,57 @@ public class TreeOperationsTest
         // expectedRoot = <p>[ab]</p><p>[]</p>
         assertEquals("Invalid tree ", expectedRoot, root);
     }
+
+    @Test
+    public void addSimpleStyle()
+    {
+        Tree paragraph = TreeFactory.createParagraphTree();
+        paragraph.addChild(TreeFactory.createTextTree("abcd"));
+        root.addChild(paragraph);
+        // SLeft: false if start == 0, SRight: false if end = text.len
+        //TreeStyle(int siteId, int[] path, int start, int end, String param, String value, boolean addStyle, boolean splitLeft, boolean splitRight) {
+        TreeStyle styleOperation = new TreeStyle(SITE_ID, new int[] {0, 0}, 0, 4, "font-weight", "bold", true, false, false);
+        styleOperation.execute(root);
+
+        Tree p1 = TreeFactory.createParagraphTree();
+        Tree boldSpan = TreeFactory.createElementTree("span");
+        boldSpan.setAttribute("font-weight", "bold");
+        boldSpan.addChild(TreeFactory.createTextTree("abcd"));
+        p1.addChild(boldSpan);
+        expectedRoot.addChild(p1);
+        assertEquals("Invalid tree ", expectedRoot, root);
+    }
+
+    @Test
+    public void addSimpleStyleOnSubSelection()
+    {
+        Tree paragraph = TreeFactory.createParagraphTree();
+        paragraph.addChild(TreeFactory.createTextTree("abcd"));
+        root.addChild(paragraph);
+
+        TreeStyle styleOperation = new TreeStyle(SITE_ID, new int[] {0, 0}, 1, 3, "font-weight", "bold", true, true, true);
+        styleOperation.execute(root);
+
+        Tree p1 = TreeFactory.createParagraphTree();
+        p1.addChild(TreeFactory.createTextTree("a"));
+        Tree boldSpan = TreeFactory.createElementTree("span");
+        boldSpan.setAttribute("font-weight", "bold");
+        boldSpan.addChild(TreeFactory.createTextTree("bc"));
+        p1.addChild(boldSpan);
+        p1.addChild(TreeFactory.createTextTree("d"));
+        expectedRoot.addChild(p1);
+        //expectedRoot = <p>[a]<span font bold>[bc]</span>[d]</p>
+        assertEquals("Invalid tree ", expectedRoot, root);
+    }
+
+    /**
+     * Applies styles to different selection ranges
+     */
+    @Test
+    public void addMultipleStylesOnDifferentRanges()
+    {
+        Tree paragraph = TreeFactory.createParagraphTree();
+        paragraph.addChild(TreeFactory.createTextTree("abcd"));
+        //todo
+    }
 }
