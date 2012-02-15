@@ -41,6 +41,12 @@ public class TreeOperationsTest
         return span;
     }
     
+    private static int[] path(int... positions) {
+        int[] path = positions;
+        return path;
+    }
+    
+    
     @Before
     public void init()
     {
@@ -54,11 +60,11 @@ public class TreeOperationsTest
         final Tree paragraphTree = TreeFactory.createParagraphTree();
         paragraphTree.addChild(TreeFactory.createTextTree("abcd"));
         root.addChild(paragraphTree);
-
+        
         expectedRoot = root.deepCloneNode();
         assertEquals("Invalid tree result", expectedRoot, root);
     }
-
+    
     @Test
     public void executeStyle()
     {
@@ -66,7 +72,7 @@ public class TreeOperationsTest
         paragraphTree.addChild(TreeFactory.createTextTree("abcd"));
         root.addChild(paragraphTree);
         
-        final TreeStyle bold = new TreeStyle(SITE_ID, new int[] {0, 0}, 0, 4, "bold", "true", ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
+        final TreeStyle bold = new TreeStyle(SITE_ID, path(0,0), 0, 4, "bold", "true", ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
         bold.execute(root);
 
         final Tree expectedParagraph = TreeFactory.createParagraphTree();
@@ -78,7 +84,7 @@ public class TreeOperationsTest
         
         final Tree rootClone = root.deepCloneNode();
 
-        final TreeStyle style1 = new TreeStyle(SITE_ID, new int[] {0, 0, 0}, 0, 2, "bold", "true", NO_ADD_STYLE, NO_SPLIT_LEFT, SPLIT_RIGHT);
+        final TreeStyle style1 = new TreeStyle(SITE_ID, path(0, 0, 0), 0, 2, "bold", "true", NO_ADD_STYLE, NO_SPLIT_LEFT, SPLIT_RIGHT);
         style1.execute(root);
         
         // now modify expectedRoot to mirror the change
@@ -88,11 +94,11 @@ public class TreeOperationsTest
         // expectedRoot = <p><span bold>[ab]</span><span bold>[cd]</span></p>
         assertEquals("Invalid tree result", expectedRoot, root);
         
-        final TreeStyle style2 = new TreeStyle(SITE_ID, new int[] {0, 0, 0}, 2, 4, "bold", "true", NO_ADD_STYLE, SPLIT_LEFT, NO_SPLIT_RIGHT);
+        final TreeStyle style2 = new TreeStyle(SITE_ID, path(0, 0, 0), 2, 4, "bold", "true", NO_ADD_STYLE, SPLIT_LEFT, NO_SPLIT_RIGHT);
         style2.execute(rootClone);
         assertEquals("Invalid tree result", root, rootClone);
     }
-
+    
     @Test
     public void executeSplitParagraphContainingText()
     {
@@ -100,7 +106,7 @@ public class TreeOperationsTest
         paragraphTree.addChild(TreeFactory.createTextTree("abcd"));
         root.addChild(paragraphTree);
 
-        final TreeInsertParagraph insertP = new TreeInsertParagraph(SITE_ID, 2, new int[] {0, 0});
+        final TreeInsertParagraph insertP = new TreeInsertParagraph(SITE_ID, 2, path(0, 0));
         insertP.execute(root);
         
         final Tree expectedParagraph1 = TreeFactory.createParagraphTree();
@@ -121,7 +127,7 @@ public class TreeOperationsTest
         paragraphTree.addChild(createStyledText("cd", "bold", "true"));
         root.addChild(paragraphTree);
         
-        final TreeInsertParagraph insertP = new TreeInsertParagraph(SITE_ID, 1, new int[] {0, 0});
+        final TreeInsertParagraph insertP = new TreeInsertParagraph(SITE_ID, 1, path(0, 0));
         insertP.execute(root);
         
         final Tree expectedParagraph1 = TreeFactory.createParagraphTree();
@@ -143,7 +149,7 @@ public class TreeOperationsTest
         paragraphTree.addChild(createStyledText("cd", "bold", "true"));
         root.addChild(paragraphTree);
 
-        final TreeInsertParagraph insertP = new TreeInsertParagraph(SITE_ID, 1, new int[] {0, 0, 0});
+        final TreeInsertParagraph insertP = new TreeInsertParagraph(SITE_ID, 1, path(0, 0, 0));
         insertP.execute(root);
 
         final Tree expectedParagraph1 = TreeFactory.createParagraphTree();
@@ -166,7 +172,7 @@ public class TreeOperationsTest
         paragraphTree.addChild(createStyledText("cd", "bold", "true"));
         root.addChild(paragraphTree);
 
-        final TreeInsertParagraph insertP = new TreeInsertParagraph(SITE_ID, 2, new int[] {0, 0, 0});
+        final TreeInsertParagraph insertP = new TreeInsertParagraph(SITE_ID, 2, path(0, 0, 0));
         insertP.execute(root);
 
         final Tree expectedParagraph1 = TreeFactory.createParagraphTree();
@@ -190,7 +196,7 @@ public class TreeOperationsTest
         expectedRoot = root.deepCloneNode();
 
         // Split it at the middle of text
-        final TreeInsertParagraph paragraphInMiddle = new TreeInsertParagraph(SITE_ID, 1, new int[] {0, 0});
+        final TreeInsertParagraph paragraphInMiddle = new TreeInsertParagraph(SITE_ID, 1, path(0, 0));
         paragraphInMiddle.execute(root);
 
         expectedRoot.getChild(0).removeChild(0);
@@ -211,7 +217,7 @@ public class TreeOperationsTest
         expectedRoot = root.deepCloneNode();
 
         // Split it at the end of text
-        final TreeInsertParagraph paragraphAtEnd = new TreeInsertParagraph(SITE_ID, 2, new int[] {0, 0});
+        final TreeInsertParagraph paragraphAtEnd = new TreeInsertParagraph(SITE_ID, 2, path(0, 0));
         paragraphAtEnd.execute(root);
 
         final Tree p = TreeFactory.createParagraphTree();
@@ -229,14 +235,14 @@ public class TreeOperationsTest
         root.addChild(p);
         expectedRoot = root.deepCloneNode();
 
-        final TreeInsertParagraph insertPMiddle = new TreeInsertParagraph(SITE_ID, 1, new int[] {0, 0, 0});
+        final TreeInsertParagraph insertPMiddle = new TreeInsertParagraph(SITE_ID, 1, path(0, 0, 0));
         insertPMiddle.execute(root);
 
-        final Tree text = expectedRoot.getChildFromPath(new int[] {0, 0, 0});
+        final Tree text = expectedRoot.getChildFromPath(path(0, 0, 0));
         text.setValue("x");
 
         final Tree p1 = p.deepCloneNode();
-        Tree text1 = p1.getChildFromPath(new int[] {0, 0});
+        Tree text1 = p1.getChildFromPath(path(0, 0));
         text1.setValue("y");
         expectedRoot.addChild(p1, 1);
         // expectedRoot = <p><span: bold true>[x]</span></p><p><span: bold true>[y]</span></p>
@@ -251,11 +257,11 @@ public class TreeOperationsTest
         root.addChild(p);
         expectedRoot = root.deepCloneNode();
 
-        final TreeInsertParagraph insertPEnd = new TreeInsertParagraph(SITE_ID, 2, new int[] {0, 0, 0});
+        final TreeInsertParagraph insertPEnd = new TreeInsertParagraph(SITE_ID, 2, path(0, 0, 0));
         insertPEnd.execute(root);
 
         final Tree p1 = p.deepCloneNode();
-        final Tree text1 = p1.getChildFromPath(new int[] {0, 0});
+        final Tree text1 = p1.getChildFromPath(path(0, 0));
         text1.setValue("");
         expectedRoot.addChild(p1, 1);
         // expectedRoot = <p><span: bold true>[ab]</span></p><p><span: bold true>[]</span></p>
@@ -274,10 +280,10 @@ public class TreeOperationsTest
         expectedRoot = root.deepCloneNode();
 
         // insert p after b
-        final TreeInsertParagraph insertPAfterB = new TreeInsertParagraph(SITE_ID, 2, new int[] {0, 0, 0});
+        final TreeInsertParagraph insertPAfterB = new TreeInsertParagraph(SITE_ID, 2, path(0, 0, 0));
         insertPAfterB.execute(root);
 
-        expectedRoot.getChildFromPath(new int[] {0, 0}).removeChild(1); // remove text node cd from first span
+        expectedRoot.getChildFromPath(path(0, 0)).removeChild(1); // remove text node cd from first span
         final Tree p1 = expectedRoot.getChild(0).deepCloneNode();
         final Tree span1 = p1.getChild(0);
         span1.getChild(0).setValue("cd");
@@ -299,12 +305,12 @@ public class TreeOperationsTest
         expectedRoot = root.deepCloneNode();
 
         // insert p before c
-        final TreeInsertParagraph insertPBeforeSecondChild = new TreeInsertParagraph(SITE_ID, 0, new int[] {0, 0, 1});
+        final TreeInsertParagraph insertPBeforeSecondChild = new TreeInsertParagraph(SITE_ID, 0, path(0, 0, 1));
         insertPBeforeSecondChild.execute(root);
 
-        expectedRoot.getChildFromPath(new int[] {0, 0}).removeChild(1); // remove text node cd from first span
+        expectedRoot.getChildFromPath(path(0, 0)).removeChild(1); // remove text node cd from first span
         final Tree p1 = expectedRoot.getChild(0).deepCloneNode();
-        final Tree text = p1.getChildFromPath(new int[]{ 0, 0 });
+        final Tree text = p1.getChildFromPath(path(0, 0));
         text.setValue("cd");
         expectedRoot.addChild(p1);
         // expectedRoot = <p><span bold true>[ab]</span></p><p><span bold true>[cd]</span></p>
@@ -323,10 +329,10 @@ public class TreeOperationsTest
         expectedRoot = root.deepCloneNode();
 
         // insert p between c and d
-        final TreeInsertParagraph insertPMiddleSecondChild = new TreeInsertParagraph(SITE_ID, 1, new int[] {0, 0, 1});
+        final TreeInsertParagraph insertPMiddleSecondChild = new TreeInsertParagraph(SITE_ID, 1, path(0, 0, 1));
         insertPMiddleSecondChild.execute(root);
 
-        expectedRoot.getChildFromPath(new int[] {0, 0, 1}).setValue("c"); // replace cd with c
+        expectedRoot.getChildFromPath(path(0, 0, 1)).setValue("c"); // replace cd with c
         final Tree span1 = createStyledText("d", "bold", "true");
         final Tree p1 = TreeFactory.createParagraphTree();
         p1.addChild(span1);
@@ -381,7 +387,7 @@ public class TreeOperationsTest
         root.addChild(paragraph);
         // SLeft: false if start == 0, SRight: false if end = text.len
         //TreeStyle(int siteId, int[] path, int start, int end, String param, String value, boolean addStyle, boolean splitLeft, boolean splitRight) {
-        TreeStyle styleOperation = new TreeStyle(SITE_ID, new int[] {0, 0}, 0, 4, "font-weight", "bold", ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
+        TreeStyle styleOperation = new TreeStyle(SITE_ID, path(0, 0), 0, 4, "font-weight", "bold", ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
         styleOperation.execute(root);
 
         Tree p1 = TreeFactory.createParagraphTree();
@@ -397,7 +403,7 @@ public class TreeOperationsTest
         paragraph.addChild(TreeFactory.createTextTree("abcd"));
         root.addChild(paragraph);
 
-        TreeStyle styleOperation = new TreeStyle(SITE_ID, new int[] {0, 0}, 1, 3, "font-weight", "bold", ADD_STYLE, SPLIT_LEFT, SPLIT_RIGHT);
+        TreeStyle styleOperation = new TreeStyle(SITE_ID, path(0, 0), 1, 3, "font-weight", "bold", ADD_STYLE, SPLIT_LEFT, SPLIT_RIGHT);
         styleOperation.execute(root);
 
         Tree p1 = TreeFactory.createParagraphTree();
@@ -416,10 +422,10 @@ public class TreeOperationsTest
         paragraph.addChild(TreeFactory.createTextTree("abc"));
         root.addChild(paragraph);
 
-        TreeOperation boldOp = new TreeStyle(SITE_ID, new int[] {0, 0}, 0, 3, "weight", "bold", true, false, false);
+        TreeOperation boldOp = new TreeStyle(SITE_ID, path(0, 0), 0, 3, "weight", "bold", ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
         boldOp.execute(root);
 
-        TreeOperation italicOp = new TreeStyle(SITE_ID, new int[] {0, 0, 0}, 0, 1, "style", "italic", false, false, true);
+        TreeOperation italicOp = new TreeStyle(SITE_ID, path(0, 0, 0), 0, 1, "style", "italic", NO_ADD_STYLE, NO_SPLIT_LEFT, SPLIT_RIGHT);
         italicOp.execute(root);
 
         Tree p1 = TreeFactory.createParagraphTree();
@@ -446,10 +452,10 @@ public class TreeOperationsTest
         paragraph.addChild(TreeFactory.createTextTree("abc"));
         root.addChild(paragraph);
 
-        TreeOperation boldOp = new TreeStyle(SITE_ID, new int[] {0, 0}, 0, 3, "weight", "bold", true, false, false);
+        TreeOperation boldOp = new TreeStyle(SITE_ID, path(0, 0), 0, 3, "weight", "bold", ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
         boldOp.execute(root);
 
-        TreeOperation italicOp = new TreeStyle(SITE_ID, new int[] {0, 0, 0}, 1, 3, "style", "italic", false, true, false);
+        TreeOperation italicOp = new TreeStyle(SITE_ID, path(0, 0, 0), 1, 3, "style", "italic", NO_ADD_STYLE, SPLIT_LEFT, NO_SPLIT_RIGHT);
         italicOp.execute(root);
 
         Tree p1 = TreeFactory.createParagraphTree();
@@ -467,6 +473,5 @@ public class TreeOperationsTest
         expectedRoot.addChild(p1);
         //expectedRoot = <p><span weight bold>[a]</span><span weight bold, style italic>[bc]</span></p>
         assertEquals("Invalid tree ", expectedRoot, root);
-
     }
 }
