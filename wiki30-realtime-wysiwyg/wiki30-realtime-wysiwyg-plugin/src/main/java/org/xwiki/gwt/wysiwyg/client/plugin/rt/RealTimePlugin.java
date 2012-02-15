@@ -340,8 +340,13 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                             pos = path.get(0);
                         }
 
+                        // Go up until we reach the parent paragraph node, because we might have nested span tags
+                        Node n = textNode;
+                        while (!"p".equalsIgnoreCase(n.getParentNode().getNodeName())) {
+                            n = n.getParentNode();
+                        }
                         // End of line
-                        if ((textNode.getNextSibling() == null || BR.equalsIgnoreCase(textNode.getNextSibling().getNodeName())) && textNode.getLength() == pos) {
+                        if ((n.getNextSibling() == null || BR.equalsIgnoreCase(n.getNextSibling().getNodeName())) && textNode.getLength() == pos) {
                             isNewParagraph = true;
                             pos = path.get(0) + 1;
                         }
