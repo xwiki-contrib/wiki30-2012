@@ -127,13 +127,13 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
         commandStyleProperties.put(Command.BOLD, Style.FONT_WEIGHT);
         commandStyleProperties.put(Command.ITALIC, Style.FONT_STYLE);
         commandStyleProperties.put(Command.UNDERLINE, Style.TEXT_DECORATION);
-        commandStyleProperties.put(Command.STRIKE_THROUGH, Style.TEXT_DECORATION);
+        commandStyleProperties.put(Command.LINE_THROUGH, Style.TEXT_DECORATION);
 
         // register the styling buttons and their actions
         addFeature("bold", Command.BOLD, Images.INSTANCE.bold(), Strings.INSTANCE.bold());
         addFeature("italic", Command.ITALIC, Images.INSTANCE.italic(), Strings.INSTANCE.italic());
         addFeature("underline", Command.UNDERLINE, Images.INSTANCE.underline(), Strings.INSTANCE.underline());
-        addFeature("strikethrough", Command.STRIKE_THROUGH, Images.INSTANCE.strikeThrough(), Strings.INSTANCE.strikeThrough());
+        addFeature("strikethrough", Command.LINE_THROUGH, Images.INSTANCE.strikeThrough(), Strings.INSTANCE.strikeThrough());
 
         if (toolBarExtension.getFeatures().length > 0) {
             registerTextAreaHandlers();
@@ -180,7 +180,6 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
     {
         if (getTextArea().isAttached() && getTextArea().isEnabled() && !IGNORED_COMMANDS.contains(command)) {
             Selection selection = getTextArea().getDocument().getSelection();
-            log.severe("It should execute just 1 time !");
             if (selection.getRangeCount() > 0) {
 
                 final Property styleProperty = commandStyleProperties.get(command);
