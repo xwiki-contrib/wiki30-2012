@@ -67,17 +67,19 @@ public class DomStyle extends AbstractDomOperation
     @Override
     public Range execute(Document document) {
         TreeStyle treeStyleOp = getOperation();
+        String stylePropertyName = treeStyleOp.param;
         String stylePropertyValue = treeStyleOp.value;
 
-        if (stylePropertyValue.equalsIgnoreCase("bold")) {
-            realDomStyleExecutable = new DomStyleExecutable(document, Style.FONT_WEIGHT, Style.FontWeight.BOLD);
-        } else if (stylePropertyValue.equalsIgnoreCase("italic")) {
-             realDomStyleExecutable = new DomStyleExecutable(document, Style.FONT_STYLE, Style.FontStyle.ITALIC);
-        } else if (stylePropertyValue.equalsIgnoreCase("underline")) {
-             realDomStyleExecutable = new DomStyleExecutable(document, Style.TEXT_DECORATION, Style.TextDecoration.UNDERLINE);
-        } else if (stylePropertyValue.equalsIgnoreCase("line-through")) {
-            realDomStyleExecutable = new DomStyleExecutable(document, Style.TEXT_DECORATION, Style.TextDecoration.LINE_THROUGH);
+        Property property = null;
+        if (stylePropertyName.equalsIgnoreCase("font-weight")) {
+            property = Style.FONT_WEIGHT;
+        } else if (stylePropertyName.equalsIgnoreCase("font-style")) {
+             property = Style.FONT_STYLE;
+        } else if (stylePropertyName.equalsIgnoreCase("text-decoration")) {
+             property = Style.TEXT_DECORATION;
         }
+
+        realDomStyleExecutable = new DomStyleExecutable(document, property, stylePropertyValue);
 
         // Create range object from the op context
         Range styleRange = document.createRange();

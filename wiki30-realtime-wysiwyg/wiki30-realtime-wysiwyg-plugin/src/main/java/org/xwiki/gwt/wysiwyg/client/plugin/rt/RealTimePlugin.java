@@ -27,8 +27,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.xwiki.gwt.dom.client.DOMUtils;
+import org.xwiki.gwt.dom.client.Property;
 import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.dom.client.Selection;
+import org.xwiki.gwt.dom.client.Style;
 import org.xwiki.gwt.user.client.Config;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
 import org.xwiki.gwt.user.client.ui.rta.cmd.Command;
@@ -68,7 +70,6 @@ import fr.loria.score.jupiter.tree.operation.TreeMergeParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import fr.loria.score.jupiter.tree.operation.TreeStyle;
-import sun.java2d.pipe.SpanClipRenderer;
 
 /**
  * Broadcasts DOM mutations generated inside the rich text area.
@@ -104,6 +105,11 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
     private final FocusWidgetUIExtension toolBarExtension = new FocusWidgetUIExtension("toolbar");
 
     /**
+     * Associates commands with style properties. Useful for toggling on/off the local and remote styling
+     */
+    private final Map<Command, Property> commandStyleProperties = new HashMap<Command, Property>();
+
+    /**
      * {@inheritDoc}
      * 
      * @see AbstractStatefulPlugin#init(RichTextArea, Config)
@@ -117,6 +123,11 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
         saveRegistration(textArea.addKeyUpHandler(this));
 
         getTextArea().getCommandManager().addCommandListener(this);
+
+        commandStyleProperties.put(Command.BOLD, Style.FONT_WEIGHT);
+        commandStyleProperties.put(Command.ITALIC, Style.FONT_STYLE);
+        commandStyleProperties.put(Command.UNDERLINE, Style.TEXT_DECORATION);
+        commandStyleProperties.put(Command.STRIKE_THROUGH, Style.TEXT_DECORATION);
 
         // register the styling buttons and their actions
         addFeature("bold", Command.BOLD, Images.INSTANCE.bold(), Strings.INSTANCE.bold());
@@ -171,21 +182,10 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
             Selection selection = getTextArea().getDocument().getSelection();
             log.severe("It should execute just 1 time !");
             if (selection.getRangeCount() > 0) {
-                String styleKey = "unsupported";
-                String styleValue = "unsupported";
-                if (Command.BOLD.equals(command)) {
-                    styleKey = "font-weight";
-                    styleValue = "bold";
-                } else if (Command.ITALIC.equals(command)) {
-                    styleKey = "font-style";
-                    styleValue = "italic";
-                } else if (Command.UNDERLINE.equals(command)) {
-                    styleKey = "text-decoration";
-                    styleValue = "underline";
-                } else if (Command.STRIKE_THROUGH.equals(command)) {
-                    styleKey = "text-decoration";
-                    styleValue = "line-through";
-                }
+
+                final Property styleProperty = commandStyleProperties.get(command);
+                String styleKey = styleProperty.getCSSName();
+                String styleValue = getTextArea().getCommandManager().isExecuted(command) ? styleProperty.getDefaultValue() : command.toString();
 
                 //Use this range to get all intermediary paths
                 Range range = selection.getRangeAt(0);
@@ -194,7 +194,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                 log.info(targets.toString());
 
                 for (OperationTarget target : targets) {
-                    log.severe("Generate tree style op for :" + target.toString());
+                    log.severe("Generate tree style op for :" + target.toString() + ", key: " + styleKey + ", val: " + styleValue);
                     boolean addStyle = false;
                     int[] path = treeOperationFactory.toIntArray(target.getStartContainer());
                     if (path.length == 2) {
