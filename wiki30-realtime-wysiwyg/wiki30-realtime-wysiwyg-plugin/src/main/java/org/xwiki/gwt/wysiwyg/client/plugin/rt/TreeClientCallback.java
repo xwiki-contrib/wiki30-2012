@@ -108,6 +108,8 @@ public class TreeClientCallback implements ClientCallback
         }
         DomOperation domOperation = domOperationFactory.createDomOperation(operation);
         if (domOperation != null) {
+            //todo-marius: should restore original selection, as the returned range is not always the original selection.
+            // Ex: select many styles, text nodes and apply a new style. The selection applied is the last one, and not the original selection
             applySelection(domOperation.execute((Document) nativeNode.getOwnerDocument()));
         } else {
             updateDOM();
@@ -126,9 +128,7 @@ public class TreeClientCallback implements ClientCallback
             restoreSelection(selectionEndPoints, operation);
         } else {
             log.warning("Update all DOM");
-            log.finest("Root is before: " + customNode);
             updateDOM();
-            log.finest("Root is after: " + customNode);
         }
     }
 
