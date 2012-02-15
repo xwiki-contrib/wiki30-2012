@@ -46,7 +46,7 @@ public class Tree implements Serializable {
     }
 
     public void setParent(Tree t) {
-        this.parent = t;
+        this.parent = t; // todo: it should add this as t's child
     }
 
     public Tree getParent() {
