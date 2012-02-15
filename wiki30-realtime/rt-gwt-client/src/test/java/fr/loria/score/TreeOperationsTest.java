@@ -380,14 +380,11 @@ public class TreeOperationsTest
         root.addChild(paragraph);
         // SLeft: false if start == 0, SRight: false if end = text.len
         //TreeStyle(int siteId, int[] path, int start, int end, String param, String value, boolean addStyle, boolean splitLeft, boolean splitRight) {
-        TreeStyle styleOperation = new TreeStyle(SITE_ID, new int[] {0, 0}, 0, 4, "font-weight", "bold", true, false, false);
+        TreeStyle styleOperation = new TreeStyle(SITE_ID, new int[] {0, 0}, 0, 4, "font-weight", "bold", ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
         styleOperation.execute(root);
 
         Tree p1 = TreeFactory.createParagraphTree();
-        Tree boldSpan = TreeFactory.createElementTree("span");
-        boldSpan.setAttribute("font-weight", "bold");
-        boldSpan.addChild(TreeFactory.createTextTree("abcd"));
-        p1.addChild(boldSpan);
+        p1.addChild(createStyledText("abcd", "font-weight", "bold"));
         expectedRoot.addChild(p1);
         assertEquals("Invalid tree ", expectedRoot, root);
     }
@@ -399,15 +396,12 @@ public class TreeOperationsTest
         paragraph.addChild(TreeFactory.createTextTree("abcd"));
         root.addChild(paragraph);
 
-        TreeStyle styleOperation = new TreeStyle(SITE_ID, new int[] {0, 0}, 1, 3, "font-weight", "bold", true, true, true);
+        TreeStyle styleOperation = new TreeStyle(SITE_ID, new int[] {0, 0}, 1, 3, "font-weight", "bold", ADD_STYLE, SPLIT_LEFT, SPLIT_RIGHT);
         styleOperation.execute(root);
 
         Tree p1 = TreeFactory.createParagraphTree();
         p1.addChild(TreeFactory.createTextTree("a"));
-        Tree boldSpan = TreeFactory.createElementTree("span");
-        boldSpan.setAttribute("font-weight", "bold");
-        boldSpan.addChild(TreeFactory.createTextTree("bc"));
-        p1.addChild(boldSpan);
+        p1.addChild(createStyledText("bc", "font-weight", "bold"));
         p1.addChild(TreeFactory.createTextTree("d"));
         expectedRoot.addChild(p1);
         //expectedRoot = <p>[a]<span font bold>[bc]</span>[d]</p>
