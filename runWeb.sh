@@ -8,7 +8,8 @@ if [ "$1" != "" ]; then
   DB_LOCATION=$1
 fi
 
-mvn -o -nsu clean install -Pdev -DskipTests=true -DfailIfNoTests=false
+#To effectively work with no snapshot updates, please update to maven 3.0.4
+mvn -nsu clean install -Pdev -DskipTests=true -DfailIfNoTests=false
 
 echo ">>> Changing directory to: wiki30-distribution-zip"
 cd wiki30-distribution/wiki30-distribution-zip/target
