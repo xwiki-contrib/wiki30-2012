@@ -12,7 +12,7 @@
   <artifactId>rt-application</artifactId>
   <packaging>xar</packaging>
 
-  <name>Wiki30 Project - Real-time editor - XAR application</name>
+  <name>Wiki3.0 - Real-time editor - XAR application</name>
   <description>The XAR module to be imported for the real time editor application</description>
   <url>http://wiki30.xwikisas.com</url>
 

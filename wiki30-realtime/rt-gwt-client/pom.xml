@@ -10,7 +10,7 @@
 
   <artifactId>rt-gwt-client</artifactId>
 
-  <name>Wiki30 Project - Real-time editor - GWT client side module</name>
+  <name>Wiki3.0 - Real-time editor - GWT client side module</name>
 
   <dependencies>
     <dependency>

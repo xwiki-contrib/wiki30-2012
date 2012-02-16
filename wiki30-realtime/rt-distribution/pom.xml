@@ -12,7 +12,7 @@
   <artifactId>rt-distribution</artifactId>
   <packaging>war</packaging>
 
-  <name>Wiki30 Project - Real-time editor - WAR Distribution</name>
+  <name>Wiki3.0 - Real-time editor - WAR Distribution</name>
   <description>The final XE war with the real-time editor libraries packed</description>
 
   <dependencies>
