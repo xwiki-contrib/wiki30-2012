@@ -333,17 +333,18 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
 
                         boolean isNewParagraph = false;
 
-                        // Start of the line
-                        if (textNode.getPreviousSibling() == null && 0 == pos) {
-                            isNewParagraph = true;
-                            pos = path.get(0);
-                        }
-
-                        // Go up until we reach the parent paragraph node, because we might have nested span tags
+                        // Go up below the parent paragraph node, because we might have span tags with text nodes
                         Node n = textNode;
                         while (!"p".equalsIgnoreCase(n.getParentNode().getNodeName())) {
                             n = n.getParentNode();
                         }
+
+                        // Start of the line
+                        if (n.getPreviousSibling() == null && 0 == pos) {
+                            isNewParagraph = true;
+                            pos = path.get(0);
+                        }
+
                         // End of line
                         if ((n.getNextSibling() == null || BR.equalsIgnoreCase(n.getNextSibling().getNodeName())) && textNode.getLength() == pos) {
                             isNewParagraph = true;
