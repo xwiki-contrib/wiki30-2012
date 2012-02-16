@@ -14,8 +14,8 @@ libDir=$curDir/wiki30-distribution/wiki30-distribution-zip/target/wiki30-distrib
 
 #Realtime plugin
 
-cd wiki30-realtime-wysiwyg/wiki30-realtime-wysiwyg-plugin
-mvn -o -nsu clean install -DskipTests=true -DfailIfNoTests=false
+cd wiki30-realtime-wysiwyg-plugin
+mvn -nsu clean install -DskipTests=true -DfailIfNoTests=false
 
 wysiwygDir=$jettyDir/wysiwyg/xwe
 rm $wysiwygDir/*.cache.html

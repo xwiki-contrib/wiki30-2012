@@ -20,17 +20,43 @@
  *
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.contrib</groupId>
-    <artifactId>wiki30-realtime-wysiwyg</artifactId>
+    <artifactId>wiki30</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>wiki30-realtime-wysiwyg-gwt-dom-mutation</artifactId>
-  <name>Wiki3.0 - Realtime WYSIWYG Editor - GWT DOM Mutations</name>
-  <description>An extension of the GWT DOM API, providing support for listening to DOM mutation events.</description>
+
+  <artifactId>wiki30-realtime-wysiwyg-plugin</artifactId>
+  <name>Wiki3.0 - Realtime WYSIWYG Editor - Plugin</name>
+  <packaging>jar</packaging>
+  <description>A plugin that listens to keyboard events and rich text area commands and broadcast them to other clients
+    editing the same page.</description>
+  <dependencies>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-gwt-dom</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-gwt-user</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-wysiwyg-plugin-api</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.xwiki.contrib</groupId>
+        <artifactId>rt-gwt-client</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+  </dependencies>
   <build>
     <resources>
       <resource>
@@ -44,18 +70,5 @@
         <directory>src/main/java</directory>
       </resource>
     </resources>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <configuration>
-          <includes>org/xwiki/gwt/dom/mutation/MutationTestSuite.java</includes>
-        </configuration>
-      </plugin>
-    </plugins>
   </build>
 </project>
