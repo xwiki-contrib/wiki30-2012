@@ -205,6 +205,9 @@ public class DomStyle extends AbstractDomOperation
             text.crop(firstCharIndex, lastCharIndex);
             Element element = (Element) text.getParentElement();
             if (SPAN.equalsIgnoreCase(element.getNodeName())) {
+                if (element.getChildCount() != 1) {
+                    splitParentNode(text, element);
+                }
                 element.getStyle().setProperty(getProperty().getJSName(), propertyValue);
             } else {
                 SpanElement spanElement = Document.get().createSpanElement();
@@ -233,6 +236,54 @@ public class DomStyle extends AbstractDomOperation
                 return computedValue != null && computedValue.toLowerCase().contains(propertyValue);
             } else {
                 return propertyValue.equalsIgnoreCase(computedValue);
+            }
+        }
+
+        /**
+         * Splits the parent node of the text, in order to preserve styling
+         * Useful when a new style is applied on a sub-selection of an already styled element.
+         * We have to split the parent node to preserve initial styling
+         *
+         * @param text the text node, whose parent is to be split
+         * @param parent the parent element to be split
+         */
+        private void splitParentNode(Text text, Element parent)
+        {
+            Node prevSibling = text.getPreviousSibling();
+            if (prevSibling != null) {
+                Element leftParent = Element.as(parent.cloneNode(false)); // apply the old styling
+                addNodeSiblingsToNewParent(text.getPreviousSibling(), leftParent, -1);
+                parent.getParentNode().insertBefore(leftParent, parent);
+            }
+
+            Node nextSibling = text.getNextSibling();
+            if (nextSibling != null) {
+                Element rightParent = Element.as(parent.cloneNode(false)); // apply the old styling
+                addNodeSiblingsToNewParent(text.getNextSibling(), rightParent, 1);
+                parent.getParentNode().insertAfter(rightParent, parent);
+            }
+        }
+
+        /**
+         * Remove sibling nodes from actual parent and adds them as children into a new parent node, keeping their original order
+         * @param node the node whose siblings (left or right) would be removed from their parent
+         * @param newParent the new node parent
+         * @param dir removal direction to follow: -1 is left, +1 is right
+         */
+        private void addNodeSiblingsToNewParent(Node node, Node newParent, int dir) {
+            if (node != null) {
+                if (dir == -1) {
+                    addNodeSiblingsToNewParent(node.getPreviousSibling(), newParent, dir);
+                } else if (dir == 1) {
+                    addNodeSiblingsToNewParent(node.getNextSibling(), newParent, dir);
+                }
+            }
+            if (node != null) {
+                if (dir == -1) {
+                    newParent.appendChild(node);
+                } else if (dir == 1) {
+                    newParent.insertFirst(node);
+                }
             }
         }
     }
