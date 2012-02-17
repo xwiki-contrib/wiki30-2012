@@ -54,7 +54,6 @@
     <module>rt-gwt-client</module>
     <module>rt-gwt-server</module>
     <module>rt-application</module>
-    <module>rt-distribution</module>
   </modules>
 
   <repositories>
