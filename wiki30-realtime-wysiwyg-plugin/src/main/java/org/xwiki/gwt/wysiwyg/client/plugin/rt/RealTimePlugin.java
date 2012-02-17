@@ -248,7 +248,6 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
         }
     }
 
-    //todo: broadcast only if the caret was inside the RTA, not outside..
     @Override
     public void onKeyDown(KeyDownEvent event) {
         final int keyCode = event.getNativeKeyCode();
@@ -271,8 +270,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                     if (Node.TEXT_NODE == startContainer.getNodeType()) {
                         Text textNode = Text.as(startContainer);
                         if (pos == 0) { // perhaps a line merge
-                            if (textNode.getParentElement().getPreviousSibling() != null) { // todo: test it 8Feb12.eroare
-                                log.fine("Line merge");
+                            if (textNode.getParentElement().getPreviousSibling() != null) {
                                 //definitively a line merge
                                 op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
                                 op.setPath(TreeHelper.toIntArray(path));
