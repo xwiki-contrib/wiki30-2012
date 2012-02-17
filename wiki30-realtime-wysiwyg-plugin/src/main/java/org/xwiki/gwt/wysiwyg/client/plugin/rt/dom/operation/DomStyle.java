@@ -89,7 +89,6 @@ public class DomStyle extends AbstractDomOperation
         styleRange.setEnd(targetNode, treeStyleOp.end);
         log.info("Style range: " + styleRange.toString());
 
-        //todo: what happens when remote user has selection?
         Range localRange = document.getSelection().getRangeAt(0);
         log.info("Local range: " + localRange.toString());
 
@@ -231,7 +230,6 @@ public class DomStyle extends AbstractDomOperation
             } else {
                 computedValue = element.getComputedStyleProperty(getProperty().getJSName());
             }
-            log.fine("Computed value is: " + computedValue);
             if (getProperty().isMultipleValue()) {
                 return computedValue != null && computedValue.toLowerCase().contains(propertyValue);
             } else {

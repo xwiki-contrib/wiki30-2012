@@ -193,7 +193,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                 log.info(targets.toString());
 
                 for (OperationTarget target : targets) {
-                    log.severe("Generate tree style op for :" + target.toString() + ", key: " + styleKey + ", val: " + styleValue);
+                    log.finest("Generate tree style op for :" + target.toString() + ", key: " + styleKey + ", val: " + styleValue);
                     boolean addStyle = false;
                     int[] path = treeOperationFactory.toIntArray(target.getStartContainer());
                     if (path.length == 2) {
@@ -266,22 +266,19 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
             switch (keyCode) {
                 case KeyCodes.KEY_BACKSPACE: {
                     pos = range.getStartOffset();
-                    log.info("Position is: " + pos);
 
                     if (Node.TEXT_NODE == startContainer.getNodeType()) {
                         Text textNode = Text.as(startContainer);
                         if (pos == 0) { // perhaps a line merge
-                            log.info("1");
                             if (textNode.getParentElement().getPreviousSibling() != null) { // todo: test it 8Feb12.eroare
-                                log.info("1 - line merge");
+                                log.fine("Line merge");
                                 //definitively a line merge
                                 op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
                                 op.setPath(treeOperationFactory.toIntArray(path));
                             } else {
-                                log.info("2 - nothing");
+                                // nothing for now
                             }
                         } else {
-                            log.info("3 - delete");
                             pos = pos - 1;
                             op = new TreeDeleteText(clientJupiter.getSiteId(), pos, treeOperationFactory.toIntArray(path));
                         }
@@ -405,8 +402,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
      */
     public void onKeyPress(KeyPressEvent event)
     {
-        log.info("onKeyPress: " + getTextArea().getHTML());
-        log.fine("onKeyPress: " + event.getCharCode() + ", native keyCode" + event.getNativeEvent().getKeyCode() + ", unicodeCharCode: " + event.getUnicodeCharCode());
+        log.finest("onKeyPress: " + getTextArea().getHTML());
         boolean isAltControlOrMetaDown = event.isAltKeyDown() || event.isControlKeyDown() || event.isMetaKeyDown();
         boolean isNoteworthyKeyPressed = event.getCharCode() != '\u0000';
 
