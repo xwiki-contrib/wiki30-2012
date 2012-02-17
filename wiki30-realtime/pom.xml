@@ -11,7 +11,7 @@
   <artifactId>realtime-editor</artifactId>
   <packaging>pom</packaging>
   
-  <name>Wiki3.0 Real-time editor - Parent POM</name>
+  <name>Wiki3.0 - Real-time editor - Parent POM</name>
   <description>Wiki3.0 - Real-time editor parent module</description>
   <url>http://wiki30.xwikisas.com</url>
 
