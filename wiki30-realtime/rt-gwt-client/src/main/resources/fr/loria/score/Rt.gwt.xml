@@ -2,7 +2,6 @@
 <module rename-to="xre">
 
     <inherits name="fr.loria.score.Jupiter"/>
-    <inherits name="org.xwiki.gwt.dom.mutation.Mutation"/>
 
     <!-- Specify the app entry point class.                   -->
     <entry-point class="fr.loria.score.client.Rt"/>
