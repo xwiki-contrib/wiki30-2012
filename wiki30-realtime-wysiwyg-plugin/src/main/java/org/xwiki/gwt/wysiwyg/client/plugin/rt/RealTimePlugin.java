@@ -193,9 +193,10 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                 log.info(targets.toString());
 
                 for (OperationTarget target : targets) {
-                    log.finest("Generate tree style op for :" + target.toString() + ", key: " + styleKey + ", val: " + styleValue);
+                    log.finest("Generate tree style op for :" + target.toString() + ", key: " + styleKey + ", val: " +
+                        styleValue);
                     boolean addStyle = false;
-                    int[] path = treeOperationFactory.toIntArray(target.getStartContainer());
+                    int[] path = TreeHelper.toIntArray(target.getStartContainer());
                     if (path.length == 2) {
                         addStyle = true;
                     }
@@ -260,7 +261,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
             Node startContainer = range.getStartContainer();
             Node endContainer = range.getEndContainer();
 
-            List<Integer> path = treeOperationFactory.getLocator(range.getStartContainer());
+            List<Integer> path = TreeHelper.getLocator(range.getStartContainer());
             //make case
             TreeOperation op = null;
             switch (keyCode) {
@@ -274,13 +275,13 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                                 log.fine("Line merge");
                                 //definitively a line merge
                                 op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
-                                op.setPath(treeOperationFactory.toIntArray(path));
+                                op.setPath(TreeHelper.toIntArray(path));
                             } else {
                                 // nothing for now
                             }
                         } else {
                             pos = pos - 1;
-                            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, treeOperationFactory.toIntArray(path));
+                            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
                         }
                     } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
                         if (pos == 0) {
@@ -306,23 +307,23 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                                 //line merge only if there is something to merge: the text node's parent has siblings
                                 path.set(0, path.get(0) + 1);
                                 op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
-                                op.setPath(treeOperationFactory.toIntArray(path));
+                                op.setPath(TreeHelper.toIntArray(path));
                             }
                         } else {
-                            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, treeOperationFactory.toIntArray(path));
+                            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
                         }
                     } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
                         if (startContainer.getNextSibling() != null) {
                             path.set(0, path.get(0) + 1);
                             op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
-                            op.setPath(treeOperationFactory.toIntArray(path));
+                            op.setPath(TreeHelper.toIntArray(path));
                         }
                     }
                 }
                 break;
 
                 case KeyCodes.KEY_ENTER: {
-                    path = treeOperationFactory.getLocator(range.getEndContainer());
+                    path = TreeHelper.getLocator(range.getEndContainer());
                     pos = range.getEndOffset();
 
                     if (Node.TEXT_NODE == endContainer.getNodeType()) {
@@ -349,9 +350,9 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                         }
                         if (isNewParagraph) {
                             op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
-                            op.setPath(treeOperationFactory.toIntArray(path));
+                            op.setPath(TreeHelper.toIntArray(path));
                         } else {
-                            op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, treeOperationFactory.toIntArray(path));
+                            op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
                         }
                     } else if (Node.ELEMENT_NODE == endContainer.getNodeType()) {
                         Element element = Element.as(endContainer);
@@ -359,7 +360,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                         // Start of the line
                         if (element.getPreviousSibling() == null && 0 == pos) {
                             op = new TreeNewParagraph(clientJupiter.getSiteId(), path.get(0));
-                            op.setPath(treeOperationFactory.toIntArray(path));
+                            op.setPath(TreeHelper.toIntArray(path));
                         } else {
                             int brCount = element.getElementsByTagName(BR).getLength();
                             int childCount = element.getChildCount();
@@ -369,11 +370,11 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                             if (isBeforeLastBrTag || isAfterLastTag) {
                                 pos = path.get(0) + 1;
                                 op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
-                                op.setPath(treeOperationFactory.toIntArray(path));
+                                op.setPath(TreeHelper.toIntArray(path));
                             } else {
                                 // Somewhere in the middle of the line
                                 pos = range.getEndOffset();
-                                op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, treeOperationFactory.toIntArray(path));
+                                op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
                             }
                         }
                     }
@@ -447,11 +448,11 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
 
     private void logRange(Range r) {
         log.info("Start container: " + r.getStartContainer().getNodeName() +
-                ", " + " locator: " + treeOperationFactory.getLocator(r.getStartContainer()) + " offset: " + r.getStartOffset()
+                ", " + " locator: " + TreeHelper.getLocator(r.getStartContainer()) + " offset: " + r.getStartOffset()
                 );
 
         log.info("End container: " + r.getEndContainer().getNodeName() +
-                ", " + " locator: " + treeOperationFactory.getLocator(r.getStartContainer()) + " offset: " + r.getEndOffset()
+                ", " + " locator: " + TreeHelper.getLocator(r.getStartContainer()) + " offset: " + r.getEndOffset()
                 );
     }
 
@@ -498,7 +499,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
             if (text == range.getEndContainer()) {
                 endIndex = range.getEndOffset();
             }
-            operationTargets.add(new OperationTarget(treeOperationFactory.getLocator(text), startIndex, endIndex, text.getLength()));
+            operationTargets.add(new OperationTarget(TreeHelper.getLocator(text), startIndex, endIndex, text.getLength()));
         }
         return operationTargets;
     }
