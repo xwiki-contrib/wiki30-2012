@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static fr.loria.score.TreeDSL.paragraph;
 import static fr.loria.score.TreeDSL.span;
 import static fr.loria.score.TreeDSL.text;
+import java.util.Arrays;
 
 /**
  * Test the effect of executing tree operations on the tree model.
@@ -397,30 +398,18 @@ public class TreeOperationsTest
         rootDSL.addChild(paragraph().addChild(text("abcd")),
                          paragraph().addChild(text("xy")));
         
-        // simulate move of 'bc' string between 'x' and 'y'.
-        
-        
+        // simulate move of 'bc' string between 'x' and 'y'.       
         final TreeInsertParagraph splitSrc1 = new TreeInsertParagraph(SITE_ID, 3, path(0, 0));
-        splitSrc1.execute(root);
-        
         final TreeInsertParagraph splitSrc2 = new TreeInsertParagraph(SITE_ID, 1, path(0, 0));
-        splitSrc2.execute(root);
-        
         final TreeInsertParagraph splitDst1 = new TreeInsertParagraph(SITE_ID, 1, path(3, 0));
-        splitDst1.execute(root);
-        
         final TreeMoveParagraph move = new TreeMoveParagraph(SITE_ID, 1, 4);
-        move.execute(root);
-               
         final TreeMergeParagraph mergeSrc1 = new TreeMergeParagraph(SITE_ID, 1, 1, 1); 
-        mergeSrc1.execute(root);
- 
-        final TreeMergeParagraph mergeDst1 = new TreeMergeParagraph(SITE_ID, 3, 1, 1); 
-        mergeDst1.execute(root);
- 
+        final TreeMergeParagraph mergeDst1 = new TreeMergeParagraph(SITE_ID, 3, 1, 1);  
         final TreeMergeParagraph mergeDst2 = new TreeMergeParagraph(SITE_ID, 2, 1, 2); 
-        mergeDst2.execute(root);
-        
+
+        final TreeCompositeOperation moveText = new TreeCompositeOperation(splitSrc1, splitSrc2, splitDst1, move, mergeSrc1, mergeDst1, mergeDst2);
+        moveText.execute(root);
+
         //expectedRoot = <p>[ad]</p><p>[x][bc]y]</p>
         expectedRootDSL.addChild(paragraph().addChild(text("a"),
                                                       text("d")),
