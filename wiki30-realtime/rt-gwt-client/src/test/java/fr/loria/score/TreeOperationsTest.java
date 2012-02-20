@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
  * @author Bogdan.Flueras@inria.fr
  * @author Gerald.Oster@loria.fr
  */
-public class TreeOperationsTestWithDSL
+public class TreeOperationsTest
 {
     private Tree root;
     private Tree expectedRoot;
