@@ -485,7 +485,8 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
     private List<OperationTarget> getIntermediaryTargets(Range range) {
         // Iterate through all the text nodes within the given range and extract the operation target
         List<OperationTarget> operationTargets = new ArrayList<OperationTarget>();
-
+        // Create the intermediary targets backwards because if we preserve the normal order when we modify the tree,
+        // the following targets will no longer reflect that
         List<Text> textNodes = getNonEmptyTextNodes(range);
         for (int i = 0; i < textNodes.size(); i++) {
             Text text = textNodes.get(i);
@@ -497,7 +498,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
             if (text == range.getEndContainer()) {
                 endIndex = range.getEndOffset();
             }
-            operationTargets.add(new OperationTarget(TreeHelper.getLocator(text), startIndex, endIndex, text.getLength()));
+            operationTargets.add(0, new OperationTarget(TreeHelper.getLocator(text), startIndex, endIndex, text.getLength()));
         }
         return operationTargets;
     }
