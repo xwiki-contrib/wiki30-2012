@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # DB location for the HSQL database. Uncomment to use it
-# DB_LOCATION=$HOME/xwiki_database
+DB_LOCATION=$HOME/xwiki_database
 
 # If a parameter is specified on the command line, use it as the DB location
 if [ "$1" != "" ]; then
