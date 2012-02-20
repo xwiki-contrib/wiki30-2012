@@ -9,6 +9,10 @@ import fr.loria.score.jupiter.tree.operation.*;
 
 import static org.junit.Assert.assertEquals;
 
+import static fr.loria.score.TreeDSL.paragraph;
+import static fr.loria.score.TreeDSL.span;
+import static fr.loria.score.TreeDSL.text;
+
 /**
  * Test the effect of executing tree operations on the tree model.
  * It should test all Tree API
@@ -21,6 +25,9 @@ public class TreeOperationsTest
     private Tree root;
     private Tree expectedRoot;
 
+    private TreeDSL rootDSL;
+    private TreeDSL expectedRootDSL;
+    
     private static final boolean SPLIT_LEFT = true;
     private static final boolean NO_SPLIT_LEFT = false;
     private static final boolean SPLIT_RIGHT = true;
@@ -384,18 +391,17 @@ public class TreeOperationsTest
         assertEquals("Invalid tree ", expectedRoot, root);
     }
     
-      
-    
     @Test
-    public void simpleMoveTextRange() {
-        
+    public void simpleMoveTextRange() 
+    {    
         rootDSL.addChild(paragraph().addChild(text("abcd")),
                          paragraph().addChild(text("xy")));
+        
+        // simulate move of 'bc' string between 'x' and 'y'.
         
         
         final TreeInsertParagraph splitSrc1 = new TreeInsertParagraph(SITE_ID, 3, path(0, 0));
         splitSrc1.execute(root);
-        
         
         final TreeInsertParagraph splitSrc2 = new TreeInsertParagraph(SITE_ID, 1, path(0, 0));
         splitSrc2.execute(root);
@@ -422,66 +428,6 @@ public class TreeOperationsTest
                                                       text("bc"),
                                                       text("y")));
        
-        assertEquals("Invalid tree ", expectedRoot, root);
-        
-    }
-    
-    
-    /* --- Little DSL to simplify test writing --- */
-    
-    private TreeDSL rootDSL;
-    private TreeDSL expectedRootDSL;
-
-    private class TreeDSL {
-        private Tree wrappedTree;
-        public TreeDSL(Tree t) {
-            this.wrappedTree = t;
-        }
-    
-        public TreeDSL addChild(TreeDSL... children) {
-            for (TreeDSL c : children) {
-                this.wrappedTree.addChild(c.wrappedTree);
-            }
-            return this;
-                
-        }
-        
-        private void removeChild(int i) {
-            this.wrappedTree.removeChild(i);
-        }
-        
-        private TreeDSL getChild(int i) {
-            return new TreeDSL(this.wrappedTree.getChild(i));
-        }
-
-        private void removeChild() {
-            for (int i=0; i<this.wrappedTree.nbChildren(); i++) {
-                this.wrappedTree.removeChild(i);
-            }
-        }
-
-        private void clear() {
-            removeChild();
-        }
-
-        private TreeDSL setAttribute(String styleName, String styleValue) {
-            if (! this.wrappedTree.getNodeName().equals("span"))
-                throw new UnsupportedOperationException("Not supported by this DSL");
-            this.wrappedTree.setAttribute(styleName, styleValue);
-            return this;
-        }
-    }
-
-    private TreeDSL paragraph() {
-        return new TreeDSL(TreeFactory.createParagraphTree());
-    }
-    private TreeDSL text(String str) {
-        return new TreeDSL(TreeFactory.createTextTree(str));
-    }
-    private TreeDSL span(String styleName, String styleValue) {        
-        Tree span = TreeFactory.createElementTree("span");
-        span.setAttribute(styleName, styleValue);
-        return new TreeDSL(span);
-    }
- 
+        assertEquals("Invalid tree ", expectedRoot, root);   
+    } 
 }
