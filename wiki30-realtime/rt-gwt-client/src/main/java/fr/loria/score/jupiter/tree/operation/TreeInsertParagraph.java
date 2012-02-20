@@ -72,7 +72,7 @@ public class TreeInsertParagraph extends TreeOperation {
                     } else {
                         tree = tree.getChild(path[i + 1]);
                         String str = tree.split(position);
-                        if (str != null)
+                        if (str != null && ! str.equals(""))
                             tTree.addChild(TreeFactory.createTextTree(str), 0);
                     }
                 }

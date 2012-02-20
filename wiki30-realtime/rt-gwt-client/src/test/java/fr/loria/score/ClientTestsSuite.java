@@ -10,7 +10,8 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    TreeOperationsTest.class
+    TreeOperationsTest.class,
+    TreeTransformationsTest.class
 })
 public class ClientTestsSuite
 {

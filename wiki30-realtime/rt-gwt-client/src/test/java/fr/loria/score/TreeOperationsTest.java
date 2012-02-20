@@ -5,10 +5,7 @@ import org.junit.Test;
 
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeFactory;
-import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
-import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
-import fr.loria.score.jupiter.tree.operation.TreeOperation;
-import fr.loria.score.jupiter.tree.operation.TreeStyle;
+import fr.loria.score.jupiter.tree.operation.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -32,13 +29,6 @@ public class TreeOperationsTest
     private static final boolean NO_ADD_STYLE = false;
 
     private static final int SITE_ID = 0;
-    
-    private static Tree createStyledText(String text, String styleName, String styleValue) {
-        Tree span = TreeFactory.createElementTree("span");
-        span.setAttribute(styleName, styleValue);
-        span.addChild(TreeFactory.createTextTree(text));
-        return span;
-    }
     
     private static int[] path(int... positions) {
         int[] path = positions;
@@ -153,9 +143,9 @@ public class TreeOperationsTest
         final TreeInsertParagraph insertP = new TreeInsertParagraph(SITE_ID, 2, path(0, 0, 0));
         insertP.execute(root);
        
-        // expectRoot = <p><span font-weight=bold>[ab]</span></p><p><span font-weight=bold>[]</span><span font-weight=bold>[cd]</span></p>
+        // expectRoot = <p><span font-weight=bold>[ab]</span></p><p><span font-weight=bold></span><span font-weight=bold>[cd]</span></p>
         expectedRootDSL.addChild(paragraph().addChild(span("font-weight", "bold").addChild(text("ab"))),
-                                 paragraph().addChild(span("font-weight", "bold").addChild(text("")),
+                                 paragraph().addChild(span("font-weight", "bold"),
                                                       span("font-weight", "bold").addChild(text("cd"))));
         
         assertEquals("Invalid tree result", expectedRoot, root);
@@ -176,8 +166,26 @@ public class TreeOperationsTest
         
         assertEquals("Invalid tree ", expectedRoot, root);
     }
+    
+    @Test
+    public void insertParagraphMiddleOfLineMultipleText()
+    {
+        rootDSL.addChild(paragraph().addChild(text("a"),
+                                              text("b")));
+        
+        // Split it at the end of text
+        final TreeInsertParagraph paragraphAtEnd = new TreeInsertParagraph(SITE_ID, 1, path(0, 0));
+        paragraphAtEnd.execute(root);
 
-     @Test
+        // expectedRoot = <p>[a]</p><p>[b]</p>
+        expectedRootDSL.addChild(paragraph().addChild(text("a")),
+                                 paragraph().addChild(text("b")));
+        
+        assertEquals("Invalid tree ", expectedRoot, root);
+    }
+    
+
+    @Test
     public void insertParagraphEndOfLine()
     {
         rootDSL.addChild(paragraph().addChild(text("ab")));
@@ -186,9 +194,9 @@ public class TreeOperationsTest
         final TreeInsertParagraph paragraphAtEnd = new TreeInsertParagraph(SITE_ID, 2, path(0, 0));
         paragraphAtEnd.execute(root);
 
-        // expectedRoot = <p>[ab]</p><p>[]</p>
+        // expectedRoot = <p>[ab]</p><p></p>
         expectedRootDSL.addChild(paragraph().addChild(text("ab")),
-                                 paragraph().addChild(text("")));
+                                 paragraph());
         
         assertEquals("Invalid tree ", expectedRoot, root);
     }
@@ -216,9 +224,9 @@ public class TreeOperationsTest
         final TreeInsertParagraph insertPEnd = new TreeInsertParagraph(SITE_ID, 2, path(0, 0, 0));
         insertPEnd.execute(root);
      
-        // expectedRoot = <p><span font-weight=bold>[ab]</span></p><p><span font-weight=bold>[]</span></p>
+        // expectedRoot = <p><span font-weight=bold>[ab]</span></p><p><span font-weight=bold></span></p>
         expectedRootDSL.addChild(paragraph().addChild(span("font-weight", "bold").addChild(text("ab"))),
-                                 paragraph().addChild(span("font-weight", "bold").addChild(text(""))));
+                                 paragraph().addChild(span("font-weight", "bold")));
         
         assertEquals("Invalid result ", expectedRoot, root);
     }
@@ -232,16 +240,12 @@ public class TreeOperationsTest
         final TreeInsertParagraph insertPAfterB = new TreeInsertParagraph(SITE_ID, 2, path(0, 0, 0));
         insertPAfterB.execute(root);
 
-        // expectedRoot = <p><span font-weight=bold>[ab]</span></p><p><span font-weight=bold>[][cd]</span></p>
+        // expectedRoot = <p><span font-weight=bold>[ab]</span></p><p><span font-weight=bold>[cd]</span></p>
         expectedRootDSL.addChild(paragraph().addChild(span("font-weight", "bold").addChild(text("ab"))),
-                                 paragraph().addChild(span("font-weight", "bold").addChild(text(""),
-                                                                                           text("cd"))));
+                                 paragraph().addChild(span("font-weight", "bold").addChild(text("cd"))));
         
         assertEquals("Invalid result ", expectedRoot, root);
     }
-
-    
-    /* -- TO BE CONTINUED... -- */
     
     @Test
     public void insertParagraphStyleWith2ChildrenBeforeSecondChild()
@@ -378,6 +382,48 @@ public class TreeOperationsTest
                                                       span("font-weight", "bold").setAttribute("font-style", "italic").addChild(text("bc"))));        
         
         assertEquals("Invalid tree ", expectedRoot, root);
+    }
+    
+      
+    
+    @Test
+    public void simpleMoveTextRange() {
+        
+        rootDSL.addChild(paragraph().addChild(text("abcd")),
+                         paragraph().addChild(text("xy")));
+        
+        
+        final TreeInsertParagraph splitSrc1 = new TreeInsertParagraph(SITE_ID, 3, path(0, 0));
+        splitSrc1.execute(root);
+        
+        
+        final TreeInsertParagraph splitSrc2 = new TreeInsertParagraph(SITE_ID, 1, path(0, 0));
+        splitSrc2.execute(root);
+        
+        final TreeInsertParagraph splitDst1 = new TreeInsertParagraph(SITE_ID, 1, path(3, 0));
+        splitDst1.execute(root);
+        
+        final TreeMoveParagraph move = new TreeMoveParagraph(SITE_ID, 1, 4);
+        move.execute(root);
+               
+        final TreeMergeParagraph mergeSrc1 = new TreeMergeParagraph(SITE_ID, 1, 1, 1); 
+        mergeSrc1.execute(root);
+ 
+        final TreeMergeParagraph mergeDst1 = new TreeMergeParagraph(SITE_ID, 3, 1, 1); 
+        mergeDst1.execute(root);
+ 
+        final TreeMergeParagraph mergeDst2 = new TreeMergeParagraph(SITE_ID, 2, 1, 2); 
+        mergeDst2.execute(root);
+        
+        //expectedRoot = <p>[ad]</p><p>[x][bc]y]</p>
+        expectedRootDSL.addChild(paragraph().addChild(text("a"),
+                                                      text("d")),
+                                 paragraph().addChild(text("x"),
+                                                      text("bc"),
+                                                      text("y")));
+       
+        assertEquals("Invalid tree ", expectedRoot, root);
+        
     }
     
     
