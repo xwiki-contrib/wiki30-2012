@@ -31,34 +31,123 @@ public class TreeTransformationsTest
         return path;
     }
     
+    private Tree siteA;
+    private TreeDSL siteADSL;
+    private Tree expectedSiteA;
+    private TreeDSL expectedSiteADSL;
+                    
+    private Tree siteB;
+    private TreeDSL siteBDSL;
+    private Tree expectedSiteB;
+    private TreeDSL expectedSiteBDSL;
     
     @Before
     public void init()
     {
+        siteA = TreeFactory.createEmptyTree();
+        siteADSL = new TreeDSL(siteA);
+        expectedSiteA = TreeFactory.createEmptyTree();
+        expectedSiteADSL = new TreeDSL(expectedSiteA);
+ 
+        siteB = TreeFactory.createEmptyTree();
+        siteBDSL = new TreeDSL(siteB);
+        expectedSiteB = TreeFactory.createEmptyTree();
+        expectedSiteBDSL = new TreeDSL(expectedSiteB);
     }
     
     @Test
-    public void insertText_insertParagraph()
+    public void insertParagraph_before_insertText()
     { 
-        TreeOperation op1 = new TreeInsertText(SITE_A, 3, path(0, 0), 'x');
+        TreeOperation op1 = new TreeInsertText(SITE_A, 3, path(0, 0), 'I');        
         TreeOperation op2 = new TreeInsertParagraph(SITE_B, 1, path(0, 0));
 
-        TreeOperation opt = (TreeOperation) op2.transform(op1);
-       
-        TreeOperation expectedOperation = new TreeInsertText(SITE_A, 2, path(1, 0), 'x');
+        TreeOperation opt1 = (TreeOperation) op2.transform(op1);       
+        TreeOperation expectedOperation1 = new TreeInsertText(SITE_A, 2, path(1, 0), 'I');
+        assertEquals("Invalid result ", expectedOperation1.toString(), opt1.toString());
+        
+        TreeOperation opt2 = (TreeOperation) op1.transform(op2);       
+        TreeOperation expectedOperation2 = new TreeInsertParagraph(SITE_B, 1, path(0, 0));
+        assertEquals("Invalid result ", expectedOperation2.toString(), opt2.toString());
+                
+        siteADSL.addChild(paragraph().addChild(text("abcd")));
+        op1.execute(siteA);
+        opt2.execute(siteA);
+          
+        siteBDSL.addChild(paragraph().addChild(text("abcd")));
+        op2.execute(siteB);
+        opt1.execute(siteB);
 
-        assertEquals("Invalid result ", expectedOperation.toString(), opt.toString());
+        assertEquals(siteA, siteB);
+
+        expectedSiteADSL.addChild(paragraph().addChild(text("a")),
+                                  paragraph().addChild(text("bcId")));
+        
+        assertEquals(expectedSiteA, siteA);
     }
-     
+    
+    @Test
+    public void insertParagraph_after_insertText()
+    { 
+        TreeOperation op1 = new TreeInsertText(SITE_A, 1, path(0, 0), 'I');        
+        TreeOperation op2 = new TreeInsertParagraph(SITE_B, 3, path(0, 0));
+
+        TreeOperation opt1 = (TreeOperation) op2.transform(op1);       
+        TreeOperation expectedOperation1 = new TreeInsertText(SITE_A, 1, path(0, 0), 'I');
+        assertEquals("Invalid result ", expectedOperation1.toString(), opt1.toString());
+        
+        TreeOperation opt2 = (TreeOperation) op1.transform(op2);       
+        TreeOperation expectedOperation2 = new TreeInsertParagraph(SITE_B, 4, path(0, 0));
+        assertEquals("Invalid result ", expectedOperation2.toString(), opt2.toString());
+                
+        siteADSL.addChild(paragraph().addChild(text("abcd")));
+        op1.execute(siteA);
+        opt2.execute(siteA);
+          
+        siteBDSL.addChild(paragraph().addChild(text("abcd")));
+        op2.execute(siteB);
+        opt1.execute(siteB);
+
+        assertEquals(siteA, siteB);
+
+        expectedSiteADSL.addChild(paragraph().addChild(text("aIbc")),
+                                  paragraph().addChild(text("d")));
+        
+        assertEquals(expectedSiteA, siteA);
+    }
+    
+    @Test
+    public void insertParagraph_samePlace_insertText()
+    {
+        TreeOperation op1 = new TreeInsertText(SITE_A, 2, path(0, 0), 'I');        
+        TreeOperation op2 = new TreeInsertParagraph(SITE_B, 2, path(0, 0));
+
+        TreeOperation opt1 = (TreeOperation) op2.transform(op1);       
+        TreeOperation expectedOperation1 = new TreeInsertText(SITE_A, 0, path(1, 0), 'I');
+        assertEquals(expectedOperation1.toString(), opt1.toString());
+        
+        TreeOperation opt2 = (TreeOperation) op1.transform(op2);       
+        TreeOperation expectedOperation2 = new TreeInsertParagraph(SITE_B, 2, path(0, 0));
+        assertEquals(expectedOperation2.toString(), opt2.toString());
+                
+        siteADSL.addChild(paragraph().addChild(text("abcd")));
+        op1.execute(siteA);
+        opt2.execute(siteA);
+          
+        siteBDSL.addChild(paragraph().addChild(text("abcd")));
+        op2.execute(siteB);
+        opt1.execute(siteB);
+
+        assertEquals(siteA, siteB);
+
+        expectedSiteADSL.addChild(paragraph().addChild(text("ab")),
+                                  paragraph().addChild(text("Icd")));
+        
+        assertEquals(expectedSiteA, siteA);        
+    } 
     
     @Test
     public void moveText_insertText() 
     {
-        Tree siteA = TreeFactory.createEmptyTree();
-        TreeDSL siteADSL = new TreeDSL(siteA);
-        Tree expectedSiteA = TreeFactory.createEmptyTree();
-        TreeDSL expectedSiteADSL = new TreeDSL(expectedSiteA);
-        
         siteADSL.addChild(paragraph().addChild(text("abcd")),
                           paragraph().addChild(text("xy")));
 
@@ -74,20 +163,14 @@ public class TreeTransformationsTest
         final TreeCompositeOperation seq = new TreeCompositeOperation(splitSrc1, splitSrc2, splitDst1, move, mergeSrc1, mergeDst1, mergeDst2);
         seq.execute(siteA);
 
-        //expectedRoot = <p>[ad]</p><p>[x][bc]y]</p>
+        //expectedRoot = <p>[ad]</p><p>[x][bc][y]</p>
         expectedSiteADSL.addChild(paragraph().addChild(text("a"),
                                                        text("d")),
                                   paragraph().addChild(text("x"),
                                                        text("bc"),
                                                        text("y"))); 
         assertEquals("Invalid tree ", expectedSiteA, siteA);   
-        
-        
-        Tree siteB = TreeFactory.createEmptyTree();
-        TreeDSL siteBDSL = new TreeDSL(siteB);
-        Tree expectedSiteB = TreeFactory.createEmptyTree();
-        TreeDSL expectedSiteBDSL = new TreeDSL(expectedSiteB);
-        
+       
         siteBDSL.addChild(paragraph().addChild(text("abcd")),
                           paragraph().addChild(text("xy")));
         
@@ -99,12 +182,13 @@ public class TreeTransformationsTest
         assertEquals("Invalid tree ", expectedSiteB, siteB);
 
         TreeOperation opt = seq.transform(ins);
-        seq.execute(siteA);
+        opt.execute(siteA);
   
         TreeOperation expectedOperation = new TreeInsertText(SITE_B, 1, path(1, 1), 'I');
         assertEquals("Invalid result ", expectedOperation.toString(), opt.toString());  
         
         //expectedRoot = <p>[ad]</p><p>[x][bIc]y]</p>
+        expectedSiteADSL.clear();
         expectedSiteADSL.addChild(paragraph().addChild(text("a"),
                                                        text("d")),
                                   paragraph().addChild(text("x"),
