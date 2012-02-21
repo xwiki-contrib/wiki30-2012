@@ -290,10 +290,12 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                                     op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount());
                                     op.setPath(TreeHelper.toIntArray(path));
                                 } else {
-                                    log.severe("Backspace: to define merge on text nodes");
+                                    log.severe("Backspace on text node: to define merge on text nodes!");
+                                    event.preventDefault();
                                 }
                             } else {
-                                log.fine("Backspace: Left paragraph is null, nothing to be done.");
+                                log.fine("Backspace on text node: Left paragraph is null, nothing to be done.");
+                                event.preventDefault();
                             }
                         } else {
                             pos = pos - 1;
@@ -301,12 +303,27 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                         }
                     } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
                         Element element = Element.as(startContainer);
-                        //todo:perhaps similar to text node
-                        if (pos == 0) {
-                            if (startContainer.getPreviousSibling() != null) {
-                                log.severe("Backspace text on element, pos = 0, prev sibling not null");
-                                // nothing for now
+                        Node n = getAncestorBelowParagraph(element);
+                        Node rightParagraph = n.getParentNode();
+                        Node leftParagraph = rightParagraph.getPreviousSibling();
+
+                        if (pos == 0 && "span".equalsIgnoreCase(n.getNodeName())) { // assume the element is a span
+                            if (leftParagraph != null) {
+                                boolean merge = false;
+                                // merge iff element is the first child
+                                if (element == n && n == rightParagraph.getFirstChild()) {
+                                    merge = true;
+                                }
+                                if (merge) {
+                                    //definitively a line merge
+                                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount());
+                                    op.setPath(TreeHelper.toIntArray(path));
+                                } else {
+                                    log.severe("Backspace on element node: to define merge on element nodes!");
+                                    event.preventDefault();
+                                }
                             } else {
+                                log.fine("Backspace on element node: Left paragraph is null, nothing to be done.");
                                 // prevent default, otherwise it would remove the paragraph element
                                 event.preventDefault();
                             }
@@ -558,14 +575,14 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
     }
 
     /**
-     * @param text the text node whose ancestor is to be returned
-     * @return the ancestor for this text node which is just below the paragraph ancestor
+     * @param node the node whose ancestor is to be returned
+     * @return the ancestor for this node which is just below the paragraph ancestor
      */
-    private Node getAncestorBelowParagraph(Text text) {
-        Node n = text;
-        while (!"p".equalsIgnoreCase(n.getParentNode().getNodeName())) {
-            n = n.getParentNode();
+    private Node getAncestorBelowParagraph(Node node) {
+        Node ancestor = node;
+        while (!"p".equalsIgnoreCase(ancestor.getParentNode().getNodeName())) {
+            ancestor = ancestor.getParentNode();
         }
-        return n;
+        return ancestor;
     }
 }
