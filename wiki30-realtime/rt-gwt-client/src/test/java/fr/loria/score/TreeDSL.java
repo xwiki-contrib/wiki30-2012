@@ -31,13 +31,14 @@ public class TreeDSL {
         }
 
         public void removeChild() {
-            for (int i=0; i<this.wrappedTree.nbChildren(); i++) {
-                this.wrappedTree.removeChild(i);
+            int childCount = this.wrappedTree.nbChildren();
+            for (int i=0; i < childCount; i++) {
+                this.wrappedTree.removeChild(0);
             }
         }
 
         public void clear() {
-            removeChild();
+            removeChild();        
         }
 
         public TreeDSL setAttribute(String styleName, String styleValue) {
