@@ -290,8 +290,8 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                                     op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount());
                                     op.setPath(TreeHelper.toIntArray(path));
                                 } else {
-                                    log.severe("Backspace on text node: to define merge on text nodes!");
-                                    event.preventDefault();
+                                    log.fine("Backspace on text node: should be handled");
+                                    op = handleBackspace(textNode, pos);
                                 }
                             } else {
                                 log.fine("Backspace on text node: Left paragraph is null, nothing to be done.");
@@ -426,6 +426,19 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                 clientJupiter.generate(op);
             }
         }
+    }
+
+
+    private TreeOperation handleBackspace (Node node, int pos) {
+        org.xwiki.gwt.dom.client.Document document = getTextArea().getDocument();
+        Range range = document.createRange();
+        range.setStart(document.getBody(), 0);
+        range.setEndBefore(node);
+
+        List<Text> nonEmptyTextNodes = getNonEmptyTextNodes(range);
+        Node prevTextNode = nonEmptyTextNodes.get(nonEmptyTextNodes.size() - 1);
+        log.severe("Previous text node is: " + prevTextNode.getNodeValue());
+        return new TreeDeleteText(clientJupiter.getSiteId(), prevTextNode.getNodeValue().length() - 1, TreeHelper.toIntArray(TreeHelper.getLocator(prevTextNode)));
     }
 
     /**
