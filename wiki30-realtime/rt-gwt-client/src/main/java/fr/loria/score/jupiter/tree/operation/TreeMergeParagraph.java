@@ -1,14 +1,14 @@
 package fr.loria.score.jupiter.tree.operation;
 
+import java.util.ArrayList;
+
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeUtils;
-
-import java.util.ArrayList;
 
 public class TreeMergeParagraph extends TreeOperation {
 
     /**
-     * You have 2 or more paragraphs siblings on same level each one with a virtual index (0 based).
+     * You have 2 or more paragraphs siblings on same level each one with a virtual index (1 based).
      * Merge position is the index number between the paragraphs siblings to be merged.
      * Ex: Merge position = 2 for merging the last 2 paragraphs siblings on a 3 paragraphs
      */
