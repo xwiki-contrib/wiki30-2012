@@ -1,8 +1,19 @@
+# Maven
 target
-*~
+
+# IDEA
 *.ipr
 *.iws
 *.iml
+
+# Eclipse
+target-eclipse
+.classpath
+.project
+.settings
+.checkstyle
+
+# Other
+*~
 overlays
 war
-
