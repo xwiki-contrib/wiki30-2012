@@ -261,7 +261,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
             Node endContainer = range.getEndContainer();
 
             List<Integer> path = TreeHelper.getLocator(range.getStartContainer());
-            //make case
+
             TreeOperation op = null;
             switch (keyCode) {
                 case KeyCodes.KEY_BACKSPACE: {
@@ -269,22 +269,42 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
 
                     if (Node.TEXT_NODE == startContainer.getNodeType()) {
                         Text textNode = Text.as(startContainer);
-                        if (pos == 0) { // perhaps a line merge
-                            if (textNode.getParentElement().getPreviousSibling() != null) {
-                                //definitively a line merge
-                                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
-                                op.setPath(TreeHelper.toIntArray(path));
+
+                        // Go up below the parent paragraph node, because we might have span tags with text nodes
+                        Node n = getAncestorBelowParagraph(textNode);
+                        Node rightParagraph = n.getParentElement();
+                        Node leftParagraph = rightParagraph.getPreviousSibling();
+
+                        if (pos == 0) {
+                            if(leftParagraph != null) {
+                                boolean merge = false;
+                                // merge iff textNode is the first child
+                                if (textNode != n && textNode == n.getFirstChild()) {
+                                    merge = true;
+                                }
+                                if (textNode == n && n == rightParagraph.getFirstChild()) {
+                                    merge = true;
+                                }
+                                if (merge) {
+                                    //definitively a line merge
+                                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount());
+                                    op.setPath(TreeHelper.toIntArray(path));
+                                } else {
+                                    log.severe("Backspace: to define merge on text nodes");
+                                }
                             } else {
-                                // nothing for now
+                                log.fine("Backspace: Left paragraph is null, nothing to be done.");
                             }
                         } else {
                             pos = pos - 1;
                             op = new TreeDeleteText(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
                         }
                     } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
+                        Element element = Element.as(startContainer);
+                        //todo:perhaps similar to text node
                         if (pos == 0) {
                             if (startContainer.getPreviousSibling() != null) {
-                                log.severe("Delete text on element, pos = 0, prev sibling not null");
+                                log.severe("Backspace text on element, pos = 0, prev sibling not null");
                                 // nothing for now
                             } else {
                                 // prevent default, otherwise it would remove the paragraph element
@@ -330,10 +350,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                         boolean isNewParagraph = false;
 
                         // Go up below the parent paragraph node, because we might have span tags with text nodes
-                        Node n = textNode;
-                        while (!"p".equalsIgnoreCase(n.getParentNode().getNodeName())) {
-                            n = n.getParentNode();
-                        }
+                        Node n = getAncestorBelowParagraph(textNode);
 
                         // Start of the line
                         if (n.getPreviousSibling() == null && 0 == pos) {
@@ -538,5 +555,17 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
      */
     private boolean isNonEmptyTextNode(Node node) {
         return node.getNodeType() == Node.TEXT_NODE && node.getNodeValue().length() > 0;
+    }
+
+    /**
+     * @param text the text node whose ancestor is to be returned
+     * @return the ancestor for this text node which is just below the paragraph ancestor
+     */
+    private Node getAncestorBelowParagraph(Text text) {
+        Node n = text;
+        while (!"p".equalsIgnoreCase(n.getParentNode().getNodeName())) {
+            n = n.getParentNode();
+        }
+        return n;
     }
 }
