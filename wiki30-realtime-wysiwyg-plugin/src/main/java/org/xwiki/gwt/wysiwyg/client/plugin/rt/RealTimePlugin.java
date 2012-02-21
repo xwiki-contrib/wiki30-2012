@@ -291,9 +291,11 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                                     op.setPath(TreeHelper.toIntArray(path));
                                 } else {
                                     log.severe("Backspace on text node: to define merge on text nodes!");
+                                    event.preventDefault();
                                 }
                             } else {
                                 log.fine("Backspace on text node: Left paragraph is null, nothing to be done.");
+                                event.preventDefault();
                             }
                         } else {
                             pos = pos - 1;
@@ -318,10 +320,12 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                                     op.setPath(TreeHelper.toIntArray(path));
                                 } else {
                                     log.severe("Backspace on element node: to define merge on element nodes!");
+                                    event.preventDefault();
                                 }
                             } else {
                                 log.fine("Backspace on element node: Left paragraph is null, nothing to be done.");
-                                // prevent default, otherwise it would remove the paragraph element -- handled at end
+                                // prevent default, otherwise it would remove the paragraph element
+                                event.preventDefault();
                             }
                         }
                     }
@@ -420,8 +424,6 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                 }
 
                 clientJupiter.generate(op);
-            } else {
-                event.preventDefault();
             }
         }
     }
