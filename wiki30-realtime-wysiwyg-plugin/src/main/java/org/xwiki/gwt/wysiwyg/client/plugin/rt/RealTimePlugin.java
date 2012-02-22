@@ -294,8 +294,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                                     op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
                                     op.setPath(TreeHelper.toIntArray(path));
                                 } else {
-                                    log.fine("Backspace on text node: should be handled");
-                                    op = handleBackspace(textNode, pos);
+                                    op = skipBackspaceOnEmptyTexts(textNode, path, rightParagraph, leftParagraph); // todo: extract above code in skipBackspace
                                 }
                             } else {
                                 log.fine("Backspace on text node: Left paragraph is null, nothing to be done.");
@@ -416,11 +415,11 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                         } else {
                             op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
                         }
-                    } else if (Node.ELEMENT_NODE == endContainer.getNodeType()) {
+                    } else if (Node.ELEMENT_NODE == endContainer.getNodeType()) { // todo: handle properly the range!
                         Element element = Element.as(endContainer);
 
                         // Start of the line
-                        if (element.getPreviousSibling() == null && 0 == pos) {
+                        if (element.getPreviousSibling() == null && 0 == pos) { //don't need elem.prevSibling
                             op = new TreeNewParagraph(clientJupiter.getSiteId(), path.get(0));
                             op.setPath(TreeHelper.toIntArray(path));
                         } else {
@@ -442,7 +441,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                     }
                 }
                 break;
-
+                // todo: set correct path to tree Merge
                 default:
                 break;
             }
@@ -458,17 +457,33 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
         }
     }
 
-
-    private TreeOperation handleBackspace (Node node, int pos) {
+    //skips backspace on empty texts
+    private TreeOperation skipBackspaceOnEmptyTexts(Node node, List<Integer> path, Node rightParagraph,
+        Node leftParagraph) {
         org.xwiki.gwt.dom.client.Document document = getTextArea().getDocument();
         Range range = document.createRange();
         range.setStart(document.getBody(), 0);
         range.setEndBefore(node);
 
         List<Text> nonEmptyTextNodes = getNonEmptyTextNodes(range);
-        Node prevTextNode = nonEmptyTextNodes.get(nonEmptyTextNodes.size() - 1);
-        log.severe("Previous text node is: " + prevTextNode.getNodeValue());
-        return new TreeDeleteText(clientJupiter.getSiteId(), prevTextNode.getNodeValue().length() - 1, TreeHelper.toIntArray(TreeHelper.getLocator(prevTextNode)));
+        Node prevNonEmptyTextNode = nonEmptyTextNodes.get(nonEmptyTextNodes.size() - 1);
+        log.severe("Previous text node is: " + prevNonEmptyTextNode.getNodeValue());
+
+        while (node != null) {
+            node = node.getPreviousSibling();
+            if (node == prevNonEmptyTextNode) {
+                log.severe("TreeDeleteText");
+                // prevNonEmptyTextNode was in the same paragraph as the node, so generate a delete text operation
+                return new TreeDeleteText(clientJupiter.getSiteId(), prevNonEmptyTextNode.getNodeValue().length() - 1, TreeHelper.toIntArray(TreeHelper.getLocator(prevNonEmptyTextNode)));
+            }
+        }
+
+        // prevNonEmptyTextNode was in different paragraph so generate a merge operation
+        int brCount = Element.as(rightParagraph).getElementsByTagName(BR).getLength();
+        TreeOperation op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
+        op.setPath(TreeHelper.toIntArray(path));
+        log.severe("TreeMergeParagraph");
+        return op;
     }
 
     /**
