@@ -286,7 +286,8 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                                 }
                                 if (merge) {
                                     //definitively a line merge
-                                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount());
+                                    int brCount = rightParagraph.getElementsByTagName(BR).getLength();
+                                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
                                     op.setPath(TreeHelper.toIntArray(path));
                                 } else {
                                     log.fine("Backspace on text node: should be handled");
@@ -311,7 +312,8 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                                 }
                                 if (merge) {
                                     //definitively a line merge
-                                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount());
+                                    int brCount = rightParagraph.getElementsByTagName(BR).getLength();
+                                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
                                     op.setPath(TreeHelper.toIntArray(path));
                                 } else {
                                     log.severe("Backspace on element node: to define merge on element nodes!");
@@ -339,8 +341,9 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                         if (textNode.getLength() == pos) { // perhaps a line merge
                             if ((rightParagraph != null) && (!rightParagraph.getClassName().toLowerCase().contains("firebug"))) {
                                 //line merge only if there is something to merge
+                                int brCount = rightParagraph.getElementsByTagName(BR).getLength();
                                 path.set(0, path.get(0) + 1);
-                                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount());
+                                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
                                 op.setPath(TreeHelper.toIntArray(path));
                             } else {
                                 log.fine("Delete on text node: Right paragraph is null, nothing to be done.");
@@ -351,8 +354,9 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                         }
                     } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
                         if (rightParagraph != null) {
+                            int brCount = rightParagraph.getElementsByTagName(BR).getLength();
                             path.set(0, path.get(0) + 1);
-                            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount());
+                            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
                             op.setPath(TreeHelper.toIntArray(path));
                         } else {
                             log.fine("Delete on element node: Right paragraph is null, nothing to be done.");
