@@ -267,14 +267,13 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                 case KeyCodes.KEY_BACKSPACE: {
                     pos = range.getStartOffset();
 
+                    // Go up below the parent paragraph node, because we might have span tags with text nodes
+                    Node n = getAncestorBelowParagraph(startContainer);
+                    Element rightParagraph = n.getParentElement();
+                    Node leftParagraph = rightParagraph.getPreviousSibling();
+
                     if (Node.TEXT_NODE == startContainer.getNodeType()) {
                         Text textNode = Text.as(startContainer);
-
-                        // Go up below the parent paragraph node, because we might have span tags with text nodes
-                        Node n = getAncestorBelowParagraph(textNode);
-                        Node rightParagraph = n.getParentElement();
-                        Node leftParagraph = rightParagraph.getPreviousSibling();
-
                         if (pos == 0) {
                             if(leftParagraph != null) {
                                 boolean merge = false;
@@ -303,10 +302,6 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                         }
                     } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
                         Element element = Element.as(startContainer);
-                        Node n = getAncestorBelowParagraph(element);
-                        Node rightParagraph = n.getParentNode();
-                        Node leftParagraph = rightParagraph.getPreviousSibling();
-
                         if (pos == 0 && "span".equalsIgnoreCase(n.getNodeName())) { // assume the element is a span
                             if (leftParagraph != null) {
                                 boolean merge = false;
@@ -333,25 +328,35 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                 break;
 
                 case KeyCodes.KEY_DELETE: {
+                    // Go up below the parent paragraph node, because we might have span tags with text nodes
+                    Node n = getAncestorBelowParagraph(startContainer);
+                    Element leftParagraph = n.getParentElement();
+                    Element rightParagraph = leftParagraph.getNextSiblingElement();
+
                     if (Node.TEXT_NODE == startContainer.getNodeType()) {
                         Text textNode = Text.as(startContainer);
                         pos = range.getStartOffset();
                         if (textNode.getLength() == pos) { // perhaps a line merge
-                            Element sibling = textNode.getParentElement().getNextSiblingElement();
-                            if ((sibling != null) && (!sibling.getClassName().toLowerCase().contains("firebug"))) {
-                                //line merge only if there is something to merge: the text node's parent has siblings
+                            if ((rightParagraph != null) && (!rightParagraph.getClassName().toLowerCase().contains("firebug"))) {
+                                //line merge only if there is something to merge
                                 path.set(0, path.get(0) + 1);
-                                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
+                                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount());
                                 op.setPath(TreeHelper.toIntArray(path));
+                            } else {
+                                log.fine("Delete on text node: Right paragraph is null, nothing to be done.");
+                                event.preventDefault();
                             }
                         } else {
                             op = new TreeDeleteText(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
                         }
                     } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
-                        if (startContainer.getNextSibling() != null) {
+                        if (rightParagraph != null) {
                             path.set(0, path.get(0) + 1);
-                            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), 1, 1);
+                            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount());
                             op.setPath(TreeHelper.toIntArray(path));
+                        } else {
+                            log.fine("Delete on element node: Right paragraph is null, nothing to be done.");
+                            event.preventDefault();
                         }
                     }
                 }
