@@ -267,12 +267,16 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                 case KeyCodes.KEY_BACKSPACE: {
                     pos = range.getStartOffset();
 
-                    // Go up below the parent paragraph node, because we might have span tags with text nodes
-                    Node n = getAncestorBelowParagraph(startContainer);
-                    Element rightParagraph = n.getParentElement();
-                    Node leftParagraph = rightParagraph.getPreviousSibling();
+                    Node n;
+                    Element rightParagraph;
+                    Node leftParagraph;
 
                     if (Node.TEXT_NODE == startContainer.getNodeType()) {
+                        // Go up below the parent paragraph node, because we might have span tags with text nodes
+                        n = getAncestorBelowParagraph(startContainer);
+                        rightParagraph = n.getParentElement();
+                        leftParagraph = rightParagraph.getPreviousSibling();
+
                         Text textNode = Text.as(startContainer);
                         if (pos == 0) {
                             if(leftParagraph != null) {
@@ -303,40 +307,47 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                         }
                     } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
                         Element element = Element.as(startContainer);
-                        if (pos == 0 && "span".equalsIgnoreCase(n.getNodeName())) { // assume the element is a span
-                            if (leftParagraph != null) {
-                                boolean merge = false;
+                        boolean merge = false;
+
+                        // Go up below the parent paragraph node, because we might have span tags with text nodes
+                        if ("p".equalsIgnoreCase(element.getNodeName())) {
+                            rightParagraph = element;
+                            leftParagraph = rightParagraph.getPreviousSibling();
+                        } else { // assume element is a span or other element contained in a paragraph
+                            n = getAncestorBelowParagraph(startContainer);
+                            rightParagraph = n.getParentElement();
+                            leftParagraph = rightParagraph.getPreviousSibling();
+
+                            if (pos == 0 && "span".equalsIgnoreCase(element.getNodeName())) { // assume the element is a span
                                 // merge iff element is the first child
-                                if (element == n && n == rightParagraph.getFirstChild()) {
-                                    merge = true;
-                                }
-                                if (merge) {
-                                    //definitively a line merge
-                                    int brCount = rightParagraph.getElementsByTagName(BR).getLength();
-                                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
-                                    op.setPath(TreeHelper.toIntArray(path));
-                                } else {
-                                    log.severe("Backspace on element node: to define merge on element nodes!");
-                                    event.preventDefault();
-                                }
-                            } else {
-                                log.fine("Backspace on element node: Left paragraph is null, nothing to be done.");
-                                // prevent default, otherwise it would remove the paragraph element
-                                event.preventDefault();
+                                merge = (element == n && n == rightParagraph.getFirstChild());
                             }
+                        }
+
+                        merge = merge && (leftParagraph != null);
+                        if (merge) {
+                            //definitively a line merge
+                            int brCount = rightParagraph.getElementsByTagName(BR).getLength();
+                            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
+                            op.setPath(TreeHelper.toIntArray(path));
+                        } else {
+                            log.severe("Backspace on element: " + element.getTagName() + ", or left paragraph is null");
+                            event.preventDefault();
                         }
                     }
                 }
                 break;
 
                 case KeyCodes.KEY_DELETE: {
-                    // Go up below the parent paragraph node, because we might have span tags with text nodes
-                    Node n = getAncestorBelowParagraph(startContainer);
-                    Element leftParagraph = n.getParentElement();
-                    Element rightParagraph = leftParagraph.getNextSiblingElement();
+                    Element leftParagraph;
+                    Element rightParagraph;
 
                     if (Node.TEXT_NODE == startContainer.getNodeType()) {
                         Text textNode = Text.as(startContainer);
+                        // Go up below the parent paragraph node, because we might have span tags with text nodes
+                        leftParagraph = getAncestorBelowParagraph(startContainer).getParentElement();
+                        rightParagraph = leftParagraph.getNextSiblingElement();
+
                         pos = range.getStartOffset();
                         if (textNode.getLength() == pos) { // perhaps a line merge
                             if ((rightParagraph != null) && (!rightParagraph.getClassName().toLowerCase().contains("firebug"))) {
@@ -353,6 +364,16 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                             op = new TreeDeleteText(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
                         }
                     } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
+                        Element element = Element.as(startContainer);
+
+                        // Go up below the parent paragraph node, because we might have span tags with text nodes
+                        if ("p".equalsIgnoreCase(element.getNodeName())) {
+                            leftParagraph = element;
+                        } else { //assume element is a span or other element contained in a paragraph
+                            leftParagraph = getAncestorBelowParagraph(element).getParentElement();
+                        }
+                        rightParagraph = leftParagraph.getNextSiblingElement();
+
                         if (rightParagraph != null) {
                             int brCount = rightParagraph.getElementsByTagName(BR).getLength();
                             path.set(0, path.get(0) + 1);
