@@ -311,18 +311,17 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                         // Go up below the parent paragraph node, because we might have span tags with text nodes
                         if ("p".equalsIgnoreCase(element.getNodeName())) {
                             rightParagraph = element;
-                            leftParagraph = rightParagraph.getPreviousSibling();
+                            merge = true; // perhaps
                         } else { // assume element is a span or other element contained in a paragraph
                             n = getAncestorBelowParagraph(startContainer);
                             rightParagraph = n.getParentElement();
-                            leftParagraph = rightParagraph.getPreviousSibling();
 
                             if (pos == 0 && "span".equalsIgnoreCase(element.getNodeName())) { // assume the element is a span
                                 // merge iff element is the first child
                                 merge = (element == n && n == rightParagraph.getFirstChild());
                             }
                         }
-
+                        leftParagraph = rightParagraph.getPreviousSibling();
                         merge = merge && (leftParagraph != null);
                         if (merge) {
                             //definitively a line merge
@@ -455,35 +454,6 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                 clientJupiter.generate(op);
             }
         }
-    }
-
-    //skips backspace on empty texts
-    private TreeOperation skipBackspaceOnEmptyTexts(Node node, List<Integer> path, Node rightParagraph,
-        Node leftParagraph) {
-        org.xwiki.gwt.dom.client.Document document = getTextArea().getDocument();
-        Range range = document.createRange();
-        range.setStart(document.getBody(), 0);
-        range.setEndBefore(node);
-
-        List<Text> nonEmptyTextNodes = getNonEmptyTextNodes(range);
-        Node prevNonEmptyTextNode = nonEmptyTextNodes.get(nonEmptyTextNodes.size() - 1);
-        log.severe("Previous text node is: " + prevNonEmptyTextNode.getNodeValue());
-
-        while (node != null) {
-            node = node.getPreviousSibling();
-            if (node == prevNonEmptyTextNode) {
-                log.severe("TreeDeleteText");
-                // prevNonEmptyTextNode was in the same paragraph as the node, so generate a delete text operation
-                return new TreeDeleteText(clientJupiter.getSiteId(), prevNonEmptyTextNode.getNodeValue().length() - 1, TreeHelper.toIntArray(TreeHelper.getLocator(prevNonEmptyTextNode)));
-            }
-        }
-
-        // prevNonEmptyTextNode was in different paragraph so generate a merge operation
-        int brCount = Element.as(rightParagraph).getElementsByTagName(BR).getLength();
-        TreeOperation op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
-        op.setPath(TreeHelper.toIntArray(path));
-        log.severe("TreeMergeParagraph");
-        return op;
     }
 
     /**
@@ -642,5 +612,34 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
             ancestor = ancestor.getParentNode();
         }
         return ancestor;
+    }
+
+    //skips backspace on empty texts
+    private TreeOperation skipBackspaceOnEmptyTexts(Node node, List<Integer> path, Node rightParagraph,
+        Node leftParagraph) {
+        org.xwiki.gwt.dom.client.Document document = getTextArea().getDocument();
+        Range range = document.createRange();
+        range.setStart(document.getBody(), 0);
+        range.setEndBefore(node);
+
+        List<Text> nonEmptyTextNodes = getNonEmptyTextNodes(range);
+        Node prevNonEmptyTextNode = nonEmptyTextNodes.get(nonEmptyTextNodes.size() - 1);
+        log.severe("Previous text node is: " + prevNonEmptyTextNode.getNodeValue());
+
+        while (node != null) {
+            node = node.getPreviousSibling();
+            if (node == prevNonEmptyTextNode) {
+                log.severe("OK: TreeDeleteText");
+                // prevNonEmptyTextNode was in the same paragraph as the node, so generate a delete text operation
+                return new TreeDeleteText(clientJupiter.getSiteId(), prevNonEmptyTextNode.getNodeValue().length() - 1, TreeHelper.toIntArray(TreeHelper.getLocator(prevNonEmptyTextNode)));
+            }
+        }
+
+        // prevNonEmptyTextNode was in different paragraph so generate a merge operation
+        int brCount = Element.as(rightParagraph).getElementsByTagName(BR).getLength();
+        TreeOperation op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
+        op.setPath(TreeHelper.toIntArray(path));
+        log.severe("OK: TreeMergeParagraph");
+        return op;
     }
 }
