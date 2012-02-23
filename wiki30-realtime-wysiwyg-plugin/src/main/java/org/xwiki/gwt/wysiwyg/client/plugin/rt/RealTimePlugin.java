@@ -351,8 +351,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                             if ((rightParagraph != null) && (!rightParagraph.getClassName().toLowerCase().contains("firebug"))) {
                                 //line merge only if there is something to merge
                                 int brCount = rightParagraph.getElementsByTagName(BR).getLength();
-                                path.set(0, path.get(0) + 1);
-                                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
+                                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0) + 1, leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
                                 op.setPath(TreeHelper.toIntArray(path));
                             } else {
                                 log.fine("Delete on text node: Right paragraph is null, nothing to be done.");
@@ -374,8 +373,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
 
                         if (rightParagraph != null) {
                             int brCount = rightParagraph.getElementsByTagName(BR).getLength();
-                            path.set(0, path.get(0) + 1);
-                            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
+                            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0) + 1, leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
                             op.setPath(TreeHelper.toIntArray(path));
                         } else {
                             log.fine("Delete on element node: Right paragraph is null, nothing to be done.");
@@ -440,7 +438,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                     }
                 }
                 break;
-                // todo: set correct path to tree Merge
+
                 default:
                 break;
             }
