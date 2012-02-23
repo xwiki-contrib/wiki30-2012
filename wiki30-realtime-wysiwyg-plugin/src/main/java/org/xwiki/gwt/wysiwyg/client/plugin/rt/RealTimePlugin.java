@@ -431,7 +431,6 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                                 op.setPath(TreeHelper.toIntArray(path));
                             } else {
                                 // Somewhere in the middle of the line
-                                pos = range.getEndOffset();
                                 op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
                             }
                         }
