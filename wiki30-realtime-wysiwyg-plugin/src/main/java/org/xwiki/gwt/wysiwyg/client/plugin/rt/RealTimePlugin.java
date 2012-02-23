@@ -418,7 +418,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                         Element element = Element.as(endContainer);
 
                         // Start of the line
-                        if (element.getPreviousSibling() == null && 0 == pos) { //don't need elem.prevSibling
+                        if (0 == pos) {
                             op = new TreeNewParagraph(clientJupiter.getSiteId(), path.get(0));
                             op.setPath(TreeHelper.toIntArray(path));
                         } else {
