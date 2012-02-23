@@ -430,8 +430,15 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                                 op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
                                 op.setPath(TreeHelper.toIntArray(path));
                             } else {
-                                // Somewhere in the middle of the line
-                                op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
+                                // Position represents the n-th child of this element
+                                path.add(pos - 1);
+                                Node child = element.getChild(pos - 1); // //todo: child can be a span!
+                                if (child.getNodeType() == Node.TEXT_NODE) {
+                                    pos = child.getNodeValue().length();
+                                    op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
+                                } else {
+                                    log.severe("ENTER not handled!");
+                                }
                             }
                         }
                     }
