@@ -433,8 +433,8 @@ public class TreeOperationsTest
         insert.execute(root);
 
         //expectedRoot = <p>[]</p><p>[a]<span bold>b</span></p>
-        expectedRootDSL.addChild(paragraph().addChild(text(""),
-                                 paragraph().addChild(text("a"), span("style", "bold").addChild(text("b")))));
+        expectedRootDSL.addChild(paragraph().addChild(text(""))).
+                        addChild(paragraph().addChild(text("a"), span("style", "bold").addChild(text("b"))));
         assertEquals("Invalid tree", expectedRoot, root);
         fail("Cannot use InsertParagraph at start of line OR InsertParagraph is not well coded");
     }
@@ -447,8 +447,47 @@ public class TreeOperationsTest
         insert.execute(root);
 
         //expectedRoot = <p>[]</p><p>[a]<span bold>b</span></p>
-        expectedRootDSL.addChild(paragraph().addChild(text("")),
-                                 paragraph().addChild(text("a"), span("style", "bold").addChild(text("b"))));
+        expectedRootDSL.addChild(paragraph().addChild(text(""))).
+                        addChild(paragraph().addChild(text("a"), span("style", "bold").addChild(text("b"))));
+        assertEquals("Invalid tree", expectedRoot, root);
+    }
+
+    @Test
+    public void simpleInsertParagraphInSpan()
+    {
+        rootDSL.addChild(paragraph().addChild(text("a"), span("style", "bold").addChild(text("b"))));
+        TreeOperation insert = new TreeInsertParagraph(SITE_ID, 0, path(0, 1, 0));
+        insert.execute(root);
+
+        //expectedRoot = <p>[a]<span bold>[]</span></p><p><span bold>[b]</span></p>
+        expectedRootDSL.addChild(paragraph().addChild(text("a")).addChild(span("style", "bold").addChild(text("")))).
+                        addChild(paragraph().addChild(span("style", "bold").addChild(text("b"))));
+        assertEquals("Invalid tree", expectedRoot, root);
+    }
+
+    @Test
+    public void simpleInsertParagraphInSpan1()
+    {
+        rootDSL.addChild(paragraph().addChild(span("style", "bold").addChild(text("b"))));
+        TreeOperation insert = new TreeInsertParagraph(SITE_ID, 0, path(0, 0, 0));
+        insert.execute(root);
+
+        //expectedRoot = <p><span bold>[]</span></p><p><span bold>[b]</span></p>
+        expectedRootDSL.addChild(paragraph().addChild(span("style", "bold").addChild(text("")))).
+                        addChild(paragraph().addChild(span("style", "bold").addChild(text("b"))));
+        assertEquals("Invalid tree", expectedRoot, root);
+    }
+
+        @Test
+    public void simpleNewParagraphInSpan()
+    {
+        rootDSL.addChild(paragraph().addChild(span("style", "bold").addChild(text("b"))));
+        TreeOperation insert = new TreeNewParagraph(SITE_ID, 0);
+        insert.execute(root);
+
+        //expectedRoot = <p><span bold>[]</span></p><p><span bold>[b]</span></p>
+        expectedRootDSL.addChild(paragraph().addChild(span("style", "bold").addChild(text("")))).
+                        addChild(paragraph().addChild(span("style", "bold").addChild(text("b"))));
         assertEquals("Invalid tree", expectedRoot, root);
     }
 }
