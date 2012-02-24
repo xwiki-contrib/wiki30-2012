@@ -129,4 +129,24 @@ public class TreeStyleTest extends AbstractTreeOperationTest
 
         assertEquals("Invalid tree ", expectedRootDSL.getTree(), rootDSL.getTree());
     }
+    
+    @Test
+    public void treeStyleWithinTwoTextNodes1()
+    {
+        rootDSL.addChild(paragraph().addChild(span("font-weight", "bold").addChild(text("a"),
+                                                                                   text("b"))));   
+
+        final TreeOperation styleOperation2 = new TreeStyle(SITE_ID, path(0, 0, 1), 0, 1, "font-style", "italic", NO_ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
+        styleOperation2.execute(rootDSL.getTree());
+
+        final TreeOperation styleOperation1 = new TreeStyle(SITE_ID, path(0, 0, 0), 1, 1, "font-style", "italic", NO_ADD_STYLE, SPLIT_LEFT, NO_SPLIT_RIGHT);
+        styleOperation1.execute(rootDSL.getTree());
+  
+        
+        //expectedRootDSL.getTree() = <p><span font-weight=bold>[a]</span><span font-weight=bold font-style=italic>[b]</span></p>
+        expectedRootDSL.addChild(paragraph().addChild(span("font-weight", "bold").addChild(text("a")),
+                                                      span("font-weight", "bold").setAttribute("font-style", "italic").addChild(text("b"))));
+        
+        assertEquals("Invalid result ", expectedRootDSL.getTree(), rootDSL.getTree());
+    }
 }
