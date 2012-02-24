@@ -5,14 +5,19 @@ import org.junit.Test;
 
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeFactory;
-import fr.loria.score.jupiter.tree.operation.*;
-
-import static org.junit.Assert.assertEquals;
+import fr.loria.score.jupiter.tree.operation.TreeCompositeOperation;
+import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
+import fr.loria.score.jupiter.tree.operation.TreeMergeParagraph;
+import fr.loria.score.jupiter.tree.operation.TreeMoveParagraph;
+import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
+import fr.loria.score.jupiter.tree.operation.TreeOperation;
+import fr.loria.score.jupiter.tree.operation.TreeStyle;
 
 import static fr.loria.score.TreeDSL.paragraph;
 import static fr.loria.score.TreeDSL.span;
 import static fr.loria.score.TreeDSL.text;
-import java.util.Arrays;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Test the effect of executing tree operations on the tree model.
@@ -418,5 +423,32 @@ public class TreeOperationsTest
                                                       text("y")));
        
         assertEquals("Invalid tree ", expectedRoot, root);   
-    } 
+    }
+
+    @Test
+    public void simpleInsertParagraphAtStartOfLine()
+    {
+        rootDSL.addChild(paragraph().addChild(text("a"), span("style", "bold").addChild(text("b"))));
+        TreeOperation insert = new TreeInsertParagraph(SITE_ID, 0, path(0, 0));
+        insert.execute(root);
+
+        //expectedRoot = <p>[]</p><p>[a]<span bold>b</span></p>
+        expectedRootDSL.addChild(paragraph().addChild(text(""),
+                                 paragraph().addChild(text("a"), span("style", "bold").addChild(text("b")))));
+        assertEquals("Invalid tree", expectedRoot, root);
+        fail("Cannot use InsertParagraph at start of line OR InsertParagraph is not well coded");
+    }
+
+    @Test
+    public void simpleNewParagraphAtStartOfLine()
+    {
+        rootDSL.addChild(paragraph().addChild(text("a"), span("style", "bold").addChild(text("b"))));
+        TreeOperation insert = new TreeNewParagraph(SITE_ID, 0);
+        insert.execute(root);
+
+        //expectedRoot = <p>[]</p><p>[a]<span bold>b</span></p>
+        expectedRootDSL.addChild(paragraph().addChild(text("")),
+                                 paragraph().addChild(text("a"), span("style", "bold").addChild(text("b"))));
+        assertEquals("Invalid tree", expectedRoot, root);
+    }
 }
