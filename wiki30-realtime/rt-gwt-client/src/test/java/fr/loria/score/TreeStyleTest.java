@@ -39,7 +39,8 @@ public class TreeStyleTest extends AbstractTreeOperationTest
 
         // expectedRootDSL.getTree() = <p><span font-weight=bold>[ab]</span><span font-weight=bold>[cd]</span></p>
         expectedRootDSL.clear();
-        expectedRootDSL.addChild(paragraph().addChild(span("font-weight", "bold").addChild(text("ab")),
+        expectedRootDSL.addChild(paragraph().addChild(
+            span("font-weight", "bold").addChild(text("ab")),
             span("font-weight", "bold").addChild(text("cd"))));
 
         assertEquals("Invalid tree result", expectedRootDSL.getTree(), rootDSL.getTree());
@@ -77,9 +78,10 @@ public class TreeStyleTest extends AbstractTreeOperationTest
         styleOperation.execute(rootDSL.getTree());
 
         //expectedRootDSL.getTree() = <p>[a]<span font-weight=bold>[bc]</span>[d]</p>
-        expectedRootDSL.addChild(paragraph().addChild(text("a"),
-            span("font-weight", "bold").addChild(text("bc")),
-            text("d")));
+        expectedRootDSL.addChild(paragraph().addChild(
+                                        text("a"),
+                                        span("font-weight", "bold").addChild(text("bc")),
+                                        text("d")));
 
         assertEquals("Invalid tree ", expectedRootDSL.getTree(), rootDSL.getTree());
     }
@@ -101,7 +103,7 @@ public class TreeStyleTest extends AbstractTreeOperationTest
         //expectedRootDSL.getTree() = <p><span font-weight=bold, font-style=italic>[a]</span><span font-weight=bold>[bc]</span></p>        
         expectedRootDSL.addChild(
             paragraph().addChild(span("font-weight", "bold").setAttribute("font-style", "italic").addChild(text("a")),
-                span("font-weight", "bold").addChild(text("bc"))));
+                                 span("font-weight", "bold").addChild(text("bc"))));
 
         assertEquals("Invalid tree ", expectedRootDSL.getTree(), rootDSL.getTree());
     }
@@ -124,9 +126,27 @@ public class TreeStyleTest extends AbstractTreeOperationTest
         italicOp.execute(rootDSL.getTree());
 
         //expectedRootDSL.getTree() = <p><span font-weight=bold>[a]</span><span font-weight=bold, font-style=italic>[bc]</span></p>
-        expectedRootDSL.addChild(paragraph().addChild(span("font-weight", "bold").addChild(text("a")),
+        expectedRootDSL.addChild(paragraph().addChild(
+            span("font-weight", "bold").addChild(text("a")),
             span("font-weight", "bold").setAttribute("font-style", "italic").addChild(text("bc"))));
 
         assertEquals("Invalid tree ", expectedRootDSL.getTree(), rootDSL.getTree());
+    }
+
+    @Test
+    public void addItalicStyleOnSecondBoldTextNode()
+    {
+        rootDSL.addChild(paragraph().addChild(span("font-weight", "bold").addChild(text("a"))
+                                                                         .addChild(text("b"))));
+
+        TreeOperation italic = new TreeStyle(SITE_ID, path(0, 0, 1), 0, 1, "font-style", "italic", NO_ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
+        italic.execute(rootDSL.getTree());
+
+        //expected = <p><span bold>[a]</span><span bold, italic>[b]</span>
+        expectedRootDSL.addChild(paragraph().addChild(span("font-weight", "bold").addChild(text("a")))
+                                            .addChild(span("font-weight", "bold").setAttribute("font-style", "italic")
+                                                .addChild(text("b"))));
+
+        assertEquals("Invalid tree", expectedRootDSL.getTree(), rootDSL.getTree());
     }
 }
