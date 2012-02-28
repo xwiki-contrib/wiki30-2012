@@ -24,6 +24,8 @@ public class TreeInsertParagraph extends TreeOperation {
         setPath(path);
         if (position != 0) {
             this.splitLeft = true;
+        }else {
+            this.splitLeft = false;
         }
     }
 
@@ -72,7 +74,7 @@ public class TreeInsertParagraph extends TreeOperation {
                     } else {
                         tree = tree.getChild(path[i + 1]);
                         String str = tree.split(position);
-                        if (str != null && ! str.equals(""))
+                        if (str != null)
                             tTree.addChild(TreeFactory.createTextTree(str), 0);
                     }
                 }
@@ -258,3 +260,4 @@ public class TreeInsertParagraph extends TreeOperation {
         return new TreeMoveParagraph(op1.getSiteId(), sp, ep);
     }
 }
+
