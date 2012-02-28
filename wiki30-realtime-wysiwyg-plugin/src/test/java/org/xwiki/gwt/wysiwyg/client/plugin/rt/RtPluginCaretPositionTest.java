@@ -109,11 +109,8 @@ public class RtPluginCaretPositionTest extends RtPluginTestCase
     // Caret is <p>[ab]|<span font-weight=”bold”>[cd]</span>ef</p>
     public void testCaretAfterFirstChildTextNode() // todo: first child is element node
     {
-        oldCaretPos.setStartAfter(getContainer().getFirstChild());
-        oldCaretPos.setEndBefore(getContainer().getFirstChild());
-
-//        oldCaretPos.setStart(getContainer(), 1);
-//        oldCaretPos.setEnd(getContainer(), 1);
+        oldCaretPos.setStart(getContainer(), 1);
+        oldCaretPos.setEnd(getContainer(), 1);
         Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
 
         // Caret is <p>[ab|]<span font-weight=”bold”>[cd]</span>ef</p>
@@ -326,7 +323,7 @@ public class RtPluginCaretPositionTest extends RtPluginTestCase
         assertNotNull(spanElement);
         assertEquals("Invalid element name", "span", spanElement.getNodeName().toLowerCase());
 
-        Text expectedText = Text.as(spanElement.getFirstChild());
+        Text expectedText = Text.as(spanElement.getNextSibling());
         assertEquals(Node.TEXT_NODE, expectedText.getNodeType());
 
         oldCaretPos.setStart(getContainer(), 3);

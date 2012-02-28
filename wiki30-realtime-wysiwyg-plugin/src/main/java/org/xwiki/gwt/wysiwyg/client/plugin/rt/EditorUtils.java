@@ -29,7 +29,6 @@ public class EditorUtils
         Range newCaretPos = null;
         if (oldCaretPosition.isCollapsed()) {
             newCaretPos = oldCaretPosition.cloneRange();
-            newCaretPos.collapse(true);
 
             // if I'm in a non-empty text node, return the oldCaretPosition
             if (isNonEmptyTextNode(oldCaretPosition.getStartContainer())) {
@@ -40,7 +39,6 @@ public class EditorUtils
                 int leftSize = leftTextNodesInSameP.size();
                 if (leftSize > 0) {
                     Text firstLeftTextNode = leftTextNodesInSameP.get(leftSize - 1);
-                    int leftPosition = Math.min(oldCaretPosition.getEndOffset(), firstLeftTextNode.getLength());
                     newCaretPos.setStart(firstLeftTextNode, firstLeftTextNode.getLength());
                 } else {
                     List<Text> rightTextNodesInSameP = getRightTextNodesInSameP(oldCaretPosition);
@@ -50,6 +48,7 @@ public class EditorUtils
                     }
                 }
             }
+            newCaretPos.collapse(true);
         }
         return newCaretPos;
     }
