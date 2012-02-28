@@ -8,7 +8,7 @@ import org.xwiki.gwt.dom.client.DOMUtils;
 import com.google.gwt.dom.client.Node;
 
 /**
- * @author Bogdan.Flueras@inria.fr
+ * @author Bogdan.Flueras@inria.fr  todo: move to EditorUtils
  */
 public class TreeHelper {
 

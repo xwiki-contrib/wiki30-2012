@@ -75,7 +75,6 @@
 
     <enterprise.version>3.5-SNAPSHOT</enterprise.version>
     <manager.version>3.5-SNAPSHOT</manager.version>
-<!--todo: define enterprise.version here-->
     <gwt.version>2.4.0</gwt.version>
     <gwt.maven.plugin.version>2.4.0</gwt.maven.plugin.version>
   </properties>

@@ -54,7 +54,7 @@
     <dependency>
         <groupId>org.xwiki.contrib</groupId>
         <artifactId>rt-gwt-client</artifactId>
-        <version>${project.version}</version>
+        <version>1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <build>
@@ -70,5 +70,15 @@
         <directory>src/main/java</directory>
       </resource>
     </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <configuration>
+          <includes>org/xwiki/gwt/wysiwyg/RtPluginTestSuite.java</includes>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>
