@@ -379,12 +379,11 @@ public class RtPluginCaretPositionTest extends RtPluginTestCase
         oldCaretPos.setEnd(lastTextNode, 0);
 
         Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
-        // Caret is <p>[|]<span>[]</span>[z]</p>
+        // Caret is <p>[]<span>[]</span>[|z]</p>
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
-        assertEquals(firstTextNode, newCaretPos.getStartContainer());
-        assertEquals(firstTextNode.getLength(), newCaretPos.getStartOffset());
+        assertEquals(lastTextNode, newCaretPos.getStartContainer());
+        assertEquals(0, newCaretPos.getStartOffset());
         assertTrue(newCaretPos.isCollapsed());
-        fail("Use skip texts method!");
     }
 }
 
