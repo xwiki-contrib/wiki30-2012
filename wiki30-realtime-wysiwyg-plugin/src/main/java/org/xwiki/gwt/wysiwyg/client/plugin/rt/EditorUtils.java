@@ -155,7 +155,7 @@ public class EditorUtils
     {
         Range rightRange = range.cloneRange();
         Node parentPNode = getAncestorParagraph(range.getEndContainer());
-        rightRange.setEndAfter(parentPNode.getLastChild());
+        rightRange.setEnd(parentPNode, parentPNode.getChildCount());
 
         return getNonEmptyTextNodes(rightRange);
     }

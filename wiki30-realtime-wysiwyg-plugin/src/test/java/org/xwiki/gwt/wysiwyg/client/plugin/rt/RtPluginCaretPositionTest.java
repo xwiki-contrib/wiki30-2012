@@ -337,5 +337,24 @@ public class RtPluginCaretPositionTest extends RtPluginTestCase
         assertEquals(expectedText.getLength(), newCaretPos.getStartOffset());
         assertTrue(newCaretPos.isCollapsed());
     }
+
+    // Caret is <p>|</p>
+    public void testCaretStartOfEmptyParagraph()
+    {
+        getContainer().removeFromParent();
+        Element p = getDocument().createPElement().cast();
+        getDocument().getBody().appendChild(p);
+
+        oldCaretPos.setStart(p, 0);
+        oldCaretPos.setEnd(p, 0);
+
+        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+
+        // Caret is <p>|</p>
+        assertEquals(Node.ELEMENT_NODE, newCaretPos.getStartContainer().getNodeType());
+        assertEquals(p, newCaretPos.getStartContainer());
+        assertEquals(0, newCaretPos.getStartOffset());
+        assertTrue(newCaretPos.isCollapsed());
+    }
 }
 
