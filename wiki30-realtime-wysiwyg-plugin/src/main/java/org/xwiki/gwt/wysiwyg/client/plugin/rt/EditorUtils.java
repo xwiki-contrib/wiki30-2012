@@ -31,7 +31,7 @@ public class EditorUtils
             newCaretPos = oldCaretPosition.cloneRange();
 
             // if I'm in a non-empty text node, return the oldCaretPosition
-            if (isNonEmptyTextNode(oldCaretPosition.getStartContainer())) {
+            if (isNonEmptyTextNode(oldCaretPosition.getStartContainer()) && oldCaretPosition.getStartOffset() > 0) {
                 return oldCaretPosition;
             } else {
                 // go left whenever possible, if not go right

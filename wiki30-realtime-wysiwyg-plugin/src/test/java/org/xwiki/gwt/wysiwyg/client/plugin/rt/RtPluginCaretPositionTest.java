@@ -155,10 +155,13 @@ public class RtPluginCaretPositionTest extends RtPluginTestCase
         oldCaretPos.setEnd(textNode, 0);
 
         Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
-        // Caret is <p>[ab]<span font-weight=”bold”>[|cd]</span>ef</p>
+        // Caret is <p>[ab|]<span font-weight=”bold”>[cd]</span>ef</p>
+        Text expectedTextNode = Text.as(getContainer().getFirstChild());
+        assertEquals(Node.TEXT_NODE, expectedTextNode.getNodeType());
+
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
-        assertEquals(textNode, newCaretPos.getStartContainer());
-        assertEquals(0, newCaretPos.getStartOffset());
+        assertEquals(expectedTextNode, newCaretPos.getStartContainer());
+        assertEquals(expectedTextNode.getLength(), newCaretPos.getStartOffset());
         assertTrue(newCaretPos.isCollapsed());
     }
 
@@ -254,19 +257,21 @@ public class RtPluginCaretPositionTest extends RtPluginTestCase
         assertNotNull(spanElement);
         assertEquals("Invalid element name", "span", spanElement.getNodeName().toLowerCase());
 
-        Text expectedText = Text.as(spanElement.getFirstChild());
-        assertEquals(Node.TEXT_NODE, expectedText.getNodeType());
+        Text text = Text.as(spanElement.getNextSibling());
+        assertEquals(Node.TEXT_NODE, text.getNodeType());
 
-        oldCaretPos.setStart(expectedText, 0);
-        oldCaretPos.setEnd(expectedText, 0);
+        oldCaretPos.setStart(text, 0);
+        oldCaretPos.setEnd(text, 0);
 
         Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
 
-        // Caret is <p>[ab]<span font-weight=”bold”>[cd]</span>[|ef]</p>
-        assertEquals(oldCaretPos, newCaretPos);
+        Text expectedText = Text.as(spanElement.getFirstChild());
+        assertEquals(Node.TEXT_NODE, expectedText.getNodeType());
+
+        // Caret is <p>[ab]<span font-weight=”bold”>[cd|]</span>[ef]</p>
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
         assertEquals(expectedText, newCaretPos.getStartContainer());
-        assertEquals(0, newCaretPos.getStartOffset());
+        assertEquals(expectedText.getLength(), newCaretPos.getStartOffset());
         assertTrue(newCaretPos.isCollapsed());
     }
 
@@ -355,6 +360,31 @@ public class RtPluginCaretPositionTest extends RtPluginTestCase
         assertEquals(p, newCaretPos.getStartContainer());
         assertEquals(0, newCaretPos.getStartOffset());
         assertTrue(newCaretPos.isCollapsed());
+    }
+
+    // Caret is <p>[]<span>[]</span>[|z]</p>
+    public void testCaretForBackspace1()
+    {
+        getContainer().removeFromParent();
+        Element p = getDocument().createPElement().cast();
+        getDocument().getBody().appendChild(p);
+
+        com.google.gwt.dom.client.Text firstTextNode = getDocument().createTextNode("");
+        p.appendChild(firstTextNode);
+        p.appendChild(getDocument().createSpanElement().appendChild(getDocument().createTextNode("")));
+        com.google.gwt.dom.client.Text lastTextNode = getDocument().createTextNode("z");
+        p.appendChild(lastTextNode);
+
+        oldCaretPos.setStart(lastTextNode, 0);
+        oldCaretPos.setEnd(lastTextNode, 0);
+
+        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        // Caret is <p>[|]<span>[]</span>[z]</p>
+        assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
+        assertEquals(firstTextNode, newCaretPos.getStartContainer());
+        assertEquals(firstTextNode.getLength(), newCaretPos.getStartOffset());
+        assertTrue(newCaretPos.isCollapsed());
+        fail("Use skip texts method!");
     }
 }
 
