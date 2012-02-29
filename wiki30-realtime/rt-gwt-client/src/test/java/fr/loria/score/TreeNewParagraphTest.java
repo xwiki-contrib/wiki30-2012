@@ -69,8 +69,8 @@ public class TreeNewParagraphTest extends AbstractTreeOperationTest
         TreeOperation insert = new TreeNewParagraph(SITE_ID, 0);
         insert.execute(rootDSL.getTree());
 
-        //expectedRootDSL.getTree() = <p><span bold>[]</span></p><p><span bold>[b]</span></p>
-        expectedRootDSL.addChild(paragraph().addChild(span("style", "bold").addChild(text("")))).
+        //expectedRootDSL.getTree() = <p>[]</p><p><span bold>[b]</span></p>
+        expectedRootDSL.addChild(paragraph().addChild(text(""))).
             addChild(paragraph().addChild(span("style", "bold").addChild(text("b"))));
         assertEquals("Invalid tree", expectedRootDSL.getTree(), rootDSL.getTree());
     }

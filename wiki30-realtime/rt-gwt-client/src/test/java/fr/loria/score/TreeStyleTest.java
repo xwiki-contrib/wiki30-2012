@@ -157,10 +157,10 @@ public class TreeStyleTest extends AbstractTreeOperationTest
     @Test
     public void addItalicStyleOnSecondBoldTextNode()
     {
-        rootDSL.addChild(paragraph().addChild(span("font-weight", "bold").addChild(text("a"))
-                                                                         .addChild(text("b"))));
+        rootDSL.addChild(paragraph().addChild(span("font-weight", "bold").addChild(text("a")))
+                                    .addChild(span("font-weight", "bold").addChild(text("b"))));
 
-        TreeOperation italic = new TreeStyle(SITE_ID, path(0, 0, 1), 0, 1, "font-style", "italic", NO_ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
+        TreeOperation italic = new TreeStyle(SITE_ID, path(0, 1, 0), 0, 1, "font-style", "italic", NO_ADD_STYLE, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
         italic.execute(rootDSL.getTree());
 
         //expected = <p><span bold>[a]</span><span bold, italic>[b]</span>
