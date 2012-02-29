@@ -36,12 +36,12 @@ public class TreeCompositeOperationTest extends AbstractTreeOperationTest
             new TreeCompositeOperation(splitSrc1, splitSrc2, splitDst1, move, mergeSrc1, mergeDst1, mergeDst2);
         moveText.execute(rootDSL.getTree());
 
-        //expectedRoot = <p>[ad]</p><p>[x][bc]y]</p>
+        //expectedRoot = <p>[a][d]</p><p>[x][bc]y]</p>
         expectedRootDSL.addChild(paragraph().addChild(text("a"),
-            text("d")),
-            paragraph().addChild(text("x"),
-                text("bc"),
-                text("y")));
+                                                      text("d")),
+                                 paragraph().addChild(text("x"),
+                                                      text("bc"),
+                                                      text("y")));
 
         assertEquals("Invalid tree ", expectedRootDSL.getTree(), rootDSL.getTree());
     }
