@@ -19,14 +19,12 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.xwiki.gwt.dom.client.DOMUtils;
 import org.xwiki.gwt.dom.client.Property;
 import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.dom.client.Selection;
@@ -52,7 +50,6 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -71,16 +68,27 @@ import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import fr.loria.score.jupiter.tree.operation.TreeStyle;
 
+import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getAncestorBelowParagraph;
+import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getIntermediaryTargets;
+import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getNonEmptyTextNodes;
+
 /**
- * Broadcasts DOM mutations generated inside the rich text area.
- * It overrides nearly all plugin-based features of WYSIWYG: line, text aso.
- * 
+ * Broadcasts DOM mutations generated inside the rich text area. It overrides nearly all plugin-based features of
+ * WYSIWYG: line, text aso.
+ *
  * @version $Id: 4e19fb82c1f5869f4850b80c3b5f5d3b3d319483 $
  */
-public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHandler, KeyPressHandler, KeyUpHandler, CommandListener, ClickHandler
+public class RealTimePlugin extends AbstractStatefulPlugin
+    implements KeyDownHandler, KeyPressHandler, KeyUpHandler, CommandListener, ClickHandler
 {
+    public static final String P = "p";
+
+    public static final String SPAN = "span";
+
+    public static final String BR = "br";
+
     private static Logger log = Logger.getLogger(RealTimePlugin.class.getName());
-    private static final String BR = "br";
+
     private static ClientJupiterAlg clientJupiter;
 
     /**
@@ -92,7 +100,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
      * The list of command that shouldn't be broadcasted.
      */
     private static final List<Command> IGNORED_COMMANDS = Arrays.asList(Command.UPDATE, Command.ENABLE, new Command(
-            "submit"));
+        "submit"));
 
     /**
      * The association between tool bar buttons and the commands that are executed when these buttons are clicked.
@@ -111,7 +119,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see AbstractStatefulPlugin#init(RichTextArea, Config)
      */
     public void init(RichTextArea textArea, Config config)
@@ -133,7 +141,8 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
         addFeature("bold", Command.BOLD, Images.INSTANCE.bold(), Strings.INSTANCE.bold());
         addFeature("italic", Command.ITALIC, Images.INSTANCE.italic(), Strings.INSTANCE.italic());
         addFeature("underline", Command.UNDERLINE, Images.INSTANCE.underline(), Strings.INSTANCE.underline());
-        addFeature("strikethrough", Command.LINE_THROUGH, Images.INSTANCE.strikeThrough(), Strings.INSTANCE.strikeThrough());
+        addFeature("strikethrough", Command.LINE_THROUGH, Images.INSTANCE.strikeThrough(),
+            Strings.INSTANCE.strikeThrough());
 
         if (toolBarExtension.getFeatures().length > 0) {
             registerTextAreaHandlers();
@@ -143,7 +152,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
         // Jupiter algo initializing
         Node bodyNode = textArea.getDocument().getBody();
         // insert a new paragraph on an empty text area
-        final Element p = Document.get().createElement("p");
+        final Element p = Document.get().createElement(P);
         if (bodyNode.getChildCount() == 0) {
             bodyNode.insertFirst(p);
         } else if (bodyNode.getChildCount() == 1 && bodyNode.getFirstChild().getNodeName().equalsIgnoreCase(BR)) {
@@ -161,7 +170,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see AbstractStatefulPlugin#destroy()
      */
     public void destroy()
@@ -173,7 +182,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see CommandListener#onBeforeCommand(CommandManager, Command, String)
      */
     public boolean onBeforeCommand(CommandManager sender, Command command, String param)
@@ -184,7 +193,9 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
 
                 final Property styleProperty = commandStyleProperties.get(command);
                 String styleKey = styleProperty.getCSSName();
-                String styleValue = getTextArea().getCommandManager().isExecuted(command) ? styleProperty.getDefaultValue() : command.toString();
+                String styleValue =
+                    getTextArea().getCommandManager().isExecuted(command) ? styleProperty.getDefaultValue() :
+                        command.toString();
 
                 //Use this range to get all intermediary paths
                 Range range = selection.getRangeAt(0);
@@ -212,7 +223,9 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
                     if (end == target.getDataLength()) {
                         splitRight = false;
                     }
-                    TreeOperation op = new TreeStyle(clientJupiter.getSiteId(), path, start, end, styleKey, styleValue, addStyle, splitLeft, splitRight);
+                    TreeOperation op =
+                        new TreeStyle(clientJupiter.getSiteId(), path, start, end, styleKey, styleValue, addStyle,
+                            splitLeft, splitRight);
                     clientJupiter.generate(op);
                 }
                 // Block the command because it's already handled in DomStyle operation.
@@ -222,15 +235,9 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see CommandListener#onCommand(CommandManager, Command, String)
-     */
-    public void onCommand(CommandManager sender, final Command command, final String param) {}
-
     @Override
-    public void onClick(ClickEvent event) {
+    public void onClick(ClickEvent event)
+    {
         Command command = buttons.get(event.getSource());
         // We have to test if the text area is attached because this method can be called after the event was consumed.
         if (command != null && getTextArea().isAttached() && ((FocusWidget) event.getSource()).isEnabled()) {
@@ -240,8 +247,9 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
     }
 
     @Override
-    public void update() {
-       for (Map.Entry<ToggleButton, Command> entry : buttons.entrySet()) {
+    public void update()
+    {
+        for (Map.Entry<ToggleButton, Command> entry : buttons.entrySet()) {
             if (entry.getKey().isEnabled()) {
                 entry.getKey().setDown(getTextArea().getCommandManager().isExecuted(entry.getValue()));
             }
@@ -249,204 +257,61 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
     }
 
     @Override
-    public void onKeyDown(KeyDownEvent event) {
+    public void onKeyDown(KeyDownEvent event)
+    {
         final int keyCode = event.getNativeKeyCode();
         Selection selection = getTextArea().getDocument().getSelection();
         if (selection.getRangeCount() > 0) {
             Range range = selection.getRangeAt(0);
             logRange(range);
 
-            int pos = -1;
+            range = EditorUtils.computeNewCaretPosition(range);
+            log.fine("New range");
+            logRange(range);
+
             Node startContainer = range.getStartContainer();
             Node endContainer = range.getEndContainer();
-
-            List<Integer> path = TreeHelper.getLocator(range.getStartContainer());
 
             TreeOperation op = null;
             switch (keyCode) {
                 case KeyCodes.KEY_BACKSPACE: {
-                    pos = range.getStartOffset();
-
-                    Node n;
-                    Element rightParagraph;
-                    Node leftParagraph;
-
                     if (Node.TEXT_NODE == startContainer.getNodeType()) {
-                        // Go up below the parent paragraph node, because we might have span tags with text nodes
-                        n = getAncestorBelowParagraph(startContainer);
-                        rightParagraph = n.getParentElement();
-                        leftParagraph = rightParagraph.getPreviousSibling();
-
-                        Text textNode = Text.as(startContainer);
-                        if (pos == 0) {
-                            if(leftParagraph != null) {
-                                boolean merge = false;
-                                // merge iff textNode is the first child
-                                if (textNode != n && textNode == n.getFirstChild()) {
-                                    merge = true;
-                                }
-                                if (textNode == n && n == rightParagraph.getFirstChild()) {
-                                    merge = true;
-                                }
-                                if (merge) {
-                                    //definitively a line merge
-                                    int brCount = rightParagraph.getElementsByTagName(BR).getLength();
-                                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
-                                    op.setPath(TreeHelper.toIntArray(path));
-                                } else {
-                                    op = skipBackspaceOnEmptyTexts(textNode, path, rightParagraph, leftParagraph); // todo: extract above code in skipBackspace
-                                }
-                            } else {
-                                log.fine("Backspace on text node: Left paragraph is null, nothing to be done.");
-                                event.preventDefault();
-                            }
-                        } else {
-                            pos = pos - 1;
-                            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
-                        }
+                        op = handleBackspaceOnTextNode(range);
                     } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
-                        Element element = Element.as(startContainer);
-                        boolean merge = false;
-
-                        // Go up below the parent paragraph node, because we might have span tags with text nodes
-                        if ("p".equalsIgnoreCase(element.getNodeName())) {
-                            rightParagraph = element;
-                            merge = true; // perhaps
-                        } else { // assume element is a span or other element contained in a paragraph
-                            n = getAncestorBelowParagraph(startContainer);
-                            rightParagraph = n.getParentElement();
-
-                            if (pos == 0 && "span".equalsIgnoreCase(element.getNodeName())) { // assume the element is a span
-                                // merge iff element is the first child
-                                merge = (element == n && n == rightParagraph.getFirstChild());
-                            }
-                        }
-                        leftParagraph = rightParagraph.getPreviousSibling();
-                        merge = merge && (leftParagraph != null);
-                        if (merge) {
-                            //definitively a line merge
-                            int brCount = rightParagraph.getElementsByTagName(BR).getLength();
-                            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
-                            op.setPath(TreeHelper.toIntArray(path));
-                        } else {
-                            log.severe("Backspace on element: " + element.getTagName() + ", or left paragraph is null");
-                            event.preventDefault();
-                        }
+                        op = handleBackspaceOnElement(range);
+                    }
+                    if (op == null) {
+                        event.preventDefault();
                     }
                 }
                 break;
 
                 case KeyCodes.KEY_DELETE: {
-                    Element leftParagraph;
-                    Element rightParagraph;
-
                     if (Node.TEXT_NODE == startContainer.getNodeType()) {
-                        Text textNode = Text.as(startContainer);
-                        // Go up below the parent paragraph node, because we might have span tags with text nodes
-                        leftParagraph = getAncestorBelowParagraph(startContainer).getParentElement();
-                        rightParagraph = leftParagraph.getNextSiblingElement();
-
-                        pos = range.getStartOffset();
-                        if (textNode.getLength() == pos) { // perhaps a line merge
-                            if ((rightParagraph != null) && (!rightParagraph.getClassName().toLowerCase().contains("firebug"))) {
-                                //line merge only if there is something to merge
-                                int brCount = rightParagraph.getElementsByTagName(BR).getLength();
-                                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0) + 1, leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
-                                op.setPath(TreeHelper.toIntArray(path));
-                            } else {
-                                log.fine("Delete on text node: Right paragraph is null, nothing to be done.");
-                                event.preventDefault();
-                            }
-                        } else {
-                            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
-                        }
+                        op = handleDeleteOnTextNode(range);
                     } else if (Node.ELEMENT_NODE == startContainer.getNodeType()) {
-                        Element element = Element.as(startContainer);
-
-                        // Go up below the parent paragraph node, because we might have span tags with text nodes
-                        if ("p".equalsIgnoreCase(element.getNodeName())) {
-                            leftParagraph = element;
-                        } else { //assume element is a span or other element contained in a paragraph
-                            leftParagraph = getAncestorBelowParagraph(element).getParentElement();
-                        }
-                        rightParagraph = leftParagraph.getNextSiblingElement();
-
-                        if (rightParagraph != null) {
-                            int brCount = rightParagraph.getElementsByTagName(BR).getLength();
-                            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0) + 1, leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
-                            op.setPath(TreeHelper.toIntArray(path));
-                        } else {
-                            log.fine("Delete on element node: Right paragraph is null, nothing to be done.");
-                            event.preventDefault();
-                        }
+                        op = handleDeleteOnElement(range);
+                    }
+                    if (op == null) {
+                        event.preventDefault();
                     }
                 }
                 break;
 
                 case KeyCodes.KEY_ENTER: {
-                    path = TreeHelper.getLocator(range.getEndContainer());
-                    pos = range.getEndOffset();
-
                     if (Node.TEXT_NODE == endContainer.getNodeType()) {
-                        Text textNode = Text.as(endContainer);
-
-                        boolean isNewParagraph = false;
-
-                        // Go up below the parent paragraph node, because we might have span tags with text nodes
-                        Node n = getAncestorBelowParagraph(textNode);
-
-                        // Start of the line
-                        if (n.getPreviousSibling() == null && 0 == pos) {
-                            isNewParagraph = true;
-                            pos = path.get(0);
-                        }
-
-                        // End of line
-                        if ((n.getNextSibling() == null || BR.equalsIgnoreCase(n.getNextSibling().getNodeName())) && textNode.getLength() == pos) {
-                            isNewParagraph = true;
-                            pos = path.get(0) + 1;
-                        }
-                        if (isNewParagraph) {
-                            op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
-                            op.setPath(TreeHelper.toIntArray(path));
-                        } else {
-                            op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
-                        }
-                    } else if (Node.ELEMENT_NODE == endContainer.getNodeType()) { // todo: handle properly the range!
-                        Element element = Element.as(endContainer);
-
-                        // Start of the line
-                        if (0 == pos) {
-                            op = new TreeNewParagraph(clientJupiter.getSiteId(), path.get(0));
-                            op.setPath(TreeHelper.toIntArray(path));
-                        } else {
-                            int brCount = element.getElementsByTagName(BR).getLength();
-                            int childCount = element.getChildCount();
-                            boolean isBeforeLastBrTag = ((pos == (childCount - brCount)) && (BR.equalsIgnoreCase(element.getLastChild().getNodeName())));
-                            boolean isAfterLastTag = (pos == childCount);
-                            // End of the line
-                            if (isBeforeLastBrTag || isAfterLastTag) {
-                                pos = path.get(0) + 1;
-                                op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
-                                op.setPath(TreeHelper.toIntArray(path));
-                            } else {
-                                // Position represents the n-th child of this element
-                                path.add(pos - 1);
-                                Node child = element.getChild(pos - 1); // //todo: child can be a span!
-                                if (child.getNodeType() == Node.TEXT_NODE) {
-                                    pos = child.getNodeValue().length();
-                                    op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
-                                } else {
-                                    log.severe("ENTER not handled!");
-                                }
-                            }
-                        }
+                        op = handleEnterOnTextNode(range);
+                    } else if (Node.ELEMENT_NODE == endContainer.getNodeType()) {
+                        op = handleEnterOnElement(range);
+                    }
+                    if (op == null) {
+                        event.preventDefault();
                     }
                 }
                 break;
 
                 default:
-                break;
+                    break;
             }
 
             if (op != null) {
@@ -462,7 +327,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see KeyPressHandler#onKeyPress(KeyPressEvent)
      */
     public void onKeyPress(KeyPressEvent event)
@@ -471,53 +336,58 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
         boolean isAltControlOrMetaDown = event.isAltKeyDown() || event.isControlKeyDown() || event.isMetaKeyDown();
         boolean isNoteworthyKeyPressed = event.getCharCode() != '\u0000';
 
-        if (getTextArea().isAttached() && getTextArea().isEnabled() && !isAltControlOrMetaDown && isNoteworthyKeyPressed) {
+        if (getTextArea().isAttached() && getTextArea().isEnabled() && !isAltControlOrMetaDown &&
+            isNoteworthyKeyPressed)
+        {
             Selection selection = getTextArea().getDocument().getSelection();
             if (selection.getRangeCount() > 0) {
                 Range range = selection.getRangeAt(0);
+                range = EditorUtils.computeNewCaretPosition(range);
+
+                log.fine("New range");
                 logRange(range);
 
-                char character = new String(new int[] {event.getUnicodeCharCode()}, 0, 1).charAt(0);
+                char character = new String(new int[]{ event.getUnicodeCharCode() }, 0, 1).charAt(0);
                 clientJupiter.generate(treeOperationFactory.createTreeInsertText(clientJupiter.getSiteId(), range,
                     character));
             }
         }
     }
 
-    @Override
-    public void onKeyUp(KeyUpEvent event) {
-        //for now nothing
-    }
-
     /**
      * Customize the action listeners found in actionButtonsRT.js
      */
     private static native void customizeActionListeners() /*-{
-        $wnd.onCancelHook = function() {
+        $wnd.onCancelHook = function()
+        {
             @org.xwiki.gwt.wysiwyg.client.plugin.rt.RealTimePlugin::disconnect()();
         };
 
-        $wnd.onSaveAndViewHook= function() {
+        $wnd.onSaveAndViewHook = function()
+        {
             @org.xwiki.gwt.wysiwyg.client.plugin.rt.RealTimePlugin::disconnect()();
         };
 
-        $wnd.onSaveAndContinueHook = function() {
+        $wnd.onSaveAndContinueHook = function()
+        {
             @org.xwiki.gwt.wysiwyg.client.plugin.rt.RealTimePlugin::disconnect()();
         }
     }-*/;
 
-    private static void disconnect() {
+    private static void disconnect()
+    {
         clientJupiter.disconnect();
     }
 
-    private void logRange(Range r) {
+    private void logRange(Range r)
+    {
         log.info("Start container: " + r.getStartContainer().getNodeName() +
-                ", " + " locator: " + TreeHelper.getLocator(r.getStartContainer()) + " offset: " + r.getStartOffset()
-                );
+            ", " + " locator: " + TreeHelper.getLocator(r.getStartContainer()) + " offset: " + r.getStartOffset()
+        );
 
         log.info("End container: " + r.getEndContainer().getNodeName() +
-                ", " + " locator: " + TreeHelper.getLocator(r.getStartContainer()) + " offset: " + r.getEndOffset()
-                );
+            ", " + " locator: " + TreeHelper.getLocator(r.getStartContainer()) + " offset: " + r.getEndOffset()
+        );
     }
 
     /**
@@ -542,108 +412,302 @@ public class RealTimePlugin extends AbstractStatefulPlugin implements KeyDownHan
         return button;
     }
 
-     /**
-     * Converts a DOM range to an list of operation targets.
-     *
-     * @param range a DOM range
-     * @return the corresponding list of operation targets
-     */
-    private List<OperationTarget> getIntermediaryTargets(Range range) {
-        // Iterate through all the text nodes within the given range and extract the operation target
-        List<OperationTarget> operationTargets = new ArrayList<OperationTarget>();
-        // Create the intermediary targets backwards because if we preserve the normal order when we modify the tree,
-        // the following targets will no longer reflect that
-        List<Text> textNodes = getNonEmptyTextNodes(range);
-        for (int i = 0; i < textNodes.size(); i++) {
-            Text text = textNodes.get(i);
-            int startIndex = 0;
-            if (text == range.getStartContainer()) {
-                startIndex = range.getStartOffset();
-            }
-            int endIndex = text.getLength();
-            if (text == range.getEndContainer()) {
-                endIndex = range.getEndOffset();
-            }
-            operationTargets.add(0, new OperationTarget(TreeHelper.getLocator(text), startIndex, endIndex, text.getLength()));
-        }
-        return operationTargets;
-    }
+    public TreeOperation handleBackspaceOnElement(Range caret)
+    {
+        int pos = caret.getStartOffset();
+        Node startContainer = caret.getStartContainer();
+        List<Integer> path = TreeHelper.getLocator(startContainer);
+        TreeOperation op = null;
 
-     /**
-     * @param range a DOM range
-     * @return the list of non empty text nodes that are completely or partially (at least one character) included in
-     *         the given range
-     */
-    protected List<Text> getNonEmptyTextNodes(Range range) {
-        Node leaf = DOMUtils.getInstance().getFirstLeaf(range);
-        Node lastLeaf = DOMUtils.getInstance().getLastLeaf(range);
-        List<Text> textNodes = new ArrayList<Text>();
-        // If the range starts at the end of a text node we have to ignore that node.
-        if (isNonEmptyTextNode(leaf)
-                && (leaf != range.getStartContainer() || range.getStartOffset() < leaf.getNodeValue().length())) {
-            textNodes.add((Text) leaf);
-        }
-        while (leaf != lastLeaf) {
-            leaf = DOMUtils.getInstance().getNextLeaf(leaf);
-            if (isNonEmptyTextNode(leaf)) {
-                textNodes.add((Text) leaf);
+        Element rightParagraph;
+        Node n;
+        Node leftParagraph;
+        Element element = Element.as(startContainer);
+        boolean merge = false;
+
+        // Go up below the parent paragraph node, because we might have span tags with text nodes
+        if (P.equalsIgnoreCase(element.getNodeName())) {
+            rightParagraph = element;
+            merge = true; // perhaps
+        } else { // assume element is a span or other element contained in a paragraph
+            log.severe("It shouldn't happen but I'm handling it anyway!");
+            n = getAncestorBelowParagraph(startContainer);
+            rightParagraph = n.getParentElement();
+
+            if (pos == 0 && SPAN.equalsIgnoreCase(element.getNodeName())) { // assume the element is a span
+                // merge iff element is the first child
+                merge = (element == n && n == rightParagraph.getFirstChild());
             }
         }
-        // If the range ends at the start of a text node then we have to ignore that node.
-        int lastIndex = textNodes.size() - 1;
-        if (lastIndex >= 0 && range.getEndOffset() == 0 && textNodes.get(lastIndex) == range.getEndContainer()) {
-            textNodes.remove(lastIndex);
+        leftParagraph = rightParagraph.getPreviousSibling();
+        merge = merge && (leftParagraph != null);
+
+        if (merge) {
+            //definitively a line merge
+            int brCount = rightParagraph.getElementsByTagName(BR).getLength();
+            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(),
+                rightParagraph.getChildCount() - brCount);
+            op.setPath(TreeHelper.toIntArray(path));
+        } else {
+            log.fine("Backspace on element: " + element.getTagName() + ", or above paragraph is null");
         }
-        return textNodes;
+        return op;
     }
 
-    /**
-     * @param node a DOM node
-     * @return {@code true} if the given node is of type {@link Node#TEXT_NODE} and it's not empty, {@code false}
-     *         otherwise
-     */
-    private boolean isNonEmptyTextNode(Node node) {
-        return node.getNodeType() == Node.TEXT_NODE && node.getNodeValue().length() > 0;
+    public TreeOperation handleBackspaceOnTextNode(Range caret)
+    {
+        int pos = caret.getStartOffset();
+        Node startContainer = caret.getStartContainer();
+        List<Integer> path = TreeHelper.getLocator(startContainer);
+        TreeOperation op = null;
+
+        Node ancestorBelowParagraph = getAncestorBelowParagraph(startContainer);
+        Element rightParagraph = ancestorBelowParagraph.getParentElement();
+        Node leftParagraph = rightParagraph
+            .getPreviousSibling(); // Go up below the parent paragraph node, because we might have span tags with text nodes
+
+        Text textNode = Text.as(startContainer);
+        if (pos == 0) {
+            if (leftParagraph != null) {
+                boolean merge = false;
+                // merge iff textNode is the first child
+                if (textNode != ancestorBelowParagraph && textNode == ancestorBelowParagraph.getFirstChild()) {
+                    merge = true;
+                }
+                if (textNode == ancestorBelowParagraph && ancestorBelowParagraph == rightParagraph.getFirstChild()) {
+                    merge = true;
+                }
+                if (merge) {
+                    //definitively a line merge
+                    int brCount = rightParagraph.getElementsByTagName(BR).getLength();
+                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(),
+                        rightParagraph.getChildCount() - brCount);
+                    op.setPath(TreeHelper.toIntArray(path));
+                } else {
+                    op = skipBackspaceOnEmptyTexts(textNode, rightParagraph, leftParagraph);
+                    // todo: can I extract above code in skipBackspaceOnEmptyTexts ?
+                }
+            } else {
+                log.fine("Backspace on text node: Above paragraph is null, nothing to be done.");
+            }
+        } else {
+            pos = pos - 1;
+            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
+        }
+        return op;
     }
 
-    /**
-     * @param node the node whose ancestor is to be returned
-     * @return the ancestor for this node which is just below the paragraph ancestor
-     */
-    private Node getAncestorBelowParagraph(Node node) {
-        Node ancestor = node;
-        while (!"p".equalsIgnoreCase(ancestor.getParentNode().getNodeName())) {
-            ancestor = ancestor.getParentNode();
+    public TreeOperation handleEnterOnElement(Range caret)
+    {
+        int pos = caret.getEndOffset();
+        Element element = Element.as(caret.getEndContainer());
+        List<Integer> path = TreeHelper.getLocator(caret.getEndContainer());
+        TreeOperation op = null;
+
+        // Start of the line
+        if (0 == pos) {
+            op = new TreeNewParagraph(clientJupiter.getSiteId(), path.get(0));
+            op.setPath(TreeHelper.toIntArray(path));
+        } else {
+            int brCount = element.getElementsByTagName(BR).getLength();
+            int childCount = element.getChildCount();
+            boolean isBeforeLastBrTag =
+                ((pos == (childCount - brCount)) && (BR.equalsIgnoreCase(element.getLastChild().getNodeName())));
+            boolean isAfterLastTag = (pos == childCount);
+            // End of the line
+            if (isBeforeLastBrTag || isAfterLastTag) {
+                pos = path.get(0) + 1;
+                op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
+                op.setPath(TreeHelper.toIntArray(path));
+            } else {
+                // Position represents the n-th child of this element
+                path.add(pos - 1);
+                Node child = element.getChild(pos - 1); // //todo: child can be a span!
+                if (child.getNodeType() == Node.TEXT_NODE) {
+                    pos = child.getNodeValue().length();
+                    op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
+                } else {
+                    log.severe("ENTER not handled!");
+                }
+            }
         }
-        return ancestor;
+        return op;
+    }
+
+    public TreeOperation handleEnterOnTextNode(Range caret)
+    {
+        int pos = caret.getEndOffset();
+        Node container = caret.getEndContainer();
+        Text textNode = Text.as(container);
+        List<Integer> path = TreeHelper.getLocator(container);
+        TreeOperation op;
+
+        boolean isNewParagraph = false;
+
+        // Go up below the parent paragraph node, because we might have span tags with text nodes
+        Node ancestorBelowParagraph = getAncestorBelowParagraph(textNode);
+
+        // Start of the line: textNode is the first child of it's ancestor (directly or indirectly)
+        boolean isFirstChild = false;
+        if (textNode != ancestorBelowParagraph) {
+            isFirstChild = ancestorBelowParagraph == ancestorBelowParagraph.getParentElement().getFirstChild();
+            isFirstChild = isFirstChild && (textNode == ancestorBelowParagraph.getFirstChild());
+        } else {
+            isFirstChild = textNode == ancestorBelowParagraph.getParentElement().getFirstChild();
+        }
+        isFirstChild = isFirstChild || (ancestorBelowParagraph.getPreviousSibling() == null);
+        if (isFirstChild && 0 == pos)
+        {
+            isNewParagraph = true;
+            pos = path.get(0);
+        }
+
+        // End of line: textNode is last child of it's ancestor (directly or indirectly)
+        boolean isLastChild = false;
+        if (textNode != ancestorBelowParagraph) {
+            isLastChild = ancestorBelowParagraph == ancestorBelowParagraph.getParentElement().getLastChild();
+            isLastChild = isLastChild && (textNode == ancestorBelowParagraph.getLastChild());
+        } else {
+            isLastChild = textNode == ancestorBelowParagraph.getParentNode().getLastChild();
+        }
+        isLastChild = isLastChild || (ancestorBelowParagraph.getNextSibling() == null || BR.equalsIgnoreCase(ancestorBelowParagraph.getNextSibling().getNodeName()));
+        if (isLastChild && textNode.getLength() == pos)
+        {
+            isNewParagraph = true;
+            pos = path.get(0) + 1;
+        }
+
+        if (isNewParagraph)
+        {
+            op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
+            op.setPath(TreeHelper.toIntArray(path));
+        } else {
+            op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
+        }
+        return op;
+    }
+
+    public TreeOperation handleDeleteOnElement(Range caret)
+    {
+        Element element = Element.as(caret.getStartContainer());
+        List<Integer> path = TreeHelper.getLocator(element);
+        TreeOperation op = null;
+
+        Element leftParagraph;
+        Element rightParagraph;
+
+        // Go up below the parent paragraph node, because we might have span tags with text nodes
+        if (P.equalsIgnoreCase(element.getNodeName())) {
+            leftParagraph = element;
+        } else { //assume element is a span or other element contained in a paragraph
+            log.severe("It shouldn't happen but I'm handling it anyway!");
+            leftParagraph = getAncestorBelowParagraph(element).getParentElement();
+        }
+        rightParagraph = leftParagraph.getNextSiblingElement();
+
+        if (rightParagraph != null) {
+            int brCount = rightParagraph.getElementsByTagName(BR).getLength();
+            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0) + 1, leftParagraph.getChildCount(),
+                rightParagraph.getChildCount() - brCount);
+            op.setPath(TreeHelper.toIntArray(path));
+        } else {
+            log.fine("Delete on element node: Below paragraph is null, nothing to be done.");
+        }
+        return op;
+    }
+
+    public TreeOperation handleDeleteOnTextNode(Range caret)
+    {
+        int pos = caret.getStartOffset();
+        Node startContainer = caret.getStartContainer();
+        Text textNode = Text.as(startContainer);
+        List<Integer> path = TreeHelper.getLocator(startContainer);
+        TreeOperation op = null;
+
+        Element leftParagraph;
+        Element rightParagraph;
+
+        // Go up below the parent paragraph node, because we might have span tags with text nodes
+        final Node ancestorBelowParagraph = getAncestorBelowParagraph(startContainer);
+        leftParagraph = ancestorBelowParagraph.getParentElement();
+        rightParagraph = leftParagraph.getNextSiblingElement();
+
+        boolean isMerge = false;
+        if (textNode != ancestorBelowParagraph) {
+            isMerge = ancestorBelowParagraph == ancestorBelowParagraph.getParentNode().getLastChild();
+            isMerge = isMerge && textNode == ancestorBelowParagraph.getLastChild();
+        } else {
+            isMerge = textNode == ancestorBelowParagraph.getParentElement().getLastChild();
+        }
+        isMerge = isMerge && ((rightParagraph != null) && (!rightParagraph.getClassName().toLowerCase().contains("firebug")));
+
+        if (textNode.getLength() == pos) { // perhaps a line merge
+            if (isMerge) {
+                //line merge only if there is something to merge
+                int brCount = rightParagraph.getElementsByTagName(BR).getLength();
+                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0) + 1, leftParagraph.getChildCount(),
+                    rightParagraph.getChildCount() - brCount);
+                op.setPath(TreeHelper.toIntArray(path));
+            } else {
+                log.fine("Delete on text node: Below paragraph is null, nothing to be done.");
+            }
+        } else {
+            op = skipDeleteOnEmptyTexts(textNode, leftParagraph, rightParagraph);
+        }
+        return op;
+    }
+
+    //skips delete on empty texts
+    private TreeOperation skipDeleteOnEmptyTexts(Node node, Node rightParagraph, Node leftParagraph)
+    {
+        return handleBackspaceOrDeleteKeyOnEmptyTexts(false, node, rightParagraph, leftParagraph);
     }
 
     //skips backspace on empty texts
-    private TreeOperation skipBackspaceOnEmptyTexts(Node node, List<Integer> path, Node rightParagraph,
-        Node leftParagraph) {
+    private TreeOperation skipBackspaceOnEmptyTexts(Node node, Node rightParagraph, Node leftParagraph)
+    {
+        return handleBackspaceOrDeleteKeyOnEmptyTexts(true, node, rightParagraph, leftParagraph) ;
+    }
+
+    private TreeOperation handleBackspaceOrDeleteKeyOnEmptyTexts(boolean isBackspace, Node node,
+        Node rightParagraph, Node leftParagraph)
+    {
         org.xwiki.gwt.dom.client.Document document = getTextArea().getDocument();
         Range range = document.createRange();
-        range.setStart(document.getBody(), 0);
-        range.setEndBefore(node);
-
-        List<Text> nonEmptyTextNodes = getNonEmptyTextNodes(range);
-        Node prevNonEmptyTextNode = nonEmptyTextNodes.get(nonEmptyTextNodes.size() - 1);
-        log.severe("Previous text node is: " + prevNonEmptyTextNode.getNodeValue());
-
-        while (node != null) {
-            node = node.getPreviousSibling();
-            if (node == prevNonEmptyTextNode) {
-                log.severe("OK: TreeDeleteText");
-                // prevNonEmptyTextNode was in the same paragraph as the node, so generate a delete text operation
-                return new TreeDeleteText(clientJupiter.getSiteId(), prevNonEmptyTextNode.getNodeValue().length() - 1, TreeHelper.toIntArray(TreeHelper.getLocator(prevNonEmptyTextNode)));
-            }
+        if (isBackspace) {
+            // select backward
+            range.setStartAfter(document.getBody().getFirstChild());
+            range.setEndBefore(node);
+        } else {
+            // select forward
+            range.setStartAfter(node);
+            range.setEndBefore(document.getBody().getLastChild());
         }
 
-        // prevNonEmptyTextNode was in different paragraph so generate a merge operation
-        int brCount = Element.as(rightParagraph).getElementsByTagName(BR).getLength();
-        TreeOperation op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(), rightParagraph.getChildCount() - brCount);
-        op.setPath(TreeHelper.toIntArray(path));
-        log.severe("OK: TreeMergeParagraph");
+        TreeOperation op = null;
+
+        List<Text> nonEmptyTextNodes = getNonEmptyTextNodes(range);
+        if (nonEmptyTextNodes.size() > 0) {
+            int idx = isBackspace ? nonEmptyTextNodes.size() - 1 : 0;
+            Node prevNonEmptyTextNode = nonEmptyTextNodes.get(idx);
+
+            log.fine("Previous text node is: " + prevNonEmptyTextNode.getNodeValue());
+            List<Integer> path;
+
+            if (node.getParentNode() == prevNonEmptyTextNode.getParentNode()) {
+                // prevNonEmptyTextNode is in the same paragraph as the node, so generate a delete text operation
+                int deletePos = isBackspace ? prevNonEmptyTextNode.getNodeValue().length() - 1 : 0;
+                path = TreeHelper.getLocator(prevNonEmptyTextNode);
+                op = new TreeDeleteText(clientJupiter.getSiteId(), deletePos, TreeHelper.toIntArray(path));
+            } else {
+                // prevNonEmptyTextNode is in different paragraph so generate a merge operation
+                int brCount = Element.as(rightParagraph).getElementsByTagName(BR).getLength();
+                path = TreeHelper.getLocator(prevNonEmptyTextNode); //todo: use previous pos
+                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(),
+                    rightParagraph.getChildCount() - brCount);
+                op.setPath(TreeHelper.toIntArray(path));
+            }
+        }
         return op;
     }
 }
