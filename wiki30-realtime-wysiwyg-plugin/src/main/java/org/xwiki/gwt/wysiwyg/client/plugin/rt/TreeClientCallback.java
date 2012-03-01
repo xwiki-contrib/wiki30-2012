@@ -103,7 +103,7 @@ public class TreeClientCallback implements ClientCallback
     {
         log.fine("Before send");
         TreeOperation operation = (TreeOperation) message.getOperation();
-        if (operation instanceof TreeInsertText || operation instanceof TreeDeleteText) {
+        if (operation instanceof TreeDeleteText) {
             return;
         }
         DomOperation domOperation = domOperationFactory.createDomOperation(operation);

@@ -62,6 +62,9 @@ public class DomInsertText extends AbstractDomOperation
         }
 
         // No change to the selection.
-        return null;
+        Range caret = document.createRange();
+        caret.setStart(targetNode, insertText.getPosition() + 1);
+        caret.collapse(true);
+        return caret;
     }
 }

@@ -350,6 +350,8 @@ public class RealTimePlugin extends AbstractStatefulPlugin
                 char character = new String(new int[]{ event.getUnicodeCharCode() }, 0, 1).charAt(0);
                 clientJupiter.generate(treeOperationFactory.createTreeInsertText(clientJupiter.getSiteId(), range,
                     character));
+
+                event.preventDefault();
             }
         }
     }
