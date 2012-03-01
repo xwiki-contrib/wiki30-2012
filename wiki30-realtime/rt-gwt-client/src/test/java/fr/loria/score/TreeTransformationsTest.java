@@ -12,6 +12,7 @@ import fr.loria.score.jupiter.tree.operation.TreeMergeParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeMoveParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 
+import static fr.loria.score.TestUtils.path;
 import static fr.loria.score.TreeDSL.paragraph;
 import static fr.loria.score.TreeDSL.text;
 import static org.junit.Assert.assertEquals;
@@ -28,12 +29,6 @@ public class TreeTransformationsTest
     private static final int SITE_A = 1;
 
     private static final int SITE_B = 2;
-
-    private static int[] path(int... positions)
-    {
-        int[] path = positions;
-        return path;
-    }
 
     private Tree siteA;
 
