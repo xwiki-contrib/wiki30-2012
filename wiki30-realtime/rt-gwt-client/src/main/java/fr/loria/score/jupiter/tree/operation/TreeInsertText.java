@@ -104,4 +104,18 @@ public class TreeInsertText extends TreeOperation {
     public TreeOperation handleTreeMoveParagraph(TreeMoveParagraph op1) {
         return op1;
     }
+
+    @Override
+    protected TreeOperation handleTreeCursorPosition(TreeCursorPosition op1) {
+        if (TreeUtils.diff(op1.path, path)) {
+            return op1;
+        }
+        if (op1.getPosition() < position) {
+            return op1;
+        }
+        if (op1.getPosition() == position && op1.getSiteId() < siteId) {
+            return op1;
+        }
+        return new TreeCursorPosition(op1.getSiteId(), op1.getPosition() + 1, op1.path);
+    }
 }

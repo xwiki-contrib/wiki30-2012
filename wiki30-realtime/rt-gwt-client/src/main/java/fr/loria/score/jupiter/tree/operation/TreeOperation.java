@@ -76,6 +76,8 @@ public abstract class TreeOperation extends AbstractOperation {
     protected abstract TreeOperation handleTreeStyle(TreeStyle op1);
 
     protected abstract TreeOperation handleTreeMoveParagraph(TreeMoveParagraph op1);
+    
+    protected abstract TreeOperation handleTreeCursorPosition(TreeCursorPosition op1);
 
     protected TreeOperation handleTreeId(TreeIdOp op1) {
         return op1;
