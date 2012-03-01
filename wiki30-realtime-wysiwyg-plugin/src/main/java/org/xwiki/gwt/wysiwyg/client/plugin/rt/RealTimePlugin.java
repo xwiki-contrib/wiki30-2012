@@ -639,7 +639,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         } else {
             isMerge = textNode == ancestorBelowParagraph.getParentElement().getLastChild();
         }
-        isMerge = isMerge && ((rightParagraph != null) && (!rightParagraph.getClassName().toLowerCase().contains("firebug")));
+        isMerge = isMerge && ((rightParagraph != null) && (!rightParagraph.getClassName().toLowerCase().contains("firebug"))); // todo: remove this!
 
         if (textNode.getLength() == pos) { // perhaps a line merge
             if (isMerge) {
