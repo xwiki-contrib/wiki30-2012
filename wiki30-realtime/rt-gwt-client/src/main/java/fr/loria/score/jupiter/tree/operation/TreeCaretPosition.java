@@ -10,9 +10,9 @@ import fr.loria.score.jupiter.tree.Tree;
  *
  * @author andre
  */
-public class TreeCursorPosition extends TreeOperation{
+public class TreeCaretPosition extends TreeOperation{
 
-    TreeCursorPosition(int siteId, int position, int[] path) {
+    public TreeCaretPosition(int siteId, int position, int[] path) {
         this.siteId=siteId;
         this.position=position;
         this.path=path;
@@ -64,7 +64,7 @@ public class TreeCursorPosition extends TreeOperation{
     }
 
     @Override
-    protected TreeOperation handleTreeCursorPosition(TreeCursorPosition op1) {
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
         return null;
     }
    

@@ -261,24 +261,24 @@ public class TreeInsertParagraph extends TreeOperation {
     }
 
     @Override
-    protected TreeOperation handleTreeCursorPosition(TreeCursorPosition op1) {
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
         if (!TreeUtils.diff(op1.path, path)) {
             if (op1.getPosition() < position) {
                 return op1;
             }
             int[] tab = new int[op1.path.length];
             tab[0] = op1.path[0] + 1;
-            return new TreeCursorPosition(op1.getSiteId(), op1.getPosition() - position, tab);
+            return new TreeCaretPosition(op1.getSiteId(), op1.getPosition() - position, tab);
         }
         if (TreeUtils.inf(op1.path, path)) {
             return op1;
         }
         if (op1.path[0] > path[0]) {
             int[] tab = TreeUtils.addP(op1.path, 1);
-            return new TreeCursorPosition(op1.getSiteId(), op1.getPosition(), tab);
+            return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), tab);
         }
         int[] tab = TreeUtils.reference(op1.path, path);
-        return new TreeCursorPosition(op1.getSiteId(), op1.getPosition(), tab);
+        return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), tab);
     }
 }
 

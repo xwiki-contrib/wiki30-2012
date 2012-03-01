@@ -58,7 +58,7 @@ public class TreeIdOp extends TreeOperation {
     }
 
     @Override
-    protected TreeOperation handleTreeCursorPosition(TreeCursorPosition op1) {
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
         return null;
     }
 }

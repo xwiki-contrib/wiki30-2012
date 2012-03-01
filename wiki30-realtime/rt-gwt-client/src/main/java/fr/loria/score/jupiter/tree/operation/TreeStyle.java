@@ -430,7 +430,7 @@ public class TreeStyle extends TreeOperation {
     }
 
     @Override
-    protected TreeOperation handleTreeCursorPosition(TreeCursorPosition op1) {
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
         if (op1.path[0] != path[0]) {
             return op1;
         }
@@ -446,10 +446,10 @@ public class TreeStyle extends TreeOperation {
                 if (addStyle) {
                     tab = TreeUtils.addLevel(tab);
                 }
-                return new TreeCursorPosition(op1.getSiteId(), op1.getPosition() - start, tab);
+                return new TreeCaretPosition(op1.getSiteId(), op1.getPosition() - start, tab);
             }
             int[] tab = TreeUtils.addC(op1.path, 1, splitLeft ? 2 : 1);
-            return new TreeCursorPosition(op1.getSiteId(), op1.getPosition() - end, tab);
+            return new TreeCaretPosition(op1.getSiteId(), op1.getPosition() - end, tab);
         }
         //op1.path[1]>path[1]
         int d = 0;//decalage
@@ -460,6 +460,6 @@ public class TreeStyle extends TreeOperation {
             d++;
         }
         int[] tab = TreeUtils.addC(op1.path, 1, d);
-        return new TreeCursorPosition(op1.getSiteId(), op1.getPosition(), tab);
+        return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), tab);
     }
 }

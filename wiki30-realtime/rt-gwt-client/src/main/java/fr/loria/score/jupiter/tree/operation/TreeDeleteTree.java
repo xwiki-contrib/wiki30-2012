@@ -69,7 +69,7 @@ public class TreeDeleteTree extends TreeOperation {
     }
 
     @Override
-    protected TreeOperation handleTreeCursorPosition(TreeCursorPosition op1) {
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -95,13 +95,13 @@ public class TreeDeleteText extends TreeOperation {
     }
 
     @Override
-    protected TreeOperation handleTreeCursorPosition(TreeCursorPosition op1) {
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
          if (TreeUtils.diff(op1.path, path)) {
             return op1;
         }
         if (op1.getPosition() <= position) {
             return op1;
         }
-        return new TreeCursorPosition(op1.getSiteId(), op1.getPosition() - 1, op1.path);
+        return new TreeCaretPosition(op1.getSiteId(), op1.getPosition() - 1, op1.path);
     }
 }

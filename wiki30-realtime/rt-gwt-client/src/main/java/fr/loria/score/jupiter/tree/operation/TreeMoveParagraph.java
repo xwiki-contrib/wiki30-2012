@@ -260,24 +260,24 @@ public class TreeMoveParagraph extends TreeOperation {
     }
 
     @Override
-    protected TreeOperation handleTreeCursorPosition(TreeCursorPosition op1) {
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
         if (op1.path[0] == sp) {
             if (sp >= ep) {
-                return new TreeCursorPosition(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep));
+                return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep));
             } else {
-                return new TreeCursorPosition(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep - 1));
+                return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep - 1));
             }
         }
         if (op1.path[0] < sp) {
             if (op1.path[0] < ep) {
                 return op1;
             } else {
-                return new TreeCursorPosition(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, 1));
+                return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, 1));
             }
         }
         //op1.path[0]>sp
         if (op1.path[0] < ep) {
-            return new TreeCursorPosition(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, -1));
+            return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, -1));
         } else {
             return op1;
         }

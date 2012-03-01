@@ -106,7 +106,7 @@ public class TreeInsertText extends TreeOperation {
     }
 
     @Override
-    protected TreeOperation handleTreeCursorPosition(TreeCursorPosition op1) {
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
         if (TreeUtils.diff(op1.path, path)) {
             return op1;
         }
@@ -116,6 +116,6 @@ public class TreeInsertText extends TreeOperation {
         if (op1.getPosition() == position && op1.getSiteId() < siteId) {
             return op1;
         }
-        return new TreeCursorPosition(op1.getSiteId(), op1.getPosition() + 1, op1.path);
+        return new TreeCaretPosition(op1.getSiteId(), op1.getPosition() + 1, op1.path);
     }
 }
