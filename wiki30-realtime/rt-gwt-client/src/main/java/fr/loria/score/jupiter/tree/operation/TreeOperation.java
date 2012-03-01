@@ -1,12 +1,12 @@
 package fr.loria.score.jupiter.tree.operation;
 
-import fr.loria.score.jupiter.model.AbstractOperation;
-import fr.loria.score.jupiter.tree.Tree;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.logging.Logger;
+
+import fr.loria.score.jupiter.model.AbstractOperation;
+import fr.loria.score.jupiter.tree.Tree;
 
 public abstract class TreeOperation extends AbstractOperation {
     private transient static final Logger log = Logger.getLogger(TreeOperation.class.getName());
