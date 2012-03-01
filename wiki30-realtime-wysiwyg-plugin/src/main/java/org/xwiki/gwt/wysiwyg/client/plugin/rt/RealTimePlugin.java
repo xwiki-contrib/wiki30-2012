@@ -446,9 +446,12 @@ public class RealTimePlugin extends AbstractStatefulPlugin
 
         if (merge) {
             //definitively a line merge
-            int brCount = rightParagraph.getElementsByTagName(BR).getLength();
-            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(),
-                rightParagraph.getChildCount() - brCount);
+            int lBrCount = Element.as(leftParagraph).getElementsByTagName(BR).getLength();
+            int rBrCount = rightParagraph.getElementsByTagName(BR).getLength();
+
+            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0),
+                leftParagraph.getChildCount() - lBrCount,
+                rightParagraph.getChildCount() - rBrCount);
             op.setPath(TreeHelper.toIntArray(path));
         } else {
             log.fine("Backspace on element: " + element.getTagName() + ", or above paragraph is null");
@@ -481,9 +484,12 @@ public class RealTimePlugin extends AbstractStatefulPlugin
                 }
                 if (merge) {
                     //definitively a line merge
-                    int brCount = rightParagraph.getElementsByTagName(BR).getLength();
-                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(),
-                        rightParagraph.getChildCount() - brCount);
+                    int lBrCount = Element.as(leftParagraph).getElementsByTagName(BR).getLength();
+                    int rBrCount = rightParagraph.getElementsByTagName(BR).getLength();
+
+                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0),
+                        leftParagraph.getChildCount() - lBrCount,
+                        rightParagraph.getChildCount() - rBrCount);
                     op.setPath(TreeHelper.toIntArray(path));
                 } else {
                     op = skipBackspaceOnEmptyTexts(textNode, rightParagraph, leftParagraph);
@@ -608,9 +614,11 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         rightParagraph = leftParagraph.getNextSiblingElement();
 
         if (rightParagraph != null) {
-            int brCount = rightParagraph.getElementsByTagName(BR).getLength();
-            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0) + 1, leftParagraph.getChildCount(),
-                rightParagraph.getChildCount() - brCount);
+            int lBrCount = leftParagraph.getElementsByTagName(BR).getLength();
+            int rBrCount = rightParagraph.getElementsByTagName(BR).getLength();
+            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0) + 1,
+                leftParagraph.getChildCount() - lBrCount,
+                rightParagraph.getChildCount() - rBrCount);
             op.setPath(TreeHelper.toIntArray(path));
         } else {
             log.fine("Delete on element node: Below paragraph is null, nothing to be done.");
@@ -646,9 +654,11 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         if (textNode.getLength() == pos) { // perhaps a line merge
             if (isMerge) {
                 //line merge only if there is something to merge
-                int brCount = rightParagraph.getElementsByTagName(BR).getLength();
-                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0) + 1, leftParagraph.getChildCount(),
-                    rightParagraph.getChildCount() - brCount);
+                int lBrCount = leftParagraph.getElementsByTagName(BR).getLength();
+                int rBrCount = rightParagraph.getElementsByTagName(BR).getLength();
+                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0) + 1,
+                    leftParagraph.getChildCount() - lBrCount,
+                    rightParagraph.getChildCount() - rBrCount);
                 op.setPath(TreeHelper.toIntArray(path));
             } else {
                 log.fine("Delete on text node: Below paragraph is null, nothing to be done.");
@@ -703,10 +713,12 @@ public class RealTimePlugin extends AbstractStatefulPlugin
                 op = new TreeDeleteText(clientJupiter.getSiteId(), deletePos, TreeHelper.toIntArray(path));
             } else {
                 // prevNonEmptyTextNode is in different paragraph so generate a merge operation
-                int brCount = Element.as(rightParagraph).getElementsByTagName(BR).getLength();
+                int lBbrCount = Element.as(leftParagraph).getElementsByTagName(BR).getLength();
+                int rBbrCount = Element.as(rightParagraph).getElementsByTagName(BR).getLength();
                 path = TreeHelper.getLocator(prevNonEmptyTextNode); //todo: use previous pos
-                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(),
-                    rightParagraph.getChildCount() - brCount);
+                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0),
+                    leftParagraph.getChildCount() - lBbrCount,
+                    rightParagraph.getChildCount() - rBbrCount);
                 op.setPath(TreeHelper.toIntArray(path));
             }
         }
