@@ -385,5 +385,43 @@ public class RtPluginCaretPositionTest extends RtPluginTestCase
         assertEquals(0, newCaretPos.getStartOffset());
         assertTrue(newCaretPos.isCollapsed());
     }
+
+    // Caret is <p>[a]<span font:bold>foox</span><span font:normal>bar</span>|</p>
+    public void testCaretAfterNonEmptySpan()
+    {
+        getContainer().setInnerHTML("a<span style=\"font-weight: bold;\">foox</span><span style=\"font-weight: normal;\">bar</span>");
+        oldCaretPos.setStart(getContainer(), 3);
+        oldCaretPos.setEnd(getContainer(), 3);
+
+        final Text textNode = Text.as(getContainer().getLastChild().getFirstChild());
+        assertEquals (Node.TEXT_NODE, textNode.getNodeType());
+        assertEquals(textNode.getData(), "bar");
+
+        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        // Caret is <p>[a]<span font:bold>foo</span><span font:normal>bar|</span></p>
+        assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
+        assertEquals(textNode, newCaretPos.getStartContainer());
+        assertEquals(textNode.getLength(), newCaretPos.getStartOffset());
+        assertTrue(newCaretPos.isCollapsed());
+    }
+
+    // Caret is <p>[a]<span font:bold>foo</span><span font:normal></span>|</p>
+    public void testCaretAfterEmptySpan()
+    {
+        getContainer().setInnerHTML("a<span style=\"font-weight: bold;\">foo</span><span style=\"font-weight: normal;\"></span>");
+        oldCaretPos.setStart(getContainer(), 3);
+        oldCaretPos.setEnd(getContainer(), 3);
+
+        final Text textNode = Text.as(getContainer().getFirstChildElement().getFirstChild());
+        assertEquals (Node.TEXT_NODE, textNode.getNodeType());
+        assertEquals(textNode.getData(), "foo");
+
+        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        // Caret is <p>[a]<span font:bold>foo|</span><span font:normal></span></p>
+        assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
+        assertEquals(textNode, newCaretPos.getStartContainer());
+        assertEquals(textNode.getLength(), newCaretPos.getStartOffset());
+        assertTrue(newCaretPos.isCollapsed());
+    }
 }
 
