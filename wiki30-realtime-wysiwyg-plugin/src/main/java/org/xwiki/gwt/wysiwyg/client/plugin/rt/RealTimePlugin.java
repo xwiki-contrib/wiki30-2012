@@ -702,7 +702,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
             } else {
                 // prevNonEmptyTextNode is in different paragraph so generate a merge operation
                 int brCount = Element.as(rightParagraph).getElementsByTagName(BR).getLength();
-                path = TreeHelper.getLocator(prevNonEmptyTextNode);
+                path = TreeHelper.getLocator(prevNonEmptyTextNode); //todo: use previous pos
                 op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0), leftParagraph.getChildCount(),
                     rightParagraph.getChildCount() - brCount);
                 op.setPath(TreeHelper.toIntArray(path));
