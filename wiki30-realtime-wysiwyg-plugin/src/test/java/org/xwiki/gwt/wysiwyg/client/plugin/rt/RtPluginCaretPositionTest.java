@@ -423,5 +423,44 @@ public class RtPluginCaretPositionTest extends RtPluginTestCase
         assertEquals(textNode.getLength(), newCaretPos.getStartOffset());
         assertTrue(newCaretPos.isCollapsed());
     }
+
+    // Caret is <p>[][|][ab]</p>
+    public void testCaretInEmptyTextNodeGoNextText()
+    {
+        getContainer().setInnerHTML("ab");
+        getContainer().insertFirst(getDocument().createTextNode(""));
+        getContainer().insertFirst(getDocument().createTextNode(""));
+        assertEquals("Invalid nr of children", 3, getContainer().getChildCount());
+
+        oldCaretPos.setStart(getContainer().getChild(1), 0);
+        oldCaretPos.setEnd(getContainer().getChild(1), 0);
+
+        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        // Caret is <p>[][][|ab]</p>
+        assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
+        assertEquals(getContainer().getLastChild(), newCaretPos.getStartContainer());
+        assertEquals(0, newCaretPos.getStartOffset());
+        assertTrue(newCaretPos.isCollapsed());
+    }
+
+    // Caret is <p>[][ab][][|]</p>
+    public void testCaretInEmptyTextNodeGoPrevText()
+    {
+        getContainer().setInnerHTML("ab");
+        getContainer().insertAfter(getDocument().createTextNode(""), getContainer().getFirstChild());
+        getContainer().insertAfter(getDocument().createTextNode(""), getContainer().getFirstChild());
+        getContainer().insertFirst(getDocument().createTextNode(""));
+        assertEquals("Invalid nr of children", 4, getContainer().getChildCount());
+
+        oldCaretPos.setStart(getContainer().getLastChild(), 0);
+        oldCaretPos.setEnd(getContainer().getLastChild(), 0);
+
+        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        // Caret is <p>[][ab|][][]</p>
+        assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
+        assertEquals(getContainer().getChild(1), newCaretPos.getStartContainer());
+        assertEquals(2, newCaretPos.getStartOffset());
+        assertTrue(newCaretPos.isCollapsed());
+    }
 }
 
