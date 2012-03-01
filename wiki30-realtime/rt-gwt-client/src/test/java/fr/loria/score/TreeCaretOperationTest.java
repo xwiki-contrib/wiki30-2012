@@ -117,6 +117,7 @@ public class TreeCaretOperationTest extends AbstractTreeOperationTest {
         assertEquals(0, newCaretPos.getPosition());
         assertArrayEquals(path(0, 1), newCaretPos.getPath());
     }
+
     @Test
     public void localCaretAfterNewParagraphStartOfLine()
     {
@@ -128,6 +129,16 @@ public class TreeCaretOperationTest extends AbstractTreeOperationTest {
         assertArrayEquals(path(1, 0), newCaretPos.getPath());
     }
 
+    @Test
+    public void localCaretAfterRemoteNewParagraphStartOfLine()
+    {
+        TreeOperation localCaretPos = new TreeCaretPosition(SITE_ID, 0, path(0,0));
+        TreeOperation remoteOp = new TreeNewParagraph(SITE_ID + 1, 0);
+
+        TreeOperation newLocalCaretPos = (TreeOperation) remoteOp.transform(localCaretPos);
+        assertEquals(0, newLocalCaretPos.getPosition());
+        assertArrayEquals(path(1, 0), newLocalCaretPos.getPath());
+    }
 
     @Test
     public void localCaretAfterNewParagraphEndOfLine()
@@ -138,6 +149,17 @@ public class TreeCaretOperationTest extends AbstractTreeOperationTest {
         TreeOperation newCaretPos = (TreeOperation) localOp.transform(caretPos);
         assertEquals(0, newCaretPos.getPosition());
         assertArrayEquals(path(1, 0), newCaretPos.getPath());
+    }
+
+    @Test
+    public void localCaretAfterRemoteNewParagraphEndOfLine()
+    {
+        TreeOperation caretPos = new TreeCaretPosition(SITE_ID, 5, path(0,0));
+        TreeOperation remoteOp = new TreeNewParagraph(SITE_ID + 1, 1);
+
+        TreeOperation newLocalCaretPos = (TreeOperation) remoteOp.transform(caretPos);
+        assertEquals(5, newLocalCaretPos.getPosition());
+        assertArrayEquals(path(0, 0), newLocalCaretPos.getPath());
     }
 
     //todo: write unit tests, when local caret is after/before the generated op position
