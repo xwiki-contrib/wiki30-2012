@@ -32,6 +32,9 @@ public class TreeMergeParagraph extends TreeOperation {
     }
 
     public TreeMergeParagraph(int position, int leftSiblingChildrenNr, int childrenNr) {
+        if (position < 1) {
+            throw new IllegalArgumentException("Cannot merge 2 paragraphs, when position is: " + position);
+        }
         this.position = position;
         this.leftSiblingChildrenNr = leftSiblingChildrenNr;
         this.childrenNr = childrenNr;
