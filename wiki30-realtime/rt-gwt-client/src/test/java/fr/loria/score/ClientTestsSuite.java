@@ -13,7 +13,8 @@ import org.junit.runners.Suite;
     TreeCompositeOperationTest.class,
     TreeInsertParagraphTest.class,
     TreeNewParagraphTest.class,
-    TreeStyleTest.class
+    TreeStyleTest.class,
+    TreeCaretOperationTest.class
 })
 public class ClientTestsSuite
 {

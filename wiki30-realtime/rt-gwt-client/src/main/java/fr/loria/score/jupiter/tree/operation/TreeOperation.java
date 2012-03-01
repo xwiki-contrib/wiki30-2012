@@ -56,6 +56,8 @@ public abstract class TreeOperation extends AbstractOperation {
             transformed = handleTreeId((TreeIdOp) op1);
         } else if (op1 instanceof TreeCompositeOperation) {
             transformed = handleTreeComposite((TreeCompositeOperation) op1);
+        } else if(op1 instanceof TreeCaretPosition){
+            transformed = handleTreeCaretPosition((TreeCaretPosition) op1);
         }
         return transformed;
     }
@@ -76,6 +78,8 @@ public abstract class TreeOperation extends AbstractOperation {
     protected abstract TreeOperation handleTreeStyle(TreeStyle op1);
 
     protected abstract TreeOperation handleTreeMoveParagraph(TreeMoveParagraph op1);
+    
+    protected abstract TreeOperation handleTreeCaretPosition(TreeCaretPosition op1);
 
     protected TreeOperation handleTreeId(TreeIdOp op1) {
         return op1;

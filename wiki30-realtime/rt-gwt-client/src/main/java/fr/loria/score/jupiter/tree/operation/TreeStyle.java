@@ -428,4 +428,38 @@ public class TreeStyle extends TreeOperation {
     public TreeOperation handleTreeMoveParagraph(TreeMoveParagraph op1) {
         return op1;
     }
+
+    @Override
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
+        if (op1.path[0] != path[0]) {
+            return op1;
+        }
+        if (op1.path[1] < path[1]) {
+            return op1;
+        }
+        if (op1.path[1] == path[1]) {//meme chemin
+            if (op1.getPosition() < start) {
+                return op1;
+            }
+            if (op1.getPosition() == start || op1.getPosition() <= end) {
+                int[] tab = TreeUtils.addC(op1.path, 1, splitLeft ? 1 : 0);
+                if (addStyle) {
+                    tab = TreeUtils.addLevel(tab);
+                }
+                return new TreeCaretPosition(op1.getSiteId(), op1.getPosition() - start, tab);
+            }
+            int[] tab = TreeUtils.addC(op1.path, 1, splitLeft ? 2 : 1);
+            return new TreeCaretPosition(op1.getSiteId(), op1.getPosition() - end, tab);
+        }
+        //op1.path[1]>path[1]
+        int d = 0;//decalage
+        if (splitLeft) {
+            d++;
+        }
+        if (splitRight) {
+            d++;
+        }
+        int[] tab = TreeUtils.addC(op1.path, 1, d);
+        return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), tab);
+    }
 }

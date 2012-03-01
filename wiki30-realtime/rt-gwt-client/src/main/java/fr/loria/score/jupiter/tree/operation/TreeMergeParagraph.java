@@ -198,4 +198,17 @@ public class TreeMergeParagraph extends TreeOperation {
         }
         return new TreeMoveParagraph(op1.getSiteId(), sp, ep);
     }
+
+    @Override
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
+        if (op1.path[0] < position) {
+            return op1;
+        }
+        int[] tab = TreeUtils.addP(op1.path, -1);
+        if (op1.path[0] > position) {
+            return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), tab);
+        }
+        tab[1] = op1.path[1] + leftSiblingChildrenNr;
+        return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), tab);
+    }
 }

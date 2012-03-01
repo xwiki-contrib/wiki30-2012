@@ -97,4 +97,29 @@ public class TreeNewParagraph extends TreeOperation {
         }
         return new TreeMoveParagraph(op1.getSiteId(), sp, ep);
     }
+
+    @Override
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
+        if(op1.getSiteId()!=siteId){
+            if (op1.path[0] < position) {
+                return op1;
+            }
+            int[] tab = TreeUtils.addP(op1.path, 1);
+            return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), tab);
+        }
+        
+        //same id : cursor at start or end of a paragraph, press enter
+        //start : op1.path[0]==position
+        //end : op1.path[0]==posititon+1
+        
+        if(op1.getPath()[0]==position){//start
+            int[] tab = TreeUtils.addP(op1.path, 1);
+            return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), tab);   
+        }
+        //else : end
+        int[] tab=new int[2];
+        tab[0]=position;
+        tab[1]=0;
+        return new TreeCaretPosition(op1.getSiteId(),0,tab);
+    }
 }

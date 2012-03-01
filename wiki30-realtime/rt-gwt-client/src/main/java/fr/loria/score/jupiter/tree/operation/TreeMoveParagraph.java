@@ -258,4 +258,28 @@ public class TreeMoveParagraph extends TreeOperation {
         }
         return new TreeMoveParagraph(siteId, sp, ep);
     }
+
+    @Override
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
+        if (op1.path[0] == sp) {
+            if (sp >= ep) {
+                return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep));
+            } else {
+                return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), TreeUtils.setP(op1.path, ep - 1));
+            }
+        }
+        if (op1.path[0] < sp) {
+            if (op1.path[0] < ep) {
+                return op1;
+            } else {
+                return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, 1));
+            }
+        }
+        //op1.path[0]>sp
+        if (op1.path[0] < ep) {
+            return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), TreeUtils.addP(op1.path, -1));
+        } else {
+            return op1;
+        }
+    }
 }

@@ -85,4 +85,9 @@ public class TreeCompositeOperation extends TreeOperation {
     protected TreeOperation handleTreeMoveParagraph(TreeMoveParagraph op1) {
         return null;
     }
+
+    @Override
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
+        return null;
+    }
 }

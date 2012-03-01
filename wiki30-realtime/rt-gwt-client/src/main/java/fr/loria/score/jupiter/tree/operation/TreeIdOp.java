@@ -56,4 +56,9 @@ public class TreeIdOp extends TreeOperation {
     public String toString() {
         return "TreeIdOp(" + super.toString() + ")";
     }
+
+    @Override
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
+        return null;
+    }
 }
