@@ -67,6 +67,9 @@ public class TreeCaretPosition extends TreeOperation{
     protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
         return null;
     }
-   
-    
+
+    @Override public String toString()
+    {
+        return "TreeCaretPos(" + super.toString() + ")";
+    }
 }
