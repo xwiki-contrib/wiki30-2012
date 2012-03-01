@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.xwiki.gwt.dom.client.Range;
 
+import fr.loria.score.jupiter.tree.operation.TreeCaretPosition;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 
@@ -45,5 +46,16 @@ public class TreeOperationFactory
     {
         List<Integer> path = TreeHelper.getLocator(location.getStartContainer());
         return new TreeInsertText(siteId, location.getStartOffset(), TreeHelper.toIntArray(path), character);
+    }
+
+    /**
+     * @param siteId the client id
+     * @param location the native DOM caret position
+     * @return a new {@link TreeCaretPosition} operation
+     */
+    public TreeCaretPosition createCaretPosition(int siteId, Range location)
+    {
+        List<Integer> path = TreeHelper.getLocator(location.getStartContainer());
+        return new TreeCaretPosition(siteId, location.getStartOffset(), TreeHelper.toIntArray(path));
     }
 }

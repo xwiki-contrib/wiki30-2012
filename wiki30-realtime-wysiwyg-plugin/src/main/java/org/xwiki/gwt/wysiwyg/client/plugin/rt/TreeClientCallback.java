@@ -36,6 +36,7 @@ import fr.loria.score.jupiter.transform.Transformation;
 import fr.loria.score.jupiter.transform.TransformationFactory;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
+import fr.loria.score.jupiter.tree.operation.TreeCaretPosition;
 import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
@@ -123,7 +124,7 @@ public class TreeClientCallback implements ClientCallback
         TreeOperation operation = (TreeOperation) receivedMessage.getOperation();
         DomOperation domOperation = domOperationFactory.createDomOperation(operation);
         if (domOperation != null) {
-            TreeInsertText[] selectionEndPoints = saveSelection();
+            TreeOperation[] selectionEndPoints = saveSelection();
             domOperation.execute((Document) nativeNode.getOwnerDocument());
             restoreSelection(selectionEndPoints, operation);
         } else {
@@ -158,33 +159,36 @@ public class TreeClientCallback implements ClientCallback
      * Saves the current selection using two {@link TreeInsertText} operations.
      * 
      * @return two {@link TreeInsertText} operations that represent the start and end of the selection
-     * @see TreeClientCallback#restoreSelection(TreeInsertText[])
+     * @see TreeClientCallback#restoreSelection(TreeOperation[])
      */
-    private TreeInsertText[] saveSelection()
+    private TreeOperation[] saveSelection()
     {
-        TreeInsertText[] selection = new TreeInsertText[2];
+        TreeOperation[] selection = new TreeCaretPosition[2];
         Range start = ((Document) nativeNode.getOwnerDocument()).getSelection().getRangeAt(0);
         Range end = start.cloneRange();
         start.collapse(true);
         end.collapse(false);
-        selection[0] = treeOperationFactory.createTreeInsertText(0, start, '\u0000');
-        selection[1] = treeOperationFactory.createTreeInsertText(0, end, '\u0000');
+        selection[0] = treeOperationFactory.createCaretPosition(0, start);
+        selection[1] = treeOperationFactory.createCaretPosition(0, end);
         return selection;
     }
 
     /**
      * Transforms the selection end points relative to the executed operation and restores them.
      * 
-     * @param selectionEndPoints two {@link TreeInsertText} operations that mark the start and end points of the
+     * @param selectionEndPoints two {@link TreeCaretPosition} operations that mark the start and end points of the
      *            selection
      * @param operation the operation that has been executed
      * @see #saveSelection()
      */
-    private void restoreSelection(TreeInsertText[] selectionEndPoints, TreeOperation operation)
+    private void restoreSelection(TreeOperation[] selectionEndPoints, TreeOperation operation)
     {
         // Transform the selection relative to the executed operation.
-        selectionEndPoints[0] = (TreeInsertText) transformation.transform(selectionEndPoints[0], operation);
-        selectionEndPoints[1] = (TreeInsertText) transformation.transform(selectionEndPoints[1], operation);
+        selectionEndPoints[0] = (TreeOperation) transformation.transform(selectionEndPoints[0], operation);    //todo: operation.transform(selectionEndPoints)
+        selectionEndPoints[1] = (TreeOperation) transformation.transform(selectionEndPoints[1], operation);
+
+        log.severe("Start selection: " + selectionEndPoints[0]);
+        log.severe("End selection: " + selectionEndPoints[1]);
 
         // Place the caret at the updated position.
         Document document = (Document) nativeNode.getOwnerDocument();

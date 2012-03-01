@@ -192,6 +192,7 @@ public class TreeCaretOperationTest extends AbstractTreeOperationTest {
         assertEquals(5 - 2, newCaretPos.getPosition());
         assertArrayEquals(path(0, 1, 0), newCaretPos.getPath());
     }
+
     @Test
     public void localCaretAfterPositionOfStyleOperation() // style op is remotely generated
     {
