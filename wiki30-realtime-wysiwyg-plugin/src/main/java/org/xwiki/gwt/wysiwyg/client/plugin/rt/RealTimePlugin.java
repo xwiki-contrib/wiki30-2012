@@ -651,17 +651,21 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         }
         isMerge = isMerge && ((rightParagraph != null) && (!rightParagraph.getClassName().toLowerCase().contains("firebug"))); // todo: remove this!
 
-        if (textNode.getLength() == pos) { // perhaps a line merge
-            if (isMerge) {
-                //line merge only if there is something to merge
-                int lBrCount = leftParagraph.getElementsByTagName(BR).getLength();
-                int rBrCount = rightParagraph.getElementsByTagName(BR).getLength();
-                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0) + 1,
-                    leftParagraph.getChildCount() - lBrCount,
-                    rightParagraph.getChildCount() - rBrCount);
-                op.setPath(TreeHelper.toIntArray(path));
+        if (textNode.getLength() > 0) {
+            if (textNode.getLength() == pos) { // perhaps a line merge
+                if (isMerge) {
+                    //line merge only if there is something to merge
+                    int lBrCount = leftParagraph.getElementsByTagName(BR).getLength();
+                    int rBrCount = rightParagraph.getElementsByTagName(BR).getLength();
+                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0) + 1,
+                        leftParagraph.getChildCount() - lBrCount,
+                        rightParagraph.getChildCount() - rBrCount);
+                    op.setPath(TreeHelper.toIntArray(path));
+                } else {
+                    log.fine("Delete on text node: Below paragraph is null, nothing to be done.");
+                }
             } else {
-                log.fine("Delete on text node: Below paragraph is null, nothing to be done.");
+                op = new TreeDeleteText(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
             }
         } else {
             op = skipDeleteOnEmptyTexts(textNode, leftParagraph, rightParagraph);
@@ -669,16 +673,28 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         return op;
     }
 
-    //skips delete on empty texts
-    private TreeOperation skipDeleteOnEmptyTexts(Node node, Node rightParagraph, Node leftParagraph)
+    /**
+     * Skips empty texts on delete
+     * @param emptyText the empty text node
+     * @param leftParagraph the left paragraph which is the ancestor of the emptyText node
+     * @param rightParagraph the right paragraph
+     * @return a {@link TreeOperation} or {@code null}
+     */
+    private TreeOperation skipDeleteOnEmptyTexts(Node emptyText, Node leftParagraph, Node rightParagraph)
     {
-        return handleBackspaceOrDeleteKeyOnEmptyTexts(false, node, rightParagraph, leftParagraph);
+        return handleBackspaceOrDeleteKeyOnEmptyTexts(false, emptyText, rightParagraph, leftParagraph);
     }
 
-    //skips backspace on empty texts
-    private TreeOperation skipBackspaceOnEmptyTexts(Node node, Node rightParagraph, Node leftParagraph)
+    /**
+     * Skips empty texts on backspace
+     * @param emptyText the empty text node
+     * @param rightParagraph the right paragraph which is the ancestor of the emptyText node
+     * @param leftParagraph the left paragraph
+     * @return a {@link TreeOperation} or {@code null}
+     */
+    private TreeOperation skipBackspaceOnEmptyTexts(Node emptyText, Node rightParagraph, Node leftParagraph)
     {
-        return handleBackspaceOrDeleteKeyOnEmptyTexts(true, node, rightParagraph, leftParagraph) ;
+        return handleBackspaceOrDeleteKeyOnEmptyTexts(true, emptyText, rightParagraph, leftParagraph) ;
     }
 
     private TreeOperation handleBackspaceOrDeleteKeyOnEmptyTexts(boolean isBackspace, Node node,
