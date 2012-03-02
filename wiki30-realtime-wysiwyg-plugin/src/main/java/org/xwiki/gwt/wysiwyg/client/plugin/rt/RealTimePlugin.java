@@ -499,13 +499,13 @@ public class RealTimePlugin extends AbstractStatefulPlugin
                 op.setPath(TreeHelper.toIntArray(path));
             } else {
                 // Position represents the n-th child of this element
-                path.add(pos - 1);
-                Node child = element.getChild(pos - 1); // //todo: child can be a span!
+                Node child = element.getChild(pos - 1);
                 if (child.getNodeType() == Node.TEXT_NODE) {
+                    path.add(pos - 1);
                     pos = child.getNodeValue().length();
                     op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
                 } else {
-                    log.severe("ENTER not handled!");
+                    op = new TreeNewParagraph(clientJupiter.getSiteId(), path.get(0));
                 }
             }
         }
