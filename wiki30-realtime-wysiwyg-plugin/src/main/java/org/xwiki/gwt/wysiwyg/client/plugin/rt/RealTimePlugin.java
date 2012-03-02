@@ -69,6 +69,7 @@ import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import fr.loria.score.jupiter.tree.operation.TreeStyle;
 
 import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getAncestorBelowParagraph;
+import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getAncestorParagraph;
 import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getIntermediaryTargets;
 import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getNonEmptyTextNodes;
 
@@ -152,7 +153,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         // Jupiter algo initializing
         Node bodyNode = textArea.getDocument().getBody();
         // insert a new paragraph on an empty text area
-        final Element p = Document.get().createElement(P);
+        final Element p = Document.get().createElement(P); // todo: add empty text node and the caret stays there!
         if (bodyNode.getChildCount() == 0) {
             bodyNode.insertFirst(p);
         } else if (bodyNode.getChildCount() == 1 && bodyNode.getFirstChild().getNodeName().equalsIgnoreCase(BR)) {
@@ -416,45 +417,34 @@ public class RealTimePlugin extends AbstractStatefulPlugin
 
     public TreeOperation handleBackspaceOnElement(Range caret)
     {
-        int pos = caret.getStartOffset();
         Node startContainer = caret.getStartContainer();
         List<Integer> path = TreeHelper.getLocator(startContainer);
         TreeOperation op = null;
 
         Element rightParagraph;
-        Node n;
         Node leftParagraph;
         Element element = Element.as(startContainer);
-        boolean merge = false;
 
         // Go up below the parent paragraph node, because we might have span tags with text nodes
         if (P.equalsIgnoreCase(element.getNodeName())) {
             rightParagraph = element;
-            merge = true; // perhaps
-        } else { // assume element is a span or other element contained in a paragraph
-            log.severe("It shouldn't happen but I'm handling it anyway!");
-            n = getAncestorBelowParagraph(startContainer);
-            rightParagraph = n.getParentElement();
+            leftParagraph = rightParagraph.getPreviousSibling();
 
-            if (pos == 0 && SPAN.equalsIgnoreCase(element.getNodeName())) { // assume the element is a span
-                // merge iff element is the first child
-                merge = (element == n && n == rightParagraph.getFirstChild());
+            if (leftParagraph != null) {
+                //definitively a line merge
+                int lBrCount = Element.as(leftParagraph).getElementsByTagName(BR).getLength();
+                int rBrCount = rightParagraph.getElementsByTagName(BR).getLength();
+
+                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0),
+                    leftParagraph.getChildCount() - lBrCount,
+                    rightParagraph.getChildCount() - rBrCount);
+                op.setPath(TreeHelper.toIntArray(path));
+            } else {
+                log.fine("Backspace on element: " + element.getTagName() + ", or above paragraph is null");
             }
-        }
-        leftParagraph = rightParagraph.getPreviousSibling();
-        merge = merge && (leftParagraph != null);
-
-        if (merge) {
-            //definitively a line merge
-            int lBrCount = Element.as(leftParagraph).getElementsByTagName(BR).getLength();
-            int rBrCount = rightParagraph.getElementsByTagName(BR).getLength();
-
-            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0),
-                leftParagraph.getChildCount() - lBrCount,
-                rightParagraph.getChildCount() - rBrCount);
-            op.setPath(TreeHelper.toIntArray(path));
-        } else {
-            log.fine("Backspace on element: " + element.getTagName() + ", or above paragraph is null");
+        } else { // assume element is a span or other element contained in a paragraph
+            rightParagraph = Element.as(getAncestorParagraph(element));
+            op = skipBackspaceOnEmptyTexts(element, path, rightParagraph, rightParagraph.getPreviousSibling());
         }
         return op;
     }
@@ -492,7 +482,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
                         rightParagraph.getChildCount() - rBrCount);
                     op.setPath(TreeHelper.toIntArray(path));
                 } else {
-                    op = skipBackspaceOnEmptyTexts(textNode, rightParagraph, leftParagraph);
+                    op = skipBackspaceOnEmptyTexts(textNode, path, rightParagraph, leftParagraph);
                     // todo: can I extract above code in skipBackspaceOnEmptyTexts ?
                 }
             } else {
@@ -602,7 +592,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         TreeOperation op = null;
 
         Element leftParagraph;
-        Element rightParagraph;
+        Element rightParagraph; //todo: same scenario as for Backspace on span element...LUC
 
         // Go up below the parent paragraph node, because we might have span tags with text nodes
         if (P.equalsIgnoreCase(element.getNodeName())) {
@@ -668,43 +658,48 @@ public class RealTimePlugin extends AbstractStatefulPlugin
                 op = new TreeDeleteText(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
             }
         } else {
-            op = skipDeleteOnEmptyTexts(textNode, leftParagraph, rightParagraph);
+            op = skipDeleteOnEmptyTexts(textNode, path, leftParagraph, rightParagraph);
         }
         return op;
     }
 
     /**
      * Skips empty texts on delete
-     * @param emptyText the empty text node
+     *
+     * @param node the node
+     * @param path the node's locator - passed only to avoid computing it again
      * @param leftParagraph the left paragraph which is the ancestor of the emptyText node
      * @param rightParagraph the right paragraph
      * @return a {@link TreeOperation} or {@code null}
      */
-    private TreeOperation skipDeleteOnEmptyTexts(Node emptyText, Node leftParagraph, Node rightParagraph)
+    private TreeOperation skipDeleteOnEmptyTexts(Node node, List<Integer> path, Node leftParagraph, Node rightParagraph)
     {
-        return handleBackspaceOrDeleteKeyOnEmptyTexts(false, emptyText, rightParagraph, leftParagraph);
+        return handleBackspaceOrDeleteKeyOnEmptyTexts(false, node, path, rightParagraph, leftParagraph);
     }
 
     /**
      * Skips empty texts on backspace
-     * @param emptyText the empty text node
+     *
+     * @param node the node
+     * @param path the node's locator - passed only to avoid computing it again
      * @param rightParagraph the right paragraph which is the ancestor of the emptyText node
      * @param leftParagraph the left paragraph
      * @return a {@link TreeOperation} or {@code null}
      */
-    private TreeOperation skipBackspaceOnEmptyTexts(Node emptyText, Node rightParagraph, Node leftParagraph)
+    private TreeOperation skipBackspaceOnEmptyTexts(Node node, List<Integer> path, Node rightParagraph,
+        Node leftParagraph)
     {
-        return handleBackspaceOrDeleteKeyOnEmptyTexts(true, emptyText, rightParagraph, leftParagraph) ;
+        return handleBackspaceOrDeleteKeyOnEmptyTexts(true, node, path, rightParagraph, leftParagraph) ;
     }
 
     private TreeOperation handleBackspaceOrDeleteKeyOnEmptyTexts(boolean isBackspace, Node node,
-        Node rightParagraph, Node leftParagraph)
+        List<Integer> path, Node rightParagraph, Node leftParagraph)
     {
         org.xwiki.gwt.dom.client.Document document = getTextArea().getDocument();
         Range range = document.createRange();
         if (isBackspace) {
             // select backward
-            range.setStartAfter(document.getBody().getFirstChild());
+            range.setStart(document.getBody().getFirstChild(), 0);
             range.setEndBefore(node);
         } else {
             // select forward
@@ -720,22 +715,21 @@ public class RealTimePlugin extends AbstractStatefulPlugin
             Node prevNonEmptyTextNode = nonEmptyTextNodes.get(idx);
 
             log.fine("Previous text node is: " + prevNonEmptyTextNode.getNodeValue());
-            List<Integer> path;
 
             if (node.getParentNode() == prevNonEmptyTextNode.getParentNode()) {
                 // prevNonEmptyTextNode is in the same paragraph as the node, so generate a delete text operation
                 int deletePos = isBackspace ? prevNonEmptyTextNode.getNodeValue().length() - 1 : 0;
-                path = TreeHelper.getLocator(prevNonEmptyTextNode);
                 op = new TreeDeleteText(clientJupiter.getSiteId(), deletePos, TreeHelper.toIntArray(path));
             } else {
                 // prevNonEmptyTextNode is in different paragraph so generate a merge operation
-                int lBbrCount = Element.as(leftParagraph).getElementsByTagName(BR).getLength();
-                int rBbrCount = Element.as(rightParagraph).getElementsByTagName(BR).getLength();
-                path = TreeHelper.getLocator(prevNonEmptyTextNode); //todo: use previous pos
-                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0),
-                    leftParagraph.getChildCount() - lBbrCount,
-                    rightParagraph.getChildCount() - rBbrCount);
-                op.setPath(TreeHelper.toIntArray(path));
+                if((isBackspace && leftParagraph != null) || (!isBackspace && rightParagraph != null)) {
+                    int lBbrCount = Element.as(leftParagraph).getElementsByTagName(BR).getLength();
+                    int rBbrCount = Element.as(rightParagraph).getElementsByTagName(BR).getLength();
+                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0),
+                        leftParagraph.getChildCount() - lBbrCount,
+                        rightParagraph.getChildCount() - rBbrCount);
+                    op.setPath(TreeHelper.toIntArray(path));
+                }
             }
         }
         return op;
