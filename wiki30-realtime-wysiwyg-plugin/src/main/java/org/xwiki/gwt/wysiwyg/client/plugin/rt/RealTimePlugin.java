@@ -464,27 +464,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         Text textNode = Text.as(startContainer);
         if (pos == 0) {
             if (leftParagraph != null) {
-                boolean merge = false;
-                // merge iff textNode is the first child
-                if (textNode != ancestorBelowParagraph && textNode == ancestorBelowParagraph.getFirstChild()) {
-                    merge = true;
-                }
-                if (textNode == ancestorBelowParagraph && ancestorBelowParagraph == rightParagraph.getFirstChild()) {
-                    merge = true;
-                }
-                if (merge) {
-                    //definitively a line merge
-                    int lBrCount = Element.as(leftParagraph).getElementsByTagName(BR).getLength();
-                    int rBrCount = rightParagraph.getElementsByTagName(BR).getLength();
-
-                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0),
-                        leftParagraph.getChildCount() - lBrCount,
-                        rightParagraph.getChildCount() - rBrCount);
-                    op.setPath(TreeHelper.toIntArray(path));
-                } else {
-                    op = skipBackspaceOnEmptyTexts(textNode, path, rightParagraph, leftParagraph);
-                    // todo: can I extract above code in skipBackspaceOnEmptyTexts ?
-                }
+                op = skipBackspaceOnEmptyTexts(textNode, path, rightParagraph, leftParagraph);
             } else {
                 log.fine("Backspace on text node: Above paragraph is null, nothing to be done.");
             }
