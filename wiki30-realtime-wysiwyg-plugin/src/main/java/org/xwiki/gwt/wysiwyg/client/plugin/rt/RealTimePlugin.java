@@ -572,7 +572,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         TreeOperation op = null;
 
         Element leftParagraph;
-        Element rightParagraph; //todo: same scenario as for Backspace on span element...LUC
+        Element rightParagraph;
 
         // Go up below the parent paragraph node, because we might have span tags with text nodes
         if (P.equalsIgnoreCase(element.getNodeName())) {
