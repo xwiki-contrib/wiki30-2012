@@ -624,36 +624,14 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         List<Integer> path = TreeHelper.getLocator(startContainer);
         TreeOperation op = null;
 
-        Element leftParagraph;
-        Element rightParagraph;
-
         // Go up below the parent paragraph node, because we might have span tags with text nodes
-        final Node ancestorBelowParagraph = getAncestorBelowParagraph(startContainer);
-        leftParagraph = ancestorBelowParagraph.getParentElement();
-        rightParagraph = leftParagraph.getNextSiblingElement();
-
-        boolean isMerge = false;
-        if (textNode != ancestorBelowParagraph) {
-            isMerge = ancestorBelowParagraph == ancestorBelowParagraph.getParentNode().getLastChild();
-            isMerge = isMerge && textNode == ancestorBelowParagraph.getLastChild();
-        } else {
-            isMerge = textNode == ancestorBelowParagraph.getParentElement().getLastChild();
-        }
-        isMerge = isMerge && ((rightParagraph != null) && (!rightParagraph.getClassName().toLowerCase().contains("firebug"))); // todo: remove this!
+        final Node ancestorParagraph = getAncestorParagraph(startContainer);
+        Element leftParagraph = Element.as(ancestorParagraph);
+        Element rightParagraph = leftParagraph.getNextSiblingElement();
 
         if (textNode.getLength() > 0) {
             if (textNode.getLength() == pos) { // perhaps a line merge
-                if (isMerge) {
-                    //line merge only if there is something to merge
-                    int lBrCount = leftParagraph.getElementsByTagName(BR).getLength();
-                    int rBrCount = rightParagraph.getElementsByTagName(BR).getLength();
-                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0) + 1,
-                        leftParagraph.getChildCount() - lBrCount,
-                        rightParagraph.getChildCount() - rBrCount);
-                    op.setPath(TreeHelper.toIntArray(path));
-                } else {
-                    log.fine("Delete on text node: Below paragraph is null, nothing to be done.");
-                }
+                op = skipDeleteOnEmptyTexts(textNode, path, leftParagraph, rightParagraph);
             } else {
                 op = new TreeDeleteText(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
             }
@@ -704,7 +682,8 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         } else {
             // select forward
             range.setStartAfter(node);
-            range.setEndBefore(document.getBody().getLastChild());
+            Node lastChild = document.getBody().getLastChild();
+            range.setEnd(lastChild, lastChild.getChildCount());
         }
 
         TreeOperation op = null;
@@ -712,20 +691,21 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         List<Text> nonEmptyTextNodes = getNonEmptyTextNodes(range);
         if (nonEmptyTextNodes.size() > 0) {
             int idx = isBackspace ? nonEmptyTextNodes.size() - 1 : 0;
-            Node prevNonEmptyTextNode = nonEmptyTextNodes.get(idx);
+            Node nonEmptyTextNode = nonEmptyTextNodes.get(idx);
 
-            log.fine("Previous text node is: " + prevNonEmptyTextNode.getNodeValue());
+            log.fine("Non empty text node is: " + nonEmptyTextNode.getNodeValue());
 
-            if (node.getParentNode() == prevNonEmptyTextNode.getParentNode()) {
-                // prevNonEmptyTextNode is in the same paragraph as the node, so generate a delete text operation
-                int deletePos = isBackspace ? prevNonEmptyTextNode.getNodeValue().length() - 1 : 0;
+            if (node.getParentNode() == nonEmptyTextNode.getParentNode()) {
+                // nonEmptyTextNode is in the same paragraph as the node, so generate a delete text operation
+                int deletePos = isBackspace ? nonEmptyTextNode.getNodeValue().length() - 1 : 0;
                 op = new TreeDeleteText(clientJupiter.getSiteId(), deletePos, TreeHelper.toIntArray(path));
             } else {
-                // prevNonEmptyTextNode is in different paragraph so generate a merge operation
+                // nonEmptyTextNode is in different paragraph so generate a merge operation
                 if((isBackspace && leftParagraph != null) || (!isBackspace && rightParagraph != null)) {
                     int lBbrCount = Element.as(leftParagraph).getElementsByTagName(BR).getLength();
                     int rBbrCount = Element.as(rightParagraph).getElementsByTagName(BR).getLength();
-                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0),
+                    int mergePos = isBackspace ? path.get(0) : path.get(0) + 1;
+                    op = new TreeMergeParagraph(clientJupiter.getSiteId(), mergePos,
                         leftParagraph.getChildCount() - lBbrCount,
                         rightParagraph.getChildCount() - rBbrCount);
                     op.setPath(TreeHelper.toIntArray(path));
