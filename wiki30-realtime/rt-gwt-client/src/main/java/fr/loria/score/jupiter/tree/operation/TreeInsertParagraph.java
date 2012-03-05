@@ -1,48 +1,51 @@
 package fr.loria.score.jupiter.tree.operation;
 
+import java.util.logging.Logger;
+
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeFactory;
 import fr.loria.score.jupiter.tree.TreeUtils;
 
-import java.util.logging.Logger;
-
-public class TreeInsertParagraph extends TreeOperation {
+public class TreeInsertParagraph extends TreeOperation
+{
     private static transient Logger logger = Logger.getLogger(TreeInsertParagraph.class.getName());
 
     public boolean splitLeft;//split left : true if position<>0(generation)
 
-    public TreeInsertParagraph() {}
+    public TreeInsertParagraph()
+    {
+    }
 
     /**
      * This is the usual constructor to be used.
+     *
      * @param siteId the site id
      * @param position the insertion position. If split between 2 nodes, uses the second and position=0.
      * @param path the path
      */
-    public TreeInsertParagraph(int siteId, int position, int[] path) {
+    public TreeInsertParagraph(int siteId, int position, int[] path)
+    {
         super(siteId, position);
         setPath(path);
         if (position != 0) {
             this.splitLeft = true;
-        }else {
+        } else {
             this.splitLeft = false;
         }
     }
 
     /**
      * This constructor should be used only by transformation functions.
-     * @param siteId
-     * @param position
-     * @param path
-     * @param splitLeft
      */
-    public TreeInsertParagraph(int siteId, int position, int[] path, boolean splitLeft) {
+    public TreeInsertParagraph(int siteId, int position, int[] path, boolean splitLeft)
+    {
         super(siteId, position);
         setPath(path);
         this.splitLeft = splitLeft;
     }
 
-    public void execute(Tree root) {
+    public void execute(Tree root)
+    {
         int d = 1;//décalage
         Tree tree = root;
         Tree pTree = TreeFactory.createParagraphTree();
@@ -74,8 +77,9 @@ public class TreeInsertParagraph extends TreeOperation {
                     } else {
                         tree = tree.getChild(path[i + 1]);
                         String str = tree.split(position);
-                        if (str != null)
+                        if (str != null) {
                             tTree.addChild(TreeFactory.createTextTree(str), 0);
+                        }
                     }
                 }
             }
@@ -86,12 +90,14 @@ public class TreeInsertParagraph extends TreeOperation {
         logger.info("Done executing " + toString() + " root is: " + root);
     }
 
-    public String toString() {
-        return "InsertP(" +  super.toString() + ")";
+    public String toString()
+    {
+        return "InsertP(" + super.toString() + ")";
     }
 
     //OT pour InsertP
-    protected TreeOperation handleTreeInsertText(TreeInsertText op1) {
+    protected TreeOperation handleTreeInsertText(TreeInsertText op1)
+    {
         if (!TreeUtils.diff(op1.path, path)) {
             if (op1.getPosition() < position) {
                 return op1;
@@ -111,7 +117,8 @@ public class TreeInsertParagraph extends TreeOperation {
         return new TreeInsertText(op1.getSiteId(), op1.getPosition(), tab, op1.text);
     }
 
-    protected TreeOperation handleTreeDeleteText(TreeDeleteText op1) {
+    protected TreeOperation handleTreeDeleteText(TreeDeleteText op1)
+    {
         if (!TreeUtils.diff(op1.path, path)) {
             if (op1.getPosition() < position) {
                 return op1;
@@ -131,14 +138,16 @@ public class TreeInsertParagraph extends TreeOperation {
         return new TreeDeleteText(op1.getSiteId(), op1.getPosition(), tab);
     }
 
-    protected TreeOperation handleTreeNewParagraph(TreeNewParagraph op1) {
+    protected TreeOperation handleTreeNewParagraph(TreeNewParagraph op1)
+    {
         if (op1.getPosition() <= path[0]) {
             return op1;
         }
         return new TreeNewParagraph(op1.getSiteId(), op1.getPosition() + 1);
     }
 
-    protected TreeOperation handleTreeMergeParagraph(TreeMergeParagraph op1) {
+    protected TreeOperation handleTreeMergeParagraph(TreeMergeParagraph op1)
+    {
         if (op1.getPosition() == path[0]) {
             return new TreeMergeParagraph(op1.getPosition(), op1.leftSiblingChildrenNr, path[1] + (splitLeft ? 1 : 0));
         }
@@ -151,7 +160,8 @@ public class TreeInsertParagraph extends TreeOperation {
         return new TreeMergeParagraph(op1.getPosition() + 1, op1.leftSiblingChildrenNr, op1.childrenNr);
     }
 
-    protected TreeOperation handleTreeInsertParagraph(TreeInsertParagraph op1) {
+    protected TreeOperation handleTreeInsertParagraph(TreeInsertParagraph op1)
+    {
         if (!TreeUtils.diff(op1.path, path)) {
             if (op1.getPosition() < position) {
                 return op1;
@@ -174,7 +184,8 @@ public class TreeInsertParagraph extends TreeOperation {
         return new TreeInsertParagraph(op1.siteId, op1.getPosition(), tab, op1.splitLeft);
     }
 
-    protected TreeOperation handleTreeDeleteTree(TreeDeleteTree op1) {
+    protected TreeOperation handleTreeDeleteTree(TreeDeleteTree op1)
+    {
         if (TreeUtils.inf(op1.path, path)) {
             return op1;
         }
@@ -192,10 +203,10 @@ public class TreeInsertParagraph extends TreeOperation {
         }
         int[] tab = TreeUtils.reference(op1.path, path);
         return new TreeDeleteTree(tab);
-
     }
 
-    protected TreeOperation handleTreeStyle(TreeStyle op1) {
+    protected TreeOperation handleTreeStyle(TreeStyle op1)
+    {
         if (TreeUtils.inf(op1.path, path)) {
             return op1;
         }
@@ -207,7 +218,8 @@ public class TreeInsertParagraph extends TreeOperation {
                 return op1;
             }
             if (op1.end == position) {
-                return new TreeStyle(op1.getSiteId(), op1.path, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, false);
+                return new TreeStyle(op1.getSiteId(), op1.path, op1.start, op1.end, op1.param, op1.value, op1.addStyle,
+                    op1.splitLeft, false);
             }
             int[] tab = new int[op1.path.length];
             tab[0] = op1.path[0] + 1;
@@ -215,37 +227,44 @@ public class TreeInsertParagraph extends TreeOperation {
 				return new TreeStyle(tab,op1.start-position,op1.end-position,op1.param,op1.value,op1.siteId,op1.addStyle,op1.splitLeft,op1.sr);
 			}*/
             if (op1.start > position) {
-                return new TreeStyle(op1.getSiteId(), tab, op1.start - position, op1.end - position, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
+                return new TreeStyle(op1.getSiteId(), tab, op1.start - position, op1.end - position, op1.param,
+                    op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
             }
             if (op1.start == position) {
-                return new TreeStyle(op1.getSiteId(), tab, op1.start - position, op1.end - position, op1.param, op1.value, op1.addStyle, false, op1.splitRight);
+                return new TreeStyle(op1.getSiteId(), tab, op1.start - position, op1.end - position, op1.param,
+                    op1.value, op1.addStyle, false, op1.splitRight);
             }
             //paragraphe entre start et end
             return new TreeCompositeOperation(
-                    new TreeStyle(op1.getSiteId(), op1.path, op1.start, position, op1.param, op1.value, op1.addStyle, op1.splitLeft, false),
-                    new TreeStyle(op1.getSiteId(), tab, 0, op1.end - position, op1.param, op1.value, op1.addStyle, false, op1.splitRight)
+                new TreeStyle(op1.getSiteId(), op1.path, op1.start, position, op1.param, op1.value, op1.addStyle,
+                    op1.splitLeft, false),
+                new TreeStyle(op1.getSiteId(), tab, 0, op1.end - position, op1.param, op1.value, op1.addStyle, false,
+                    op1.splitRight)
             );
         }
         //TreeUtils.inf(path,op1.path)
         if (op1.path[0] > path[0]) {
             int[] tab = TreeUtils.addP(op1.path, 1);
-            return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
+            return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle,
+                op1.splitLeft, op1.splitRight);
         }
         int[] tab = TreeUtils.reference(op1.path, path);
-        return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
+        return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle,
+            op1.splitLeft, op1.splitRight);
     }
 
-    protected TreeOperation handleTreeMoveParagraph(TreeMoveParagraph op1) {
+    protected TreeOperation handleTreeMoveParagraph(TreeMoveParagraph op1)
+    {
         if (op1.sp == path[0]) {
             if (op1.sp < op1.ep) {
                 return new TreeCompositeOperation(
-                        new TreeMoveParagraph(op1.getSiteId(), op1.sp, op1.ep + 1),
-                        new TreeMoveParagraph(op1.getSiteId(), op1.sp, op1.ep + 1)
+                    new TreeMoveParagraph(op1.getSiteId(), op1.sp, op1.ep + 1),
+                    new TreeMoveParagraph(op1.getSiteId(), op1.sp, op1.ep + 1)
                 );
             } else {
                 return new TreeCompositeOperation(
-                        new TreeMoveParagraph(op1.getSiteId(), op1.sp, op1.ep),
-                        new TreeMoveParagraph(op1.getSiteId(), op1.sp + 1, op1.ep + 1)
+                    new TreeMoveParagraph(op1.getSiteId(), op1.sp, op1.ep),
+                    new TreeMoveParagraph(op1.getSiteId(), op1.sp + 1, op1.ep + 1)
                 );
             }
         }
@@ -261,7 +280,8 @@ public class TreeInsertParagraph extends TreeOperation {
     }
 
     @Override
-    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1)
+    {
         if (!TreeUtils.diff(op1.path, path)) {
             if (op1.getPosition() < position) {
                 return op1;
