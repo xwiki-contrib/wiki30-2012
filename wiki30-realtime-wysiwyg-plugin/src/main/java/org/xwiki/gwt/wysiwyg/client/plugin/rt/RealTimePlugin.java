@@ -63,7 +63,6 @@ import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
 import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
-import fr.loria.score.jupiter.tree.operation.TreeMergeParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import fr.loria.score.jupiter.tree.operation.TreeStyle;
@@ -433,13 +432,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
 
             if (leftParagraph != null) {
                 //definitively a line merge
-                int lBrCount = Element.as(leftParagraph).getElementsByTagName(BR).getLength();
-                int rBrCount = rightParagraph.getElementsByTagName(BR).getLength();
-
-                op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0),
-                    leftParagraph.getChildCount() - lBrCount,
-                    rightParagraph.getChildCount() - rBrCount);
-                op.setPath(TreeHelper.toIntArray(path));
+                op = treeOperationFactory.createTreeMergeParagraph(true, clientJupiter.getSiteId(), leftParagraph, rightParagraph, path);
             } else {
                 log.fine("Backspace on element: " + element.getTagName() + ", or above paragraph is null");
             }
@@ -586,12 +579,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         rightParagraph = leftParagraph.getNextSiblingElement();
 
         if (rightParagraph != null) {
-            int lBrCount = leftParagraph.getElementsByTagName(BR).getLength();
-            int rBrCount = rightParagraph.getElementsByTagName(BR).getLength();
-            op = new TreeMergeParagraph(clientJupiter.getSiteId(), path.get(0) + 1,
-                leftParagraph.getChildCount() - lBrCount,
-                rightParagraph.getChildCount() - rBrCount);
-            op.setPath(TreeHelper.toIntArray(path));
+            op = treeOperationFactory.createTreeMergeParagraph(false, clientJupiter.getSiteId(), leftParagraph, rightParagraph, path);
         } else {
             log.fine("Delete on element node: Below paragraph is null, nothing to be done.");
         }
