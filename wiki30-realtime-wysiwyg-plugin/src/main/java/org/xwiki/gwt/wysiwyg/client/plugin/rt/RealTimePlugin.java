@@ -692,7 +692,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         } else {
             //caret is positioned into the first left empty text
             //perhaps backspace on first empty text node
-            mergeOnBackspace = mergeOnBackspace && (node == rightParagraph.getFirstChild());
+            mergeOnBackspace = mergeOnBackspace && (node == node.getParentNode().getFirstChild());
             //perhaps delete on last empty text node, but I don't care since all text nodes are empty so do it anyway
             mergeOnDelete = mergeOnDelete;
         }
