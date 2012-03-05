@@ -23,8 +23,12 @@ import java.util.List;
 
 import org.xwiki.gwt.dom.client.Range;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Node;
+
 import fr.loria.score.jupiter.tree.operation.TreeCaretPosition;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
+import fr.loria.score.jupiter.tree.operation.TreeMergeParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 
 /**
@@ -57,5 +61,19 @@ public class TreeOperationFactory
     {
         List<Integer> path = TreeHelper.getLocator(location.getStartContainer());
         return new TreeCaretPosition(siteId, location.getStartOffset(), TreeHelper.toIntArray(path));
+    }
+
+    public TreeMergeParagraph createTreeMergeParagraph(boolean isBackspace, int siteId, Node leftParagraph, Node rightParagraph, List<Integer> path)
+    {
+        TreeMergeParagraph op = null;
+        int lBbrCount = Element.as(leftParagraph).getElementsByTagName("br").getLength();
+        int rBbrCount = Element.as(rightParagraph).getElementsByTagName("br").getLength();
+        int mergePos = isBackspace ? path.get(0) : path.get(0) + 1;
+        op = new TreeMergeParagraph(siteId, mergePos,
+            leftParagraph.getChildCount() - lBbrCount,
+            rightParagraph.getChildCount() - rBbrCount);
+        op.setPath(TreeHelper.toIntArray(path));
+
+        return op;
     }
 }

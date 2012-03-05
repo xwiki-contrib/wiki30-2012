@@ -33,7 +33,7 @@ public class RtPluginCaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(getContainer(), 0);
         oldCaretPos.setEnd(getContainer(), 0);
 
-        List textNodes = EditorUtils.getNonEmptyTextNodes(oldCaretPos);
+        List textNodes = EditorUtils.getTextNodes(oldCaretPos).get(EditorUtils.NON__EMPTY);
         assertNotNull(textNodes);
         assertEquals("Invalid nr of text nodes", 0, textNodes.size());
     }
@@ -346,9 +346,9 @@ public class RtPluginCaretPositionTest extends RtPluginTestCase
     // Caret is <p>|</p>
     public void testCaretStartOfEmptyParagraph()
     {
-        getContainer().removeFromParent();
         Element p = getDocument().createPElement().cast();
-        getDocument().getBody().appendChild(p);
+        getDocument().getBody().replaceChild(p, getContainer());
+        assertEquals("Invalid nr of children", 0, getDocument().getBody().getFirstChild().getChildCount());
 
         oldCaretPos.setStart(p, 0);
         oldCaretPos.setEnd(p, 0);
@@ -460,6 +460,110 @@ public class RtPluginCaretPositionTest extends RtPluginTestCase
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
         assertEquals(getContainer().getChild(1), newCaretPos.getStartContainer());
         assertEquals(2, newCaretPos.getStartOffset());
+        assertTrue(newCaretPos.isCollapsed());
+    }
+
+    // Caret is <p>|[]</p>
+    public void testCaretGoesToRightEmptyText()
+    {
+        getContainer().removeFromParent();
+        Element p = getDocument().createPElement().cast();
+        p.appendChild(getDocument().createTextNode(""));
+        getDocument().getBody().appendChild(p);
+        assertEquals("Invalid nr of children", 1, p.getChildCount());
+
+        oldCaretPos.setStart(p, 0);
+        oldCaretPos.setEnd(p, 0);
+
+        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+
+        // Caret is <p>[|]</p>
+        assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
+        assertEquals(p.getFirstChild(), newCaretPos.getStartContainer());
+        assertEquals(0, newCaretPos.getStartOffset());
+        assertTrue(newCaretPos.isCollapsed());
+    }
+
+    // Caret is <p>[]|</p>
+    public void testCaretGoesLeftToEmptyText()
+    {
+        getContainer().removeFromParent();
+        Element p = getDocument().createPElement().cast();
+        p.appendChild(getDocument().createTextNode(""));
+        assertEquals("Invalid nr of children", 1, p.getChildCount());
+
+        oldCaretPos.setStart(p, 1);
+        oldCaretPos.setEnd(p, 1);
+
+        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+
+        // Caret is <p>[|]</p>
+        assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
+        assertEquals(p.getFirstChild(), newCaretPos.getStartContainer());
+        assertEquals(0, newCaretPos.getStartOffset());
+        assertTrue(newCaretPos.isCollapsed());
+    }
+
+    // Caret is <p>[]|[]</p>
+    public void testCaretGoesToEmptyText3()
+    {
+        getContainer().removeFromParent();
+        Element p = getDocument().createPElement().cast();
+        p.appendChild(getDocument().createTextNode(""));
+        p.appendChild(getDocument().createTextNode(""));
+        assertEquals("Invalid nr of children", 2, p.getChildCount());
+
+        oldCaretPos.setStart(p, 1);
+        oldCaretPos.setEnd(p, 1);
+
+        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+
+        // Caret is <p>[|][]</p>
+        assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
+        assertEquals(p.getFirstChild(), newCaretPos.getStartContainer());
+        assertEquals(0, newCaretPos.getStartOffset());
+        assertTrue(newCaretPos.isCollapsed());
+    }
+
+    // Caret is <p>[][|]</p>
+    public void testCaretGoesToFirstEmptyText()
+    {
+        getContainer().removeFromParent();
+        Element p = getDocument().createPElement().cast();
+        p.appendChild(getDocument().createTextNode(""));
+        p.appendChild(getDocument().createTextNode(""));
+        assertEquals("Invalid nr of children", 2, p.getChildCount());
+
+        oldCaretPos.setStart(p.getChild(1), 0);
+        oldCaretPos.setEnd(p.getChild(1), 0);
+
+        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+
+        // Caret is <p>[|][]</p>
+        assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
+        assertEquals(p.getFirstChild(), newCaretPos.getStartContainer());
+        assertEquals(0, newCaretPos.getStartOffset());
+        assertTrue(newCaretPos.isCollapsed());
+    }
+
+     // Caret is <p>[][]|</p>
+    public void testCaretGoesToFirstEmptyText1()
+    {
+        getContainer().removeFromParent();
+        Element p = getDocument().createPElement().cast();
+        p.appendChild(getDocument().createTextNode(""));
+        p.appendChild(getDocument().createTextNode(""));
+        assertEquals("Invalid nr of children", 2, p.getChildCount());
+
+        oldCaretPos.setStart(p, 2);
+        oldCaretPos.setEnd(p, 2);
+
+        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+
+        // Caret is <p>[|][]</p>
+        assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
+        assertEquals(p.getFirstChild(), newCaretPos.getStartContainer());
+        assertEquals(0, newCaretPos.getStartOffset());
         assertTrue(newCaretPos.isCollapsed());
     }
 }

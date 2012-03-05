@@ -1,7 +1,9 @@
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.xwiki.gwt.dom.client.DOMUtils;
 import org.xwiki.gwt.dom.client.Range;
@@ -11,16 +13,22 @@ import com.google.gwt.dom.client.Text;
 
 /**
  * Utility class used for controlling the behaviour of the realtime wysiwyg editor.
- * The caret has to be deterministically positioned, it is always located as follows:
- * <ul>
- *     <li>at the last position of the previous non-empty text-node within the same paragraph if such a previous text-node exists.</li>
- *     <li>if not, at the first position of the next non-empty text-node relative to the locator within the same paragraph.</li>
- * </ul>
+ *
  * @author Bogdan.Flueras@inria.fr
  */
 public class EditorUtils
 {
+    public static final String NON__EMPTY = "NON_EMPTY";
+
+    public static final String EMPTY = "EMPTY";
+
     /**
+     * The caret has to be deterministically positioned (within a paragraph), it is always located as follows:
+     * <ul>
+     *     <li>at the last position of the previous non-empty text-node within the same paragraph if such a previous text-node exists.</li>
+     *     <li>if not, at the first position of the next non-empty text-node relative to the locator within the same paragraph.</li>
+     *     <li>if there are no non-empty text nodes (all text nodes are empty) then the caret moves to the first empty text node either at left or at right
+     * </ul>
      * @param oldCaretPosition the old caret position
      * @return the new caret position, as described above
      */
@@ -35,16 +43,32 @@ public class EditorUtils
                 return oldCaretPosition;
             } else {
                 // go left whenever possible, if not go right
-                List<Text> leftTextNodesInSameP = getLeftTextNodesInSameP(oldCaretPosition);
-                int leftSize = leftTextNodesInSameP.size();
+                Map<String, List<Text>> leftTextNodesInSameP = getLeftTextNodesInSameP(oldCaretPosition);
+                List<Text> leftNonEmpty = leftTextNodesInSameP.get(NON__EMPTY);
+                int leftSize = leftNonEmpty.size();
                 if (leftSize > 0) {
-                    Text firstLeftTextNode = leftTextNodesInSameP.get(leftSize - 1);
+                    Text firstLeftTextNode = leftNonEmpty.get(leftSize - 1);
                     newCaretPos.setStart(firstLeftTextNode, firstLeftTextNode.getLength());
                 } else {
-                    List<Text> rightTextNodesInSameP = getRightTextNodesInSameP(oldCaretPosition);
-                    if (rightTextNodesInSameP.size() > 0) {
-                        Text firstRightTextNode = rightTextNodesInSameP.get(0);
+                    Map<String, List<Text>> rightTextNodesInSameP = getRightTextNodesInSameP(oldCaretPosition);
+                    List<Text> rightNonEmpty = rightTextNodesInSameP.get(NON__EMPTY);
+                    if (rightNonEmpty.size() > 0) {
+                        Text firstRightTextNode = rightNonEmpty.get(0);
                         newCaretPos.setStart(firstRightTextNode, 0);
+                    } else { //no left or right non-empty text nodes, so go to first text child (which is empty)
+                        List<Text> emptyTextNodes = leftTextNodesInSameP.get(EMPTY);
+                        Text emptyText = null;
+                        if (emptyTextNodes.size() > 0) {
+                            emptyText = emptyTextNodes.get(0);
+                        } else {
+                            emptyTextNodes = rightTextNodesInSameP.get(EMPTY);
+                            if (emptyTextNodes.size() > 0) {
+                                emptyText = emptyTextNodes.get(emptyTextNodes.size() - 1);
+                            }
+                        }
+                        if (emptyText != null) {
+                            newCaretPos.setStart(emptyText, 0);
+                        }
                     }
                 }
             }
@@ -89,7 +113,7 @@ public class EditorUtils
         List<OperationTarget> operationTargets = new ArrayList<OperationTarget>();
         // Create the intermediary targets backwards because if we preserve the normal order when we modify the tree,
         // the following targets will no longer reflect that
-        List<Text> textNodes = getNonEmptyTextNodes(range);
+        List<Text> textNodes = getTextNodes(range).get(NON__EMPTY);
         for (int i = 0; i < textNodes.size(); i++) {
             Text text = textNodes.get(i);
             int startIndex = 0;
@@ -107,57 +131,76 @@ public class EditorUtils
 
      /**
      * @param range a DOM range
-     * @return the list of non empty text nodes that are completely or partially (at least one character) included in
+     * @return the list of empty and non empty text nodes that are completely or partially (at least one character) included in
      *         the given range
      */
-    public static List<Text> getNonEmptyTextNodes(Range range) {
+    public static Map<String, List<Text>> getTextNodes(Range range) {
+        Map<String, List<Text>> textNodesMap = new HashMap<String, List<Text>>();
+
         Node leaf = DOMUtils.getInstance().getFirstLeaf(range);
         Node lastLeaf = DOMUtils.getInstance().getLastLeaf(range);
-        List<Text> textNodes = new ArrayList<Text>();
+        List<Text> nonEmptyTextNodes = new ArrayList<Text>();
+        List<Text> emptyTextNodes = new ArrayList<Text>();
+
         // If the range starts at the end of a text node we have to ignore that node.
-        if (isNonEmptyTextNode(leaf)
-                && (leaf != range.getStartContainer() || range.getStartOffset() < leaf.getNodeValue().length())) {
-            textNodes.add((Text) leaf);
+        if (isTextNode(leaf) &&
+            (leaf != range.getStartContainer() || range.getStartOffset() < leaf.getNodeValue().length()))
+        {
+            if (isNonEmptyTextNode(leaf)) {
+                nonEmptyTextNodes.add((Text) leaf);
+            } else if (isEmptyTextNode(leaf)) {
+                emptyTextNodes.add((Text) leaf);
+            }
         }
         while (leaf != lastLeaf) {
             leaf = DOMUtils.getInstance().getNextLeaf(leaf);
             if (isNonEmptyTextNode(leaf)) {
-                textNodes.add((Text) leaf);
+                nonEmptyTextNodes.add((Text) leaf);
+            } else if (isEmptyTextNode(leaf)) {
+                emptyTextNodes.add((Text) leaf);
             }
         }
         // If the range ends at the start of a text node then we have to ignore that node.
-        int lastIndex = textNodes.size() - 1;
-        if (lastIndex >= 0 && range.getEndOffset() == 0 && textNodes.get(lastIndex) == range.getEndContainer()) {
-            textNodes.remove(lastIndex);
+        int lastIndex = nonEmptyTextNodes.size() - 1;
+        if (lastIndex >= 0 && range.getEndOffset() == 0 && nonEmptyTextNodes.get(lastIndex) == range.getEndContainer()) {
+            nonEmptyTextNodes.remove(lastIndex);
         }
-        return textNodes;
+        textNodesMap.put(NON__EMPTY, nonEmptyTextNodes);
+
+        lastIndex = emptyTextNodes.size() - 1;
+        if (lastIndex >=0 && range.getEndOffset() == 0 && emptyTextNodes.get(lastIndex) == range.getEndContainer()) {
+            emptyTextNodes.remove(lastIndex);
+        }
+        textNodesMap.put(EMPTY, emptyTextNodes);
+
+        return textNodesMap;
     }
 
     /**
-     * @param range the selection range, usually a collapsed range which is the caret position
+     * @param range the selection range, usually a collapsed range which is the caret position, placed inside a paragraph
      * @return all the non-empty text nodes from the left of the caret within the same paragraph
      */
-    private static List<Text> getLeftTextNodesInSameP(Range range)
+    private static Map<String, List<Text>> getLeftTextNodesInSameP(Range range)
     {
         Range leftRange = range.cloneRange();
         leftRange.setEnd(range.getStartContainer(), range.getStartOffset());
         Node parentPNode = getAncestorParagraph(range.getStartContainer());
         leftRange.setStart(parentPNode, 0);
 
-        return getNonEmptyTextNodes(leftRange);
+        return getTextNodes(leftRange);
     }
 
     /**
-     * @param range the selection range, usually a collapsed range which is the caret position
+     * @param range the selection range, usually a collapsed range which is the caret position, placed inside a paragraph
      * @return all the non-empty text nodes from the right of the caret within the same paragraph
      */
-    private static List<Text> getRightTextNodesInSameP(Range range)
+    private static Map<String, List<Text>> getRightTextNodesInSameP(Range range)
     {
         Range rightRange = range.cloneRange();
         Node parentPNode = getAncestorParagraph(range.getEndContainer());
         rightRange.setEnd(parentPNode, parentPNode.getChildCount());
 
-        return getNonEmptyTextNodes(rightRange);
+        return getTextNodes(rightRange);
     }
 
     /**
@@ -166,7 +209,15 @@ public class EditorUtils
      *         otherwise
      */
     public static boolean isNonEmptyTextNode(Node node) {
-        return node != null && node.getNodeType() == Node.TEXT_NODE && node.getNodeValue().length() > 0;
+        return isTextNode(node) && node.getNodeValue().length() > 0;
+    }
+
+    public static boolean isTextNode(Node node) {
+        return node != null && node.getNodeType() == Node.TEXT_NODE;
+    }
+
+    public static boolean isEmptyTextNode(Node node) {
+        return isTextNode(node) && node.getNodeValue().length() == 0;
     }
 
     /**
