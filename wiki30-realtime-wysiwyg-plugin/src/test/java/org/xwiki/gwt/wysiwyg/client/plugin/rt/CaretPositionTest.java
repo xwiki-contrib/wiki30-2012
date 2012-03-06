@@ -44,7 +44,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(getContainer(), 0);
         oldCaretPos.setEnd(getContainer(), 0);
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
 
         // New caret is <p>[|ab]<span font-weight=”bold”>[cd]</span>ef</p>
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
@@ -62,7 +62,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(firstTextNode, 0);
         oldCaretPos.setEnd(firstTextNode, 0);
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
 
         // Caret is <p>[|ab]<span font-weight=”bold”>[cd]</span>ef</p>
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
@@ -80,7 +80,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(firstTextNode, 1);
         oldCaretPos.setEnd(firstTextNode, 1);
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
         // Caret is <p>[a|b]<span font-weight=”bold”>[cd]</span>ef</p>
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
         assertEquals(firstTextNode, newCaretPos.getStartContainer());
@@ -97,7 +97,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(firstTextNode, firstTextNode.getLength());
         oldCaretPos.setEnd(firstTextNode, firstTextNode.getLength());
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
 
         // Caret is <p>[ab|]<span font-weight=”bold”>[cd]</span>ef</p>
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
@@ -111,7 +111,7 @@ public class CaretPositionTest extends RtPluginTestCase
     {
         oldCaretPos.setStart(getContainer(), 1);
         oldCaretPos.setEnd(getContainer(), 1);
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
 
         // Caret is <p>[ab|]<span font-weight=”bold”>[cd]</span>ef</p>
         Text expectedText = Text.as(getContainer().getFirstChild()); //Get the first child text node
@@ -131,7 +131,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStartAfter(spanElement); // spanElement,0
         oldCaretPos.setEndBefore(spanElement.getFirstChild());
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
 
         // Caret is <p>[ab|]<span font-weight=”bold”>[cd]</span>ef</p>
         Text expectedText = Text.as(getContainer().getFirstChild()); //Get the first child text node
@@ -154,7 +154,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(textNode, 0);
         oldCaretPos.setEnd(textNode, 0);
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
         // Caret is <p>[ab|]<span font-weight=”bold”>[cd]</span>ef</p>
         Text expectedTextNode = Text.as(getContainer().getFirstChild());
         assertEquals(Node.TEXT_NODE, expectedTextNode.getNodeType());
@@ -178,7 +178,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(textNode, 1);
         oldCaretPos.setEnd(textNode, 1);
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
 
         // Caret is <p>[ab]<span font-weight=”bold”>[c|d]</span>ef</p>
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
@@ -200,7 +200,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(expectedText, expectedText.getLength());
         oldCaretPos.setEnd(expectedText, expectedText.getLength());
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
 
         // Caret is <p>[ab]<span font-weight=”bold”>[cd|]</span>ef</p>
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
@@ -219,7 +219,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(spanElement, 1);
         oldCaretPos.setEnd(spanElement, 1);
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
 
         Text expectedText = Text.as(spanElement.getFirstChild());
         assertEquals(Node.TEXT_NODE, expectedText.getNodeType());
@@ -237,7 +237,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(getContainer(), 2);
         oldCaretPos.setEnd(getContainer(), 2);
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
 
         // Caret is <p>[ab]<span font-weight=”bold”>[cd|]</span>ef</p>
         //Get the first child text node of span element
@@ -263,7 +263,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(text, 0);
         oldCaretPos.setEnd(text, 0);
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
 
         Text expectedText = Text.as(spanElement.getFirstChild());
         assertEquals(Node.TEXT_NODE, expectedText.getNodeType());
@@ -288,7 +288,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(expectedText, 1);
         oldCaretPos.setEnd(expectedText, 1);
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
 
         // Caret is <p>[ab]<span font-weight=”bold”>[cd]</span>[e|f]</p>
         assertEquals(oldCaretPos, newCaretPos);
@@ -311,7 +311,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(expectedText, expectedText.getLength());
         oldCaretPos.setEnd(expectedText, expectedText.getLength());
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
 
         // Caret is <p>[ab]<span font-weight=”bold”>[cd]</span>[ef|]</p>
         assertEquals(oldCaretPos, newCaretPos);
@@ -334,7 +334,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(getContainer(), 3);
         oldCaretPos.setEnd(getContainer(), 3);
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
 
         // Caret is <p>[ab]<span font-weight=”bold”>[cd]</span>[ef|]</p>
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
@@ -359,7 +359,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(lastTextNode, 0);
         oldCaretPos.setEnd(lastTextNode, 0);
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
         // Caret is <p>[]<span>[]</span>[|z]</p>
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
         assertEquals(lastTextNode, newCaretPos.getStartContainer());
@@ -378,7 +378,7 @@ public class CaretPositionTest extends RtPluginTestCase
         assertEquals (Node.TEXT_NODE, textNode.getNodeType());
         assertEquals(textNode.getData(), "bar");
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
         // Caret is <p>[a]<span font:bold>foo</span><span font:normal>bar|</span></p>
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
         assertEquals(textNode, newCaretPos.getStartContainer());
@@ -397,7 +397,7 @@ public class CaretPositionTest extends RtPluginTestCase
         assertEquals (Node.TEXT_NODE, textNode.getNodeType());
         assertEquals(textNode.getData(), "foo");
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
         // Caret is <p>[a]<span font:bold>foo|</span><span font:normal></span></p>
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
         assertEquals(textNode, newCaretPos.getStartContainer());
@@ -416,7 +416,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(getContainer().getChild(1), 0);
         oldCaretPos.setEnd(getContainer().getChild(1), 0);
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
         // Caret is <p>[][][|ab]</p>
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
         assertEquals(getContainer().getLastChild(), newCaretPos.getStartContainer());
@@ -436,7 +436,7 @@ public class CaretPositionTest extends RtPluginTestCase
         oldCaretPos.setStart(getContainer().getLastChild(), 0);
         oldCaretPos.setEnd(getContainer().getLastChild(), 0);
 
-        Range newCaretPos = EditorUtils.computeNewCaretPosition(oldCaretPos);
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
         // Caret is <p>[][ab|][][]</p>
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
         assertEquals(getContainer().getChild(1), newCaretPos.getStartContainer());

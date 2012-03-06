@@ -171,7 +171,7 @@ public class TreeClientCallback implements ClientCallback
     {
         TreeOperation[] selection = new TreeCaretPosition[2];
         Range start = ((Document) nativeNode.getOwnerDocument()).getSelection().getRangeAt(0);
-        start = EditorUtils.computeNewCaretPosition(start); // make sure the caret is in a text node
+        start = EditorUtils.normalizeCaretPosition(start); // make sure the caret is in a text node
         Range end = start.cloneRange();
         start.collapse(true);
         end.collapse(false);

@@ -266,7 +266,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
             Range range = selection.getRangeAt(0);
             logRange(range);
 
-            range = EditorUtils.computeNewCaretPosition(range);
+            range = EditorUtils.normalizeCaretPosition(range); // todo: don't do this unless necessary!
             log.fine("New range");
             logRange(range);
 
@@ -333,7 +333,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
      */
     public void onKeyPress(KeyPressEvent event)
     {
-        log.finest("onKeyPress: " + getTextArea().getHTML());
+        log.fine("onKeyPress: " + getTextArea().getHTML());
         boolean isAltControlOrMetaDown = event.isAltKeyDown() || event.isControlKeyDown() || event.isMetaKeyDown();
         boolean isNoteworthyKeyPressed = event.getCharCode() != '\u0000';
 
@@ -343,7 +343,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
             Selection selection = getTextArea().getDocument().getSelection();
             if (selection.getRangeCount() > 0) {
                 Range range = selection.getRangeAt(0);
-                range = EditorUtils.computeNewCaretPosition(range);
+                range = EditorUtils.normalizeCaretPosition(range);
 
                 log.fine("New range");
                 logRange(range);

@@ -32,7 +32,7 @@ public class EditorUtils
      * @param oldCaretPosition the old caret position
      * @return the new caret position, as described above
      */
-    public static Range computeNewCaretPosition(Range oldCaretPosition)    // todo: rename to normalizeCaretPosition
+    public static Range normalizeCaretPosition(Range oldCaretPosition)
     {
         Range newCaretPos = null;
         if (oldCaretPosition.isCollapsed()) {
