@@ -266,10 +266,11 @@ public class RealTimePlugin extends AbstractStatefulPlugin
             Range range = selection.getRangeAt(0);
             logRange(range);
 
-            range = EditorUtils.normalizeCaretPosition(range); // todo: don't do this unless necessary!
-            log.fine("New range");
-            logRange(range);
-
+            if (keyCode == KeyCodes.KEY_BACKSPACE || keyCode == KeyCodes.KEY_DELETE || keyCode == KeyCodes.KEY_ENTER) {
+                range = EditorUtils.normalizeCaretPosition(range);
+                log.fine("New range");
+                logRange(range);
+            }
             Node startContainer = range.getStartContainer();
             Node endContainer = range.getEndContainer();
 
