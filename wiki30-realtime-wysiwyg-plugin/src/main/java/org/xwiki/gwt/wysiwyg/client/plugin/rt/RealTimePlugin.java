@@ -70,7 +70,6 @@ import fr.loria.score.jupiter.tree.operation.TreeStyle;
 import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.NON__EMPTY;
 import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getAncestorBelowParagraph;
 import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getAncestorParagraph;
-import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getIntermediaryTargets;
 import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getTextNodes;
 
 /**
@@ -200,34 +199,12 @@ public class RealTimePlugin extends AbstractStatefulPlugin
 
                 //Use this range to get all intermediary paths
                 Range range = selection.getRangeAt(0);
-
-                List<OperationTarget> targets = getIntermediaryTargets(range);
-                log.info(targets.toString());
-
-                for (OperationTarget target : targets) {
-                    log.finest("Generate tree style op for :" + target.toString() + ", key: " + styleKey + ", val: " +
-                        styleValue);
-                    boolean addStyle = false;
-                    int[] path = TreeHelper.toIntArray(target.getStartContainer());
-                    if (path.length == 2) {
-                        addStyle = true;
+                List<TreeStyle> ops = treeOperationFactory.createStyleOperation(clientJupiter.getSiteId(), range,
+                    styleKey, styleValue);
+                for (TreeStyle op : ops) {
+                    if (op != null) {
+                        clientJupiter.generate(op);
                     }
-
-                    boolean splitLeft = true;
-                    int start = target.getStartOffset();
-                    if (start == 0) {
-                        splitLeft = false;
-                    }
-
-                    boolean splitRight = true;
-                    int end = target.getEndOffset();
-                    if (end == target.getDataLength()) {
-                        splitRight = false;
-                    }
-                    TreeOperation op =
-                        new TreeStyle(clientJupiter.getSiteId(), path, start, end, styleKey, styleValue, addStyle,
-                            splitLeft, splitRight);
-                    clientJupiter.generate(op);
                 }
                 // Block the command because it's already handled in DomStyle operation.
                 return true;

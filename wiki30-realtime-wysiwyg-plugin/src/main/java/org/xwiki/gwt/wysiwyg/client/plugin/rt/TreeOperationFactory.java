@@ -19,7 +19,9 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.xwiki.gwt.dom.client.Range;
 
@@ -30,6 +32,9 @@ import fr.loria.score.jupiter.tree.operation.TreeCaretPosition;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
 import fr.loria.score.jupiter.tree.operation.TreeMergeParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
+import fr.loria.score.jupiter.tree.operation.TreeStyle;
+
+import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getIntermediaryTargets;
 
 /**
  * Utility methods for creating {@link TreeOperation}s.
@@ -38,6 +43,8 @@ import fr.loria.score.jupiter.tree.operation.TreeOperation;
  */
 public class TreeOperationFactory
 {
+    private static Logger log = Logger.getLogger(TreeOperationFactory.class.getName());
+
     /**
      * Creates a new {@link TreeInsertText} operation.
      * 
@@ -77,5 +84,49 @@ public class TreeOperationFactory
         op.setPath(TreeHelper.toIntArray(path));
 
         return op;
+    }
+
+    /**
+     *
+     * @param siteId the site id
+     * @param range the range selection, which could span across multiple text nodes
+     * @param styleKey the name of the style attribute
+     * @param styleValue the value of the style attribute
+     * @return a List<TreeStyle> operations, for every text node included in the selection range
+     */
+    public List<TreeStyle> createStyleOperation(int siteId, Range range, String styleKey, String styleValue)
+    {
+        List<TreeStyle> styleOperations = new ArrayList<TreeStyle>();
+
+        List<OperationTarget> targets = getIntermediaryTargets(range);
+        log.info(targets.toString());
+
+        for (OperationTarget target : targets) {
+            log.finest("Generate tree style op for :" + target.toString() + ", key: " + styleKey + ", val: " +
+                styleValue);
+            boolean addStyle = false;
+            int[] path = TreeHelper.toIntArray(target.getStartContainer());
+            if (path.length == 2) {
+                addStyle = true;
+            }
+
+            boolean splitLeft = true;
+            int start = target.getStartOffset();
+            if (start == 0) {
+                splitLeft = false;
+            }
+
+            boolean splitRight = true;
+            int end = target.getEndOffset();
+            if (end == target.getDataLength()) {
+                splitRight = false;
+            }
+
+            TreeStyle op = new TreeStyle(siteId, path, start, end, styleKey, styleValue, addStyle,
+                    splitLeft, splitRight);
+            styleOperations.add(op);
+        }
+
+        return styleOperations;
     }
 }
