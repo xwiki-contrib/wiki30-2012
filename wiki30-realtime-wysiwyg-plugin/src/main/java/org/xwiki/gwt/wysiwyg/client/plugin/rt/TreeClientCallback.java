@@ -74,6 +74,11 @@ public class TreeClientCallback implements ClientCallback
     private Transformation transformation;
 
     /**
+     * The siteId, used for re-creating the 'local selection' (which can be collapsed) after receiving remote messages
+     */
+    private int siteId;
+
+    /**
      * Creates a new instance.
      * 
      * @param nativeNode the root of the DOM document that is synchronized with the Tree model
@@ -87,6 +92,7 @@ public class TreeClientCallback implements ClientCallback
     public void onConnected(ClientDTO dto, fr.loria.score.jupiter.model.Document document, boolean updateUI)
     {
         customNode = ((TreeDocument) document).getRoot();
+        siteId = dto.getSiteId();
         transformation = TransformationFactory.createTransformation(document);
         if (updateUI) {
             log.finest("Updating UI for WYSIWYG");
@@ -165,11 +171,12 @@ public class TreeClientCallback implements ClientCallback
     {
         TreeOperation[] selection = new TreeCaretPosition[2];
         Range start = ((Document) nativeNode.getOwnerDocument()).getSelection().getRangeAt(0);
+        start = EditorUtils.computeNewCaretPosition(start); // make sure the caret is in a text node
         Range end = start.cloneRange();
         start.collapse(true);
         end.collapse(false);
-        selection[0] = treeOperationFactory.createCaretPosition(0, start);
-        selection[1] = treeOperationFactory.createCaretPosition(0, end);
+        selection[0] = treeOperationFactory.createCaretPosition(siteId, start);
+        selection[1] = treeOperationFactory.createCaretPosition(siteId, end);
         return selection;
     }
 
