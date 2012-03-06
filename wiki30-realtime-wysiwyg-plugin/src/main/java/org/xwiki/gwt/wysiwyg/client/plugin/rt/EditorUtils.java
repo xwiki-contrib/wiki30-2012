@@ -32,7 +32,7 @@ public class EditorUtils
      * @param oldCaretPosition the old caret position
      * @return the new caret position, as described above
      */
-    public static Range computeNewCaretPosition(Range oldCaretPosition)
+    public static Range computeNewCaretPosition(Range oldCaretPosition)    // todo: rename to normalizeCaretPosition
     {
         Range newCaretPos = null;
         if (oldCaretPosition.isCollapsed()) {
@@ -63,7 +63,7 @@ public class EditorUtils
                         } else {
                             emptyTextNodes = rightTextNodesInSameP.get(EMPTY);
                             if (emptyTextNodes.size() > 0) {
-                                emptyText = emptyTextNodes.get(emptyTextNodes.size() - 1);
+                                emptyText = emptyTextNodes.get(0);
                             }
                         }
                         if (emptyText != null) {
@@ -143,14 +143,12 @@ public class EditorUtils
         List<Text> emptyTextNodes = new ArrayList<Text>();
 
         // If the range starts at the end of a text node we have to ignore that node.
-        if (isTextNode(leaf) &&
-            (leaf != range.getStartContainer() || range.getStartOffset() < leaf.getNodeValue().length()))
-        {
-            if (isNonEmptyTextNode(leaf)) {
-                nonEmptyTextNodes.add((Text) leaf);
-            } else if (isEmptyTextNode(leaf)) {
-                emptyTextNodes.add((Text) leaf);
-            }
+        if (isNonEmptyTextNode(leaf) &&
+            (leaf != range.getStartContainer() || range.getStartOffset() < leaf.getNodeValue().length())) {
+            nonEmptyTextNodes.add((Text) leaf);
+        }
+        if (isEmptyTextNode(leaf)) {
+            emptyTextNodes.add((Text) leaf);
         }
         while (leaf != lastLeaf) {
             leaf = DOMUtils.getInstance().getNextLeaf(leaf);
@@ -167,10 +165,6 @@ public class EditorUtils
         }
         textNodesMap.put(NON__EMPTY, nonEmptyTextNodes);
 
-        lastIndex = emptyTextNodes.size() - 1;
-        if (lastIndex >=0 && range.getEndOffset() == 0 && emptyTextNodes.get(lastIndex) == range.getEndContainer()) {
-            emptyTextNodes.remove(lastIndex);
-        }
         textNodesMap.put(EMPTY, emptyTextNodes);
 
         return textNodesMap;

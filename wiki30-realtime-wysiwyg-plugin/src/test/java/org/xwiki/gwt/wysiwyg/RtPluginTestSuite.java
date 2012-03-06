@@ -1,6 +1,7 @@
 package org.xwiki.gwt.wysiwyg;
 
-import org.xwiki.gwt.wysiwyg.client.plugin.rt.RtPluginCaretPositionTest;
+import org.xwiki.gwt.wysiwyg.client.plugin.rt.CaretPositionInEmptyTextTest;
+import org.xwiki.gwt.wysiwyg.client.plugin.rt.CaretPositionTest;
 
 import com.google.gwt.junit.tools.GWTTestSuite;
 
@@ -18,8 +19,8 @@ public class RtPluginTestSuite extends GWTTestSuite
     public static Test suite()
     {
         TestSuite suite = new TestSuite("Realtime plugin GWT Unit Tests");
-        suite.addTestSuite(RtPluginCaretPositionTest.class);
-
+        suite.addTestSuite(CaretPositionTest.class);
+        suite.addTestSuite(CaretPositionInEmptyTextTest.class);
         return suite;
     }
 }
