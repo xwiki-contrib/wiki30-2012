@@ -34,10 +34,8 @@ public class EditorUtils
      */
     public static Range normalizeCaretPosition(Range oldCaretPosition)
     {
-        Range newCaretPos = null;
+        Range newCaretPos = oldCaretPosition.cloneRange();
         if (oldCaretPosition.isCollapsed()) {
-            newCaretPos = oldCaretPosition.cloneRange();
-
             // if I'm in a non-empty text node, return the oldCaretPosition
             if (isNonEmptyTextNode(oldCaretPosition.getStartContainer()) && oldCaretPosition.getStartOffset() > 0) {
                 return oldCaretPosition;

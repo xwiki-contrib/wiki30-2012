@@ -37,7 +37,6 @@ import fr.loria.score.jupiter.transform.TransformationFactory;
 import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.operation.TreeCaretPosition;
-import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 
@@ -110,9 +109,7 @@ public class TreeClientCallback implements ClientCallback
     {
         log.fine("Before send");
         TreeOperation operation = (TreeOperation) message.getOperation();
-        if (operation instanceof TreeDeleteText) {
-            return;
-        }
+
         DomOperation domOperation = domOperationFactory.createDomOperation(operation);
         if (domOperation != null) {
             //todo-marius: should restore original selection, as the returned range is not always the original selection.
@@ -175,8 +172,8 @@ public class TreeClientCallback implements ClientCallback
         Range end = start.cloneRange();
         start.collapse(true);
         end.collapse(false);
-        selection[0] = treeOperationFactory.createCaretPosition(siteId, start);
-        selection[1] = treeOperationFactory.createCaretPosition(siteId, end);
+        selection[0] = treeOperationFactory.createCaretPosition(siteId, start, start.getStartOffset());
+        selection[1] = treeOperationFactory.createCaretPosition(siteId, end, end.getEndOffset());
         return selection;
     }
 

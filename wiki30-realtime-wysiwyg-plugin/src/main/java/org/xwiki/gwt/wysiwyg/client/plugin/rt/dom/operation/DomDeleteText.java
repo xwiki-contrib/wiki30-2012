@@ -55,7 +55,10 @@ public class DomDeleteText extends AbstractDomOperation
         } else if (Node.ELEMENT_NODE == targetNode.getNodeType()) {
             // There is no delete text operation generated on elements yet.
         }
-        // No change to the selection.
-        return null;
+        // Selection shifts 1 char left.
+        Range caret = document.createRange();
+        caret.setStart(targetNode, getOperation().getPosition());
+        caret.collapse(true);
+        return caret;
     }
 }

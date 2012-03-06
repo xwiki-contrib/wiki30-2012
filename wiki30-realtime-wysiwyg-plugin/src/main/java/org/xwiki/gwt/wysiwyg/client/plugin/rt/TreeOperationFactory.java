@@ -53,14 +53,16 @@ public class TreeOperationFactory
     }
 
     /**
+     *
      * @param siteId the client id
      * @param location the native DOM caret position
+     * @param offset
      * @return a new {@link TreeCaretPosition} operation
      */
-    public TreeCaretPosition createCaretPosition(int siteId, Range location)
+    public TreeCaretPosition createCaretPosition(int siteId, Range location, int offset)
     {
         List<Integer> path = TreeHelper.getLocator(location.getStartContainer());
-        return new TreeCaretPosition(siteId, location.getStartOffset(), TreeHelper.toIntArray(path));
+        return new TreeCaretPosition(siteId, offset, TreeHelper.toIntArray(path));
     }
 
     public TreeMergeParagraph createTreeMergeParagraph(boolean isBackspace, int siteId, Node leftParagraph, Node rightParagraph, List<Integer> path)

@@ -61,7 +61,7 @@ public class DomInsertText extends AbstractDomOperation
             Text.as(targetNode).insertData(insertText.getPosition(), text);
         }
 
-        // No change to the selection.
+        // Selection shifts 1 char right.
         Range caret = document.createRange();
         caret.setStart(targetNode, insertText.getPosition() + 1);
         caret.collapse(true);

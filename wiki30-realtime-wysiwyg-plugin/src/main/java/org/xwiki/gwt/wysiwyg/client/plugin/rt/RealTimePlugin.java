@@ -317,7 +317,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
             }
 
             if (op != null) {
-                if (!(op instanceof TreeInsertText || op instanceof TreeDeleteText)) {
+                if (!(op instanceof TreeInsertText)) {
                     // Prevent the default behavior because the DOM tree will be synchronized with the Tree model.
                     event.preventDefault();
                 }
