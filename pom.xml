@@ -17,11 +17,9 @@
   <url>http://wiki30.xwikisas.com</url>
 
   <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk
-    </developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk
-    </url>
+    <connection>scm:git:git://github.com/xwiki-contrib/wiki30.git</connection>
+    <developerConnection>scm:git:git@github.com:xwiki-contrib/wiki30.git</developerConnection>
+    <url>https://github.com/xwiki-contrib/wiki30</url>
   </scm>
 
   <developers>
