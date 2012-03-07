@@ -197,10 +197,10 @@ public class TreeClientCallback implements ClientCallback
         Selection selection = document.getSelection();
         Range caret = document.createRange();
 
-        Node startContainer = TreeHelper.getChildNodeFromLocator(document.getBody(), selectionEndPoints[0].getPath());
+        Node startContainer = EditorUtils.getChildNodeFromLocator(document.getBody(), selectionEndPoints[0].getPath());
         caret.setStart(startContainer, selectionEndPoints[0].getPosition());
 
-        Node endContainer = TreeHelper.getChildNodeFromLocator(document.getBody(), selectionEndPoints[1].getPath());
+        Node endContainer = EditorUtils.getChildNodeFromLocator(document.getBody(), selectionEndPoints[1].getPath());
         caret.setEnd(endContainer, selectionEndPoints[1].getPosition());
 
         selection.removeAllRanges();
