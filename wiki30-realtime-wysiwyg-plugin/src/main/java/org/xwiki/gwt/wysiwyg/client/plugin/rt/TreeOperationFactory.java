@@ -92,7 +92,7 @@ public class TreeOperationFactory
      * @param range the range selection, which could span across multiple text nodes
      * @param styleKey the name of the style attribute
      * @param styleValue the value of the style attribute
-     * @return a List<TreeStyle> operations, for every text node included in the selection range
+     * @return a List<TreeStyle> of operations, for every text node included in the selection range
      */
     public List<TreeStyle> createStyleOperation(int siteId, Range range, String styleKey, String styleValue)
     {

@@ -94,7 +94,6 @@ public class TreeClientCallback implements ClientCallback
         siteId = dto.getSiteId();
         transformation = TransformationFactory.createTransformation(document);
         if (updateUI) {
-            log.finest("Updating UI for WYSIWYG");
             updateDOM();
         }
     }
@@ -131,7 +130,6 @@ public class TreeClientCallback implements ClientCallback
             domOperation.execute((Document) nativeNode.getOwnerDocument());
             restoreSelection(selectionEndPoints, operation);
         } else {
-            log.warning("Update all DOM");
             updateDOM();
         }
     }
@@ -191,8 +189,8 @@ public class TreeClientCallback implements ClientCallback
         selectionEndPoints[0] = (TreeOperation) transformation.transform(selectionEndPoints[0], operation);    //todo: operation.transform(selectionEndPoints)
         selectionEndPoints[1] = (TreeOperation) transformation.transform(selectionEndPoints[1], operation);
 
-        log.severe("Start selection: " + selectionEndPoints[0]);
-        log.severe("End selection: " + selectionEndPoints[1]);
+        log.fine("Start selection: " + selectionEndPoints[0]);
+        log.fine("End selection: " + selectionEndPoints[1]);
 
         // Place the caret at the updated position.
         Document document = (Document) nativeNode.getOwnerDocument();
@@ -228,12 +226,13 @@ public class TreeClientCallback implements ClientCallback
      */
     private void updateDOM()
     {
-        log.fine("Native node is before: " + Element.as(nativeNode).getString());
+        log.warning("Update all DOM");
+        log.finest("Native node is before: " + Element.as(nativeNode).getString());
         nativeNode = replaceDOMNode(customNode, nativeNode);
         // The BODY element is overwritten in the synchronization process and so the contentEditable state is reset. We
         // have to focus the rich text area in order to make it editable on Firefox.
         Element.as(nativeNode).focus();
-        log.fine("Native node is after: " + Element.as(nativeNode).getString());
+        log.finest("Native node is after: " + Element.as(nativeNode).getString());
 
         // Place the caret at the start of the DOM document.
         applyDefaultSelection();
