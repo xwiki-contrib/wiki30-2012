@@ -118,4 +118,40 @@ public class TreeInsertText extends TreeOperation {
         }
         return new TreeCaretPosition(op1.getSiteId(), op1.getPosition() + 1, op1.path);
     }
+
+    @Override
+    protected TreeOperation handleTreeMergeItem(TreeMergeItem op1) {
+        return op1;
+    }
+
+    @Override
+    protected TreeOperation handleTreeMoveItem(TreeMoveItem op1) {
+        return op1;
+    }
+
+    @Override
+    protected TreeOperation handleTreeNewItem(TreeNewItem op1) {
+        return op1;
+    }
+
+    @Override
+    protected TreeOperation handleTreeNewList(TreeNewList op1) {
+        return op1;
+    }
+
+    @Override
+    protected TreeOperation handleTreeSplitItem(TreeSplitItem op1) {
+        if (TreeUtils.diff(op1.path, path)) {
+            return op1;
+        }
+        if (op1.getPosition() <= position) {
+            return op1;
+        }
+        return new TreeSplitItem(op1.getSiteId(), op1.getPosition() + 1, op1.path, op1.splitLeft);
+    }
+
+    @Override
+    protected TreeOperation handleTreeUpdateElement(TreeUpdateElement op1) {
+        return op1;
+    }
 }

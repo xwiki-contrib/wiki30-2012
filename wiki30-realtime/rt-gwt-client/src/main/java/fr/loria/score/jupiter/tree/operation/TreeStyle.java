@@ -462,4 +462,98 @@ public class TreeStyle extends TreeOperation {
         int[] tab = TreeUtils.addC(op1.path, 1, d);
         return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), tab);
     }
+
+    @Override
+    protected TreeOperation handleTreeMergeItem(TreeMergeItem op1) {
+        if (op1.getPosition() == path[0] && op1.posItem==path[1]) {
+            int d = 0;
+            if (splitLeft) {
+                d++;
+            }
+            if (splitRight) {
+                d++;
+            }
+            return new TreeMergeItem(op1.getSiteId(),op1.getPosition(),
+                    op1.posItem,op1.leftSiblingChildrenNr, op1.childrenNr + d);
+        }
+        if (op1.getPosition() == path[0] && op1.posItem==path[1]+1) {
+            int d = 0;
+            if (splitLeft) {
+                d++;
+            }
+            if (splitRight) {
+                d++;
+            }
+            return new TreeMergeItem(op1.getSiteId(),op1.getPosition(),
+                    op1.posItem,op1.leftSiblingChildrenNr+d, op1.childrenNr);
+        }
+        return op1;
+    }
+
+    @Override
+    protected TreeOperation handleTreeMoveItem(TreeMoveItem op1) {
+        return op1;
+    }
+
+    @Override
+    protected TreeOperation handleTreeNewItem(TreeNewItem op1) {
+        return op1;
+    }
+
+    @Override
+    protected TreeOperation handleTreeNewList(TreeNewList op1) {
+        return op1;
+    }
+
+    @Override
+    protected TreeOperation handleTreeSplitItem(TreeSplitItem op1) {
+        if (op1.path[0] != path[0]) {
+            return op1;
+        }
+        if (op1.path[1] != path[1]) {
+            return op1;
+        }
+        if (op1.path[2] < path[2]) {
+            return op1;
+        }
+        if (op1.path[2] == path[2]) {//meme chemin
+            if (op1.getPosition() < start) {
+                return op1;
+            }
+            if (op1.getPosition() == start) {
+                int[] tab = TreeUtils.addC(op1.path, 2, splitLeft ? 1 : 0);
+                if (addStyle) {
+                    tab = TreeUtils.addLevel(tab);
+                }
+                return new TreeInsertParagraph(op1.getSiteId(), 0, tab, false);
+            }
+            if (op1.getPosition() < end) {
+                int[] tab = TreeUtils.addC(op1.path, 2, splitLeft ? 1 : 0);
+                if (addStyle) {
+                    tab = TreeUtils.addLevel(tab);
+                }
+                return new TreeInsertParagraph(op1.getSiteId(), op1.getPosition() - start, tab, op1.splitLeft);
+            }
+            int[] tab = TreeUtils.addC(op1.path, 2, splitLeft ? 2 : 1);
+            if (op1.getPosition() == end) {
+                return new TreeInsertParagraph(op1.getSiteId(), 0, tab, false);
+            }
+            return new TreeInsertParagraph(op1.getSiteId(), op1.getPosition() - end, tab, op1.splitLeft);
+        }
+        //op1.path[2]>path[2]
+        int d = 0;//decalage
+        if (splitLeft) {
+            d++;
+        }
+        if (splitRight) {
+            d++;
+        }
+        int[] tab = TreeUtils.addC(op1.path, 2, d);
+        return new TreeInsertParagraph(op1.getSiteId(), op1.getPosition(), tab, op1.splitLeft);
+    }
+
+    @Override
+    protected TreeOperation handleTreeUpdateElement(TreeUpdateElement op1) {
+        return op1;
+    }
 }

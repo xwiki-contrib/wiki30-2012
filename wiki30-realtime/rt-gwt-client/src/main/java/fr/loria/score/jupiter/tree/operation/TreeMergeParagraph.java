@@ -214,4 +214,53 @@ public class TreeMergeParagraph extends TreeOperation {
         tab[1] = op1.path[1] + leftSiblingChildrenNr;
         return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), tab);
     }
+
+    @Override
+    protected TreeOperation handleTreeMergeItem(TreeMergeItem op1) {
+        if(op1.getPosition()<position){
+            return op1;
+        }
+        return new TreeMergeItem(op1.getSiteId(), op1.getPosition()-1, op1.posItem,
+                op1.leftSiblingChildrenNr, op1.childrenNr);
+    }
+
+    @Override
+    protected TreeOperation handleTreeMoveItem(TreeMoveItem op1) {
+        if(op1.getPosition()<position){
+            return op1;
+        }
+        return new TreeMoveItem(op1.getSiteId(), op1.getPosition()-1, 
+                op1.sp, op1.ep);
+    }
+
+    @Override
+    protected TreeOperation handleTreeNewItem(TreeNewItem op1) {
+        if(op1.getPosition()<position){
+            return op1;
+        }
+        return new TreeNewItem(op1.getSiteId(), op1.getPosition()-1, op1.posItem);
+    }
+
+    @Override
+    protected TreeOperation handleTreeNewList(TreeNewList op1) {
+        if(op1.getPosition()<position){
+            return op1;
+        }
+        return new TreeNewList(op1.getSiteId(), op1.getPosition()-1);
+    }
+
+    @Override
+    protected TreeOperation handleTreeSplitItem(TreeSplitItem op1) {
+        if(op1.getPosition()<position){
+            return op1;
+        }
+        return new TreeSplitItem(op1.getSiteId(), op1.getPosition(),
+                TreeUtils.addC(op1.getPath(),0,-1), op1.splitLeft);
+    }
+
+    @Override
+    protected TreeOperation handleTreeUpdateElement(TreeUpdateElement op1) {
+        //todo !
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

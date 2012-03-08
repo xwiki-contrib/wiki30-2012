@@ -48,7 +48,7 @@ public class TreeInsertParagraph extends TreeOperation
     {
         int d = 1;//décalage
         Tree tree = root;
-        Tree pTree = TreeFactory.createParagraphTree();
+        Tree pTree = root.getChild(path[0]).cloneNode();
         Tree tTree = pTree;
         if (path.length > 0) {
             tree = tree.getChild(path[0]);
@@ -299,6 +299,66 @@ public class TreeInsertParagraph extends TreeOperation
         }
         int[] tab = TreeUtils.reference(op1.path, path);
         return new TreeCaretPosition(op1.getSiteId(), op1.getPosition(), tab);
+    }
+
+    @Override
+    protected TreeOperation handleTreeMergeItem(TreeMergeItem op1) {
+        if(op1.getPosition()<path[0]){
+            return op1;
+        }
+        return new TreeMergeItem(op1.getSiteId(), op1.getPosition()+1, op1.posItem,
+                op1.leftSiblingChildrenNr, op1.childrenNr);
+        
+    }
+
+    @Override
+    protected TreeOperation handleTreeMoveItem(TreeMoveItem op1) {
+        if(op1.getPosition()<path[0]){
+            return op1;
+        }
+        return new TreeMoveItem(op1.getSiteId(), op1.getPosition()+1,
+                op1.sp, op1.ep);
+    }
+
+    @Override
+    protected TreeOperation handleTreeNewItem(TreeNewItem op1) {
+        if(op1.getPosition()<path[0]){
+            return op1;
+        }
+        return new TreeNewItem(op1.getSiteId(), op1.getPosition()+1, op1.posItem);
+    }
+
+    @Override
+    protected TreeOperation handleTreeNewList(TreeNewList op1) {
+        if(op1.getPosition()<path[0]){
+            return op1;
+        }
+        return new TreeNewList(op1.getSiteId(), op1.getPosition()+1);
+    }
+
+    @Override
+    protected TreeOperation handleTreeSplitItem(TreeSplitItem op1) {
+        if(op1.getPosition()<path[0]){
+            return op1;
+        }
+        
+        return new TreeSplitItem(op1.getSiteId(), op1.getPosition(),
+                TreeUtils.addP(op1.path, 1), op1.splitLeft);
+    }
+
+    @Override
+    protected TreeOperation handleTreeUpdateElement(TreeUpdateElement op1) {
+        if(op1.path[0]<path[0]){
+            return op1;
+        }
+        if(op1.path[0]>path[0]){
+            return new TreeUpdateElement(op1.getSiteId(), TreeUtils.addP(op1.getPath(),1), op1.tag, op1.value);
+        }
+        //op1.path[0]==path[0] : same paragraph
+        return new TreeCompositeOperation(
+             new TreeUpdateElement(op1.getSiteId(), op1.getPath(), op1.tag, op1.value),
+             new TreeUpdateElement(op1.getSiteId(), TreeUtils.addP(op1.getPath(),1), op1.tag, op1.value)
+        );
     }
 }
 

@@ -58,7 +58,19 @@ public abstract class TreeOperation extends AbstractOperation {
             transformed = handleTreeComposite((TreeCompositeOperation) op1);
         } else if(op1 instanceof TreeCaretPosition){
             transformed = handleTreeCaretPosition((TreeCaretPosition) op1);
-        }
+        } else if(op1 instanceof TreeMergeItem){
+            transformed = handleTreeMergeItem((TreeMergeItem) op1);
+        } else if(op1 instanceof TreeMoveItem){
+            transformed = handleTreeMoveItem((TreeMoveItem) op1);
+        } else if(op1 instanceof TreeNewItem){
+            transformed = handleTreeNewItem((TreeNewItem) op1);
+        } else if(op1 instanceof TreeNewList){
+            transformed = handleTreeNewList((TreeNewList) op1);
+        } else if(op1 instanceof TreeSplitItem){
+            transformed = handleTreeSplitItem((TreeSplitItem) op1);
+        } else if(op1 instanceof TreeUpdateElement){
+            transformed = handleTreeUpdateElement((TreeUpdateElement) op1);
+        }   
         return transformed;
     }
 
@@ -78,6 +90,18 @@ public abstract class TreeOperation extends AbstractOperation {
     protected abstract TreeOperation handleTreeStyle(TreeStyle op1);
 
     protected abstract TreeOperation handleTreeMoveParagraph(TreeMoveParagraph op1);
+    
+    protected abstract TreeOperation handleTreeMergeItem(TreeMergeItem op1);
+    
+    protected abstract TreeOperation handleTreeMoveItem(TreeMoveItem op1);
+    
+    protected abstract TreeOperation handleTreeNewItem(TreeNewItem op1);
+    
+    protected abstract TreeOperation handleTreeNewList(TreeNewList op1);
+    
+    protected abstract TreeOperation handleTreeSplitItem(TreeSplitItem op1);
+    
+    protected abstract TreeOperation handleTreeUpdateElement(TreeUpdateElement op1);
     
     protected abstract TreeOperation handleTreeCaretPosition(TreeCaretPosition op1);
 
