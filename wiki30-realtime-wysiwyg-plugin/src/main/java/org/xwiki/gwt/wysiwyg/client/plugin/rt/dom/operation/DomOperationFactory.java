@@ -37,10 +37,12 @@ import fr.loria.score.jupiter.tree.operation.TreeStyle;
 public class DomOperationFactory
 {
     /**
+     *
      * @param operation a tree operation
+     * @param isRemote {@code true} if the {@code TreeOperation} is received from server, and {@code false} if it's generated locally
      * @return the DOM operation equivalent to the given tree operation
      */
-    public DomOperation createDomOperation(TreeOperation operation)
+    public DomOperation createDomOperation(TreeOperation operation, boolean isRemote)
     {
         if (operation instanceof TreeInsertText) {
             return new DomInsertText(operation);
@@ -53,7 +55,7 @@ public class DomOperationFactory
         } else if (operation instanceof TreeMergeParagraph) {
             return new DomMergeParagraph(operation);
         } else if (operation instanceof TreeStyle) {
-            return new DomStyle(operation);
+            return new DomStyle(operation, isRemote);
         }
         return null;
     }

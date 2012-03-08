@@ -1,9 +1,9 @@
 package fr.loria.score.jupiter.transform;
 
 
-import fr.loria.score.jupiter.model.AbstractOperation;
-
 import java.util.logging.Logger;
+
+import fr.loria.score.jupiter.model.AbstractOperation;
 
 /**
  * Transformation for concurrent operations on a tree like model
@@ -14,7 +14,7 @@ public class TreeTransformation extends Transformation {
 
     @Override
     public AbstractOperation transform(AbstractOperation op1, AbstractOperation op2) {
-        log.fine("Transforming op1:" + op1 +" with respect to op2: " + op2);
+        log.finest("Transforming op1:" + op1 +" with respect to op2: " + op2);
         AbstractOperation result = op2.transform(op1);
         return result;
     }

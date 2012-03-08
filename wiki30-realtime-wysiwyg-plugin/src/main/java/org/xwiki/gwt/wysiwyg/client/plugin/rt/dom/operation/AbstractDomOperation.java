@@ -20,7 +20,7 @@
 package org.xwiki.gwt.wysiwyg.client.plugin.rt.dom.operation;
 
 import org.xwiki.gwt.dom.client.DOMUtils;
-import org.xwiki.gwt.wysiwyg.client.plugin.rt.TreeHelper;
+import org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Node;
@@ -71,6 +71,6 @@ public abstract class AbstractDomOperation implements DomOperation
      */
     public Node getTargetNode(Document document)
     {
-        return TreeHelper.getChildNodeFromLocator(document.getBody(), operation.getPath());
+        return EditorUtils.getChildNodeFromLocator(document.getBody(), operation.getPath());
     }
 }

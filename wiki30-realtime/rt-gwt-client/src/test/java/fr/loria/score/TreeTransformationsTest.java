@@ -15,7 +15,10 @@ import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import static fr.loria.score.TestUtils.path;
 import static fr.loria.score.TreeDSL.paragraph;
 import static fr.loria.score.TreeDSL.text;
+import static fr.loria.score.TreeDSL.span;
+import fr.loria.score.jupiter.tree.operation.*;
 import static org.junit.Assert.assertEquals;
+
 
 /**
  * Test the effect of computing and/or executing tree transformations. It should test all TreeOperation
@@ -24,7 +27,7 @@ import static org.junit.Assert.assertEquals;
  * @author Bogdan.Flueras@inria.fr
  * @author Gerald.Oster@loria.fr
  */
-public class TreeTransformationsTest
+public class TreeTransformationsTest extends AbstractTreeOperationTest
 {
     private static final int SITE_A = 1;
 
@@ -207,6 +210,36 @@ public class TreeTransformationsTest
 
         // expectedSiteA == expectedSiteB
         assertEquals("Invalid result ", expectedSiteA, siteB);
+    }
+    
+    @Test
+    public void treeStyle_samePlace_treeStyle()
+    {
+        TreeOperation op1 = new TreeStyle(SITE_A, path(0, 0), 0, 4, "font-style", "italic", true, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
+        TreeOperation op2 = new TreeStyle(SITE_B, path(0, 0), 0, 4, "font-style", "italic", true, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
+ 
+        
+        TreeOperation opt1 = (TreeOperation) op2.transform(op1);
+        TreeOperation expectedOperation1 = new TreeStyle(SITE_A, path(0, 0, 0), 0, 4, "font-style", "italic", false, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
+        assertEquals(expectedOperation1.toString(), opt1.toString());
+
+        TreeOperation opt2 = (TreeOperation) op1.transform(op2);
+        TreeOperation expectedOperation2 = new TreeStyle(SITE_B, path(0, 0, 0), 0, 4, "font-style", "italic", false, NO_SPLIT_LEFT, NO_SPLIT_RIGHT);
+        assertEquals(expectedOperation2.toString(), opt2.toString());
+
+        siteADSL.addChild(paragraph().addChild(text("abcd")));
+        op1.execute(siteA);
+        opt2.execute(siteA);
+
+        siteBDSL.addChild(paragraph().addChild(text("abcd")));
+        op2.execute(siteB);
+        opt1.execute(siteB);
+
+        assertEquals(siteA, siteB);
+
+        expectedSiteADSL.addChild(paragraph().addChild(span("font-style", "italic").addChild(text("abcd"))));
+        assertEquals(expectedSiteA, siteA);       
+        
     }
 }
 

@@ -94,7 +94,6 @@ public class TreeClientCallback implements ClientCallback
         siteId = dto.getSiteId();
         transformation = TransformationFactory.createTransformation(document);
         if (updateUI) {
-            log.finest("Updating UI for WYSIWYG");
             updateDOM();
         }
     }
@@ -110,7 +109,7 @@ public class TreeClientCallback implements ClientCallback
         log.fine("Before send");
         TreeOperation operation = (TreeOperation) message.getOperation();
 
-        DomOperation domOperation = domOperationFactory.createDomOperation(operation);
+        DomOperation domOperation = domOperationFactory.createDomOperation(operation, false);
         if (domOperation != null) {
             //todo-marius: should restore original selection, as the returned range is not always the original selection.
             // Ex: select many styles, text nodes and apply a new style. The selection applied is the last one, and not the original selection
@@ -125,13 +124,12 @@ public class TreeClientCallback implements ClientCallback
     {
         log.fine("Executing received: " + receivedMessage);
         TreeOperation operation = (TreeOperation) receivedMessage.getOperation();
-        DomOperation domOperation = domOperationFactory.createDomOperation(operation);
+        DomOperation domOperation = domOperationFactory.createDomOperation(operation, true);
         if (domOperation != null) {
             TreeOperation[] selectionEndPoints = saveSelection();
             domOperation.execute((Document) nativeNode.getOwnerDocument());
             restoreSelection(selectionEndPoints, operation);
         } else {
-            log.warning("Update all DOM");
             updateDOM();
         }
     }
@@ -191,18 +189,18 @@ public class TreeClientCallback implements ClientCallback
         selectionEndPoints[0] = (TreeOperation) transformation.transform(selectionEndPoints[0], operation);    //todo: operation.transform(selectionEndPoints)
         selectionEndPoints[1] = (TreeOperation) transformation.transform(selectionEndPoints[1], operation);
 
-        log.severe("Start selection: " + selectionEndPoints[0]);
-        log.severe("End selection: " + selectionEndPoints[1]);
+        log.fine("Start selection: " + selectionEndPoints[0]);
+        log.fine("End selection: " + selectionEndPoints[1]);
 
         // Place the caret at the updated position.
         Document document = (Document) nativeNode.getOwnerDocument();
         Selection selection = document.getSelection();
         Range caret = document.createRange();
 
-        Node startContainer = TreeHelper.getChildNodeFromLocator(document.getBody(), selectionEndPoints[0].getPath());
+        Node startContainer = EditorUtils.getChildNodeFromLocator(document.getBody(), selectionEndPoints[0].getPath());
         caret.setStart(startContainer, selectionEndPoints[0].getPosition());
 
-        Node endContainer = TreeHelper.getChildNodeFromLocator(document.getBody(), selectionEndPoints[1].getPath());
+        Node endContainer = EditorUtils.getChildNodeFromLocator(document.getBody(), selectionEndPoints[1].getPath());
         caret.setEnd(endContainer, selectionEndPoints[1].getPosition());
 
         selection.removeAllRanges();
@@ -228,12 +226,13 @@ public class TreeClientCallback implements ClientCallback
      */
     private void updateDOM()
     {
-        log.fine("Native node is before: " + Element.as(nativeNode).getString());
+        log.warning("Update all DOM");
+        log.finest("Native node is before: " + Element.as(nativeNode).getString());
         nativeNode = replaceDOMNode(customNode, nativeNode);
         // The BODY element is overwritten in the synchronization process and so the contentEditable state is reset. We
         // have to focus the rich text area in order to make it editable on Firefox.
         Element.as(nativeNode).focus();
-        log.fine("Native node is after: " + Element.as(nativeNode).getString());
+        log.finest("Native node is after: " + Element.as(nativeNode).getString());
 
         // Place the caret at the start of the DOM document.
         applyDefaultSelection();

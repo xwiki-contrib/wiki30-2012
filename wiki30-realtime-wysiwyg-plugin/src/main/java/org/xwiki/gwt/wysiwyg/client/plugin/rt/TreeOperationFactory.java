@@ -55,8 +55,8 @@ public class TreeOperationFactory
      */
     public TreeInsertText createTreeInsertText(int siteId, Range location, char character)
     {
-        List<Integer> path = TreeHelper.getLocator(location.getStartContainer());
-        return new TreeInsertText(siteId, location.getStartOffset(), TreeHelper.toIntArray(path), character);
+        List<Integer> path = EditorUtils.getLocator(location.getStartContainer());
+        return new TreeInsertText(siteId, location.getStartOffset(), EditorUtils.toIntArray(path), character);
     }
 
     /**
@@ -68,8 +68,8 @@ public class TreeOperationFactory
      */
     public TreeCaretPosition createCaretPosition(int siteId, Range location, int offset)
     {
-        List<Integer> path = TreeHelper.getLocator(location.getStartContainer());
-        return new TreeCaretPosition(siteId, offset, TreeHelper.toIntArray(path));
+        List<Integer> path = EditorUtils.getLocator(location.getStartContainer());
+        return new TreeCaretPosition(siteId, offset, EditorUtils.toIntArray(path));
     }
 
     public TreeMergeParagraph createTreeMergeParagraph(boolean isBackspace, int siteId, Node leftParagraph, Node rightParagraph, List<Integer> path)
@@ -81,7 +81,7 @@ public class TreeOperationFactory
         op = new TreeMergeParagraph(siteId, mergePos,
             leftParagraph.getChildCount() - lBbrCount,
             rightParagraph.getChildCount() - rBbrCount);
-        op.setPath(TreeHelper.toIntArray(path));
+        op.setPath(EditorUtils.toIntArray(path));
 
         return op;
     }
@@ -92,7 +92,7 @@ public class TreeOperationFactory
      * @param range the range selection, which could span across multiple text nodes
      * @param styleKey the name of the style attribute
      * @param styleValue the value of the style attribute
-     * @return a List<TreeStyle> operations, for every text node included in the selection range
+     * @return a List<TreeStyle> of operations, for every text node included in the selection range
      */
     public List<TreeStyle> createStyleOperation(int siteId, Range range, String styleKey, String styleValue)
     {
@@ -105,7 +105,7 @@ public class TreeOperationFactory
             log.finest("Generate tree style op for :" + target.toString() + ", key: " + styleKey + ", val: " +
                 styleValue);
             boolean addStyle = false;
-            int[] path = TreeHelper.toIntArray(target.getStartContainer());
+            int[] path = EditorUtils.toIntArray(target.getStartContainer());
             if (path.length == 2) {
                 addStyle = true;
             }

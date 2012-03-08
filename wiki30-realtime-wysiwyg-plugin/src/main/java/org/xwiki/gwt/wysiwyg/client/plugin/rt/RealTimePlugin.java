@@ -363,11 +363,11 @@ public class RealTimePlugin extends AbstractStatefulPlugin
     private void logRange(Range r)
     {
         log.info("Start container: " + r.getStartContainer().getNodeName() +
-            ", " + " locator: " + TreeHelper.getLocator(r.getStartContainer()) + " offset: " + r.getStartOffset()
+            ", " + " locator: " + EditorUtils.getLocator(r.getStartContainer()) + " offset: " + r.getStartOffset()
         );
 
         log.info("End container: " + r.getEndContainer().getNodeName() +
-            ", " + " locator: " + TreeHelper.getLocator(r.getStartContainer()) + " offset: " + r.getEndOffset()
+            ", " + " locator: " + EditorUtils.getLocator(r.getStartContainer()) + " offset: " + r.getEndOffset()
         );
     }
 
@@ -396,7 +396,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
     public TreeOperation handleBackspaceOnElement(Range caret)
     {
         Node startContainer = caret.getStartContainer();
-        List<Integer> path = TreeHelper.getLocator(startContainer);
+        List<Integer> path = EditorUtils.getLocator(startContainer);
         TreeOperation op = null;
 
         Element rightParagraph;
@@ -426,7 +426,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
     {
         int pos = caret.getStartOffset();
         Node startContainer = caret.getStartContainer();
-        List<Integer> path = TreeHelper.getLocator(startContainer);
+        List<Integer> path = EditorUtils.getLocator(startContainer);
         TreeOperation op = null;
 
         Node ancestorBelowParagraph = getAncestorBelowParagraph(startContainer);
@@ -443,7 +443,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
             }
         } else {
             pos = pos - 1;
-            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
+            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, EditorUtils.toIntArray(path));
         }
         return op;
     }
@@ -452,13 +452,13 @@ public class RealTimePlugin extends AbstractStatefulPlugin
     {
         int pos = caret.getEndOffset();
         Element element = Element.as(caret.getEndContainer());
-        List<Integer> path = TreeHelper.getLocator(caret.getEndContainer());
+        List<Integer> path = EditorUtils.getLocator(caret.getEndContainer());
         TreeOperation op = null;
 
         // Start of the line
         if (0 == pos) {
             op = new TreeNewParagraph(clientJupiter.getSiteId(), path.get(0));
-            op.setPath(TreeHelper.toIntArray(path));
+            op.setPath(EditorUtils.toIntArray(path));
         } else {
             int brCount = element.getElementsByTagName(BR).getLength();
             int childCount = element.getChildCount();
@@ -469,14 +469,14 @@ public class RealTimePlugin extends AbstractStatefulPlugin
             if (isBeforeLastBrTag || isAfterLastTag) {
                 pos = path.get(0) + 1;
                 op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
-                op.setPath(TreeHelper.toIntArray(path));
+                op.setPath(EditorUtils.toIntArray(path));
             } else {
                 // Position represents the n-th child of this element
                 Node child = element.getChild(pos - 1);
                 if (child.getNodeType() == Node.TEXT_NODE) {
                     path.add(pos - 1);
                     pos = child.getNodeValue().length();
-                    op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
+                    op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, EditorUtils.toIntArray(path));
                 } else {
                     op = new TreeNewParagraph(clientJupiter.getSiteId(), path.get(0));
                 }
@@ -490,7 +490,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         int pos = caret.getEndOffset();
         Node container = caret.getEndContainer();
         Text textNode = Text.as(container);
-        List<Integer> path = TreeHelper.getLocator(container);
+        List<Integer> path = EditorUtils.getLocator(container);
         TreeOperation op;
 
         boolean isNewParagraph = false;
@@ -531,9 +531,9 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         if (isNewParagraph)
         {
             op = new TreeNewParagraph(clientJupiter.getSiteId(), pos);
-            op.setPath(TreeHelper.toIntArray(path));
+            op.setPath(EditorUtils.toIntArray(path));
         } else {
-            op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
+            op = new TreeInsertParagraph(clientJupiter.getSiteId(), pos, EditorUtils.toIntArray(path));
         }
         return op;
     }
@@ -541,7 +541,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
     public TreeOperation handleDeleteOnElement(Range caret)
     {
         Element element = Element.as(caret.getStartContainer());
-        List<Integer> path = TreeHelper.getLocator(element);
+        List<Integer> path = EditorUtils.getLocator(element);
         TreeOperation op = null;
 
         Element leftParagraph;
@@ -569,7 +569,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         int pos = caret.getStartOffset();
         Node startContainer = caret.getStartContainer();
         Text textNode = Text.as(startContainer);
-        List<Integer> path = TreeHelper.getLocator(startContainer);
+        List<Integer> path = EditorUtils.getLocator(startContainer);
         TreeOperation op = null;
 
         // Go up below the parent paragraph node, because we might have span tags with text nodes
@@ -578,7 +578,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
         Element rightParagraph = leftParagraph.getNextSiblingElement();
 
         if (pos < textNode.getLength()) {
-            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, TreeHelper.toIntArray(path));
+            op = new TreeDeleteText(clientJupiter.getSiteId(), pos, EditorUtils.toIntArray(path));
         } else { // perhaps a line merge
             op = maybeMergeParagraphs(false, textNode, path, rightParagraph, leftParagraph);
         }
@@ -628,7 +628,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
             if (node.getParentNode() == nonEmptyTextNode.getParentNode()) {
                 // nonEmptyTextNode is in the same paragraph as the node, so generate a delete text operation
                 int deletePos = isBackspace ? nonEmptyTextNode.getNodeValue().length() - 1 : 0;
-                op = new TreeDeleteText(clientJupiter.getSiteId(), deletePos, TreeHelper.toIntArray(path));
+                op = new TreeDeleteText(clientJupiter.getSiteId(), deletePos, EditorUtils.toIntArray(path));
             } else {
                 // nonEmptyTextNode is in different paragraph so generate a merge operation
                 if((isBackspace && leftParagraph != null) || (!isBackspace && rightParagraph != null)) {

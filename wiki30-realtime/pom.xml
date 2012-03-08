@@ -15,13 +15,6 @@
   <description>Wiki3.0 - Real-time editor parent module</description>
   <url>http://wiki30.xwikisas.com</url>
 
-  <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk
-        </developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk</url>
-  </scm>
-
   <distributionManagement>
     <repository>
       <id>xwiki-staging</id>
