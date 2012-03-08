@@ -282,4 +282,151 @@ public class TreeMoveParagraph extends TreeOperation {
             return op1;
         }
     }
+
+    @Override
+    protected TreeOperation handleTreeMergeItem(TreeMergeItem op1) {
+        if (op1.getPosition() == sp) {
+            if (sp >= ep) {
+                return new TreeMergeItem(op1.getSiteId(),ep,op1.posItem,
+                        op1.leftSiblingChildrenNr,op1.childrenNr);
+            } else {
+                return new TreeMergeItem(op1.getSiteId(),ep-1,op1.posItem,
+                        op1.leftSiblingChildrenNr,op1.childrenNr);
+            }
+        }
+        if (op1.getPosition() < sp) {
+            if (op1.getPosition() < ep) {
+                return op1;
+            } else {
+                return new TreeMergeItem(op1.getSiteId(),op1.getPosition()+1,op1.posItem,
+                        op1.leftSiblingChildrenNr,op1.childrenNr);
+            }
+        }
+        //op1.getPosition()>sp
+        if (op1.getPosition() < ep) {
+            return new TreeMergeItem(op1.getSiteId(),op1.getPosition()-1,op1.posItem,
+                        op1.leftSiblingChildrenNr,op1.childrenNr);
+        } else {
+            return op1;
+        }
+    }
+
+    @Override
+    protected TreeOperation handleTreeMoveItem(TreeMoveItem op1) {
+        if (op1.getPosition() == sp) {
+            if (sp >= ep) {
+                return new TreeMoveItem(op1.getSiteId(), ep, op1.sp,op1.ep);
+            } else {
+                return new TreeMoveItem(op1.getSiteId(), ep-1, op1.sp,op1.ep);
+            }
+        }
+        if (op1.getPosition() < sp) {
+            if (op1.getPosition() < ep) {
+                return op1;
+            } else {
+                return new TreeMoveItem(op1.getSiteId(),op1.getPosition()+1, op1.sp,op1.ep);
+            }
+        }
+        //op1.getPosition()>sp
+        if (op1.getPosition() < ep) {
+            return new TreeMoveItem(op1.getSiteId(), op1.getPosition()-1, op1.sp,op1.ep);
+        } else {
+            return op1;
+        }
+    }
+
+    @Override
+    protected TreeOperation handleTreeNewItem(TreeNewItem op1) {
+        if (op1.getPosition() == sp) {
+            if (sp >= ep) {
+                return new TreeNewItem(op1.getSiteId(), ep, op1.posItem);
+            } else {
+                return new TreeNewItem(op1.getSiteId(), ep-1, op1.posItem);
+            }
+        }
+        if (op1.getPosition() < sp) {
+            if (op1.getPosition() < ep) {
+                return op1;
+            } else {
+                return new TreeNewItem(op1.getSiteId(), op1.getPosition()+1, op1.posItem);
+            }
+        }
+        //op1.getPosition()>sp
+        if (op1.getPosition() < ep) {
+            return new TreeNewItem(op1.getSiteId(), op1.getPosition()-1, op1.posItem);
+        } else {
+            return op1;
+        }
+    }
+
+    @Override
+    protected TreeOperation handleTreeNewList(TreeNewList op1) {
+        if (sp < op1.getPosition()) {
+            if (ep <= op1.getPosition()) {
+                return op1;
+            }
+            return new TreeNewList(op1.getSiteId(), op1.getPosition() - 1);
+        }
+        //sp>=op1.getPosition()
+        if (ep <= op1.getPosition()) {
+            return new TreeNewList(op1.getSiteId(), op1.getPosition() + 1);
+        }
+        return op1;
+    }
+
+    @Override
+    protected TreeOperation handleTreeSplitItem(TreeSplitItem op1) {
+        if (op1.path[0] == sp) {
+            if (sp >= ep) {
+                return new TreeSplitItem(op1.getSiteId(), op1.getPosition(), 
+                        TreeUtils.setP(op1.path, ep), op1.splitLeft);
+            } else {
+                return new TreeSplitItem(op1.getSiteId(), op1.getPosition(), 
+                        TreeUtils.setP(op1.path, ep-1), op1.splitLeft);
+            }
+        }
+        if (op1.path[0] < sp) {
+            if (op1.path[0] < ep) {
+                return op1;
+            } else {
+                return new TreeSplitItem(op1.getSiteId(), op1.getPosition(), 
+                        TreeUtils.addP(op1.path, 1), op1.splitLeft);
+            }
+        }
+        //op1.path[0]>sp
+        if (op1.path[0] < ep) {
+                return new TreeSplitItem(op1.getSiteId(), op1.getPosition(), 
+                        TreeUtils.addP(op1.path, -1), op1.splitLeft);
+        } else {
+            return op1;
+        }
+    }
+
+    @Override
+    protected TreeOperation handleTreeUpdateElement(TreeUpdateElement op1) {
+        if (op1.path[0] == sp) {
+            if (sp >= ep) {
+                return new TreeUpdateElement(op1.getSiteId(), TreeUtils.setP(op1.path, ep),
+                        op1.tag, op1.value);
+            } else {
+                return new TreeUpdateElement(op1.getSiteId(), TreeUtils.setP(op1.path, ep-1),
+                        op1.tag, op1.value);
+            }
+        }
+        if (op1.path[0] < sp) {
+            if (op1.path[0] < ep) {
+                return op1;
+            } else {
+                return new TreeUpdateElement(op1.getSiteId(), TreeUtils.addP(op1.path, 1),
+                        op1.tag, op1.value);
+            }
+        }
+        //op1.path[0]>sp
+        if (op1.path[0] < ep) {
+                return new TreeUpdateElement(op1.getSiteId(), TreeUtils.addP(op1.path, -1),
+                        op1.tag, op1.value);
+        } else {
+            return op1;
+        }
+    }
 }
