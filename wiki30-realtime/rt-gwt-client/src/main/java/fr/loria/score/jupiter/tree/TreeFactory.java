@@ -28,6 +28,15 @@ public class TreeFactory {
     }
 
     /**
+     * @return a heading tree
+     */
+    public static Tree createHeadingTree(int level) {
+        Tree t = createElementTree("h" + level);
+        t.setValue(null);
+        return t;
+    }
+
+    /**
      * @param text the value of this text tree
      * @return a text tree
      */
