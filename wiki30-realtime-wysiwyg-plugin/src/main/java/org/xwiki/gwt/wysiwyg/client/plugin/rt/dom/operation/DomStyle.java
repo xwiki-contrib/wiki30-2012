@@ -55,13 +55,26 @@ public class DomStyle extends AbstractDomOperation
     private DomStyleExecutable realDomStyleExecutable;
 
     /**
+     * {@code true} if the {@code TreeOperation} is received from server, and {@code false} if it's generated locally
+     * This is the simplest solution in order to fix a bug. Otherwise I would have to modify a lot of code
+     */
+    private final boolean isRemote;
+
+    /**
      * Creates a new DOM operation equivalent to the given Tree operation.
      *
      * @param operation a Tree operation
+     * @param isRemote true if tree operation was remotely generated (received from server)
      */
-    public DomStyle(TreeOperation operation)
+    public DomStyle(TreeOperation operation, boolean isRemote)
     {
         super(operation);
+        this.isRemote = isRemote;
+    }
+
+    public boolean isRemote()
+    {
+        return isRemote;
     }
 
     @Override
@@ -183,7 +196,13 @@ public class DomStyle extends AbstractDomOperation
         @Override
         protected TextFragment execute(Text text, int startIndex, int endIndex, String parameter) {
             boolean addStyle = isExecuted();
-            return addStyle ? removeStyle(text, startIndex, endIndex) : addStyle(text, startIndex, endIndex);
+            //if operation is remote, then add style if necessary, but don't remove it
+            if (DomStyle.this.isRemote()) {
+                return addStyle ? new TextFragment(text, startIndex, endIndex) : addStyle(text, startIndex, endIndex);
+            } else {
+                // operation is local, add or remove style
+                return addStyle ? removeStyle(text, startIndex, endIndex) : addStyle(text, startIndex, endIndex);
+            }
         }
 
         /**

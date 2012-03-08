@@ -109,7 +109,7 @@ public class TreeClientCallback implements ClientCallback
         log.fine("Before send");
         TreeOperation operation = (TreeOperation) message.getOperation();
 
-        DomOperation domOperation = domOperationFactory.createDomOperation(operation);
+        DomOperation domOperation = domOperationFactory.createDomOperation(operation, false);
         if (domOperation != null) {
             //todo-marius: should restore original selection, as the returned range is not always the original selection.
             // Ex: select many styles, text nodes and apply a new style. The selection applied is the last one, and not the original selection
@@ -124,7 +124,7 @@ public class TreeClientCallback implements ClientCallback
     {
         log.fine("Executing received: " + receivedMessage);
         TreeOperation operation = (TreeOperation) receivedMessage.getOperation();
-        DomOperation domOperation = domOperationFactory.createDomOperation(operation);
+        DomOperation domOperation = domOperationFactory.createDomOperation(operation, true);
         if (domOperation != null) {
             TreeOperation[] selectionEndPoints = saveSelection();
             domOperation.execute((Document) nativeNode.getOwnerDocument());
