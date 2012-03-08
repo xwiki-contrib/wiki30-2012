@@ -1,100 +1,120 @@
 package fr.loria.score.jupiter.tree.operation;
 
-
 import fr.loria.score.jupiter.tree.Tree;
 
-
-public class TreeUpdateElement extends TreeOperation{
-    
+public class TreeUpdateElement extends TreeOperation
+{
     public String tag;
+
     public String value;
-    
-    public TreeUpdateElement(int siteId,int[] path,String tag,String value){
+
+    public TreeUpdateElement(int siteId, int[] path, String tag, String value)
+    {
         this.setPath(path);
         this.setSiteId(siteId);
-        this.tag=tag;
-        this.value=value;
+        this.tag = tag;
+        this.value = value;
     }
 
     @Override
-    public void execute(Tree root) {
-        Tree tree =root.getChildFromPath(path);
+    public void execute(Tree root)
+    {
+        Tree tree = root.getChildFromPath(path);
         tree.setAttribute(tag, value);
     }
 
     @Override
-    protected TreeOperation handleTreeInsertText(TreeInsertText op1) {
+    protected TreeOperation handleTreeInsertText(TreeInsertText op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected TreeOperation handleTreeDeleteText(TreeDeleteText op1) {
+    protected TreeOperation handleTreeDeleteText(TreeDeleteText op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected TreeOperation handleTreeNewParagraph(TreeNewParagraph op1) {
+    protected TreeOperation handleTreeNewParagraph(TreeNewParagraph op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected TreeOperation handleTreeMergeParagraph(TreeMergeParagraph op1) {
+    protected TreeOperation handleTreeMergeParagraph(TreeMergeParagraph op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected TreeOperation handleTreeInsertParagraph(TreeInsertParagraph op1) {
+    protected TreeOperation handleTreeInsertParagraph(TreeInsertParagraph op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected TreeOperation handleTreeDeleteTree(TreeDeleteTree op1) {
+    protected TreeOperation handleTreeDeleteTree(TreeDeleteTree op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected TreeOperation handleTreeStyle(TreeStyle op1) {
+    protected TreeOperation handleTreeStyle(TreeStyle op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected TreeOperation handleTreeMoveParagraph(TreeMoveParagraph op1) {
+    protected TreeOperation handleTreeMoveParagraph(TreeMoveParagraph op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1) {
+    protected TreeOperation handleTreeCaretPosition(TreeCaretPosition op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected TreeOperation handleTreeMergeItem(TreeMergeItem op1) {
+    protected TreeOperation handleTreeMergeItem(TreeMergeItem op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected TreeOperation handleTreeMoveItem(TreeMoveItem op1) {
+    protected TreeOperation handleTreeMoveItem(TreeMoveItem op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected TreeOperation handleTreeNewItem(TreeNewItem op1) {
+    protected TreeOperation handleTreeNewItem(TreeNewItem op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected TreeOperation handleTreeNewList(TreeNewList op1) {
+    protected TreeOperation handleTreeNewList(TreeNewList op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected TreeOperation handleTreeSplitItem(TreeSplitItem op1) {
+    protected TreeOperation handleTreeSplitItem(TreeSplitItem op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected TreeOperation handleTreeUpdateElement(TreeUpdateElement op1) {
+    protected TreeOperation handleTreeUpdateElement(TreeUpdateElement op1)
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
+    @Override public String toString()
+    {
+        return "TreeUpdateElement(" + super.toString() + ")";
+    }
 }
