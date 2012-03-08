@@ -161,7 +161,6 @@ public class RealTimeSymbolPlugin extends BaseRealTimePlugin implements ClickHan
                     TreeOperation op = treeOperationFactory.createTreeInsertText(clientJupiter.getSiteId(), r,
                         character.charAt(0));
                     clientJupiter.generate(op);
-                    log.severe("FOK");
                 }
             }
         }
