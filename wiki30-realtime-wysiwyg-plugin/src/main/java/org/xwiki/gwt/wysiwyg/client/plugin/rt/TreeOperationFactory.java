@@ -28,11 +28,13 @@ import org.xwiki.gwt.dom.client.Range;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 
+import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.operation.TreeCaretPosition;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
 import fr.loria.score.jupiter.tree.operation.TreeMergeParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import fr.loria.score.jupiter.tree.operation.TreeStyle;
+import fr.loria.score.jupiter.tree.operation.TreeUpdateElement;
 
 import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getIntermediaryTargets;
 
@@ -128,5 +130,17 @@ public class TreeOperationFactory
         }
 
         return styleOperations;
+    }
+
+    /**
+     * @param siteId the site id
+     * @param range the range selection
+     * @param headingOrParagraphValue a value representing a heading level (h1, h2, .., h6) or a paragraph (p)
+     * @return a {@code TreeUpdateElement} operation
+     */
+    public TreeOperation createHeadingOrParagraphOperation(int siteId, Range range, String headingOrParagraphValue)
+    {
+        List<Integer> path = EditorUtils.getLocator(range.getStartContainer());
+        return new TreeUpdateElement(siteId, EditorUtils.toIntArray(path), Tree.NODE_NAME, headingOrParagraphValue);
     }
 }
