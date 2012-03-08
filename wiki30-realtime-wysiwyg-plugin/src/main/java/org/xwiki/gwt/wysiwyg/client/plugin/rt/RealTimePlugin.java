@@ -30,6 +30,7 @@ import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.dom.client.Selection;
 import org.xwiki.gwt.dom.client.Style;
 import org.xwiki.gwt.user.client.Config;
+import org.xwiki.gwt.user.client.Console;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
 import org.xwiki.gwt.user.client.ui.rta.cmd.Command;
 import org.xwiki.gwt.user.client.ui.rta.cmd.CommandListener;
@@ -39,7 +40,6 @@ import org.xwiki.gwt.wysiwyg.client.Strings;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractStatefulPlugin;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.FocusWidgetUIExtension;
 
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Text;
@@ -56,10 +56,6 @@ import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ToggleButton;
 
-import fr.loria.score.client.ClientJupiterAlg;
-import fr.loria.score.client.CommunicationService;
-import fr.loria.score.client.RtApi;
-import fr.loria.score.jupiter.tree.TreeDocument;
 import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
 import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
@@ -78,23 +74,10 @@ import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getTextNodes;
  *
  * @version $Id: 4e19fb82c1f5869f4850b80c3b5f5d3b3d319483 $
  */
-public class RealTimePlugin extends AbstractStatefulPlugin
+public class RealTimePlugin extends BaseRealTimePlugin
     implements KeyDownHandler, KeyPressHandler, KeyUpHandler, CommandListener, ClickHandler
 {
-    public static final String P = "p";
-
-    public static final String SPAN = "span";
-
-    public static final String BR = "br";
-
     private static Logger log = Logger.getLogger(RealTimePlugin.class.getName());
-
-    private static ClientJupiterAlg clientJupiter;
-
-    /**
-     * The object used to create tree operations.
-     */
-    private TreeOperationFactory treeOperationFactory = new TreeOperationFactory();
 
     /**
      * The list of command that shouldn't be broadcasted.
@@ -125,6 +108,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
     public void init(RichTextArea textArea, Config config)
     {
         super.init(textArea, config);
+        Console.getInstance().log("Loading RT Plugin... ");
 
         saveRegistration(textArea.addKeyDownHandler(this));
         saveRegistration(textArea.addKeyPressHandler(this));
@@ -149,23 +133,7 @@ public class RealTimePlugin extends AbstractStatefulPlugin
             getUIExtensionList().add(toolBarExtension);
         }
 
-        // Jupiter algo initializing
-        Node bodyNode = textArea.getDocument().getBody();
-        // insert a new paragraph on an empty text area
-        final Element p = Document.get().createElement(P); // todo: add empty text node and the caret stays there!
-        if (bodyNode.getChildCount() == 0) {
-            bodyNode.insertFirst(p);
-        } else if (bodyNode.getChildCount() == 1 && bodyNode.getFirstChild().getNodeName().equalsIgnoreCase(BR)) {
-            bodyNode.insertBefore(p, bodyNode.getFirstChild());
-        }
-
-        clientJupiter = new ClientJupiterAlg(new TreeDocument(Converter.fromNativeToCustom(Element.as(bodyNode))));
-        clientJupiter.setEditingSessionId(Integer.parseInt(config.getParameter(RtApi.DOCUMENT_ID)));
-        clientJupiter.setCommunicationService(CommunicationService.ServiceHelper.getCommunicationService());
-        clientJupiter.setCallback(new TreeClientCallback(bodyNode));
-        clientJupiter.connect();
-
-        customizeActionListeners();
+        Console.getInstance().log("RT Plugin loaded ");
     }
 
     /**
@@ -333,31 +301,6 @@ public class RealTimePlugin extends AbstractStatefulPlugin
                 event.preventDefault();
             }
         }
-    }
-
-    /**
-     * Customize the action listeners found in actionButtonsRT.js
-     */
-    private static native void customizeActionListeners() /*-{
-        $wnd.onCancelHook = function()
-        {
-            @org.xwiki.gwt.wysiwyg.client.plugin.rt.RealTimePlugin::disconnect()();
-        };
-
-        $wnd.onSaveAndViewHook = function()
-        {
-            @org.xwiki.gwt.wysiwyg.client.plugin.rt.RealTimePlugin::disconnect()();
-        };
-
-        $wnd.onSaveAndContinueHook = function()
-        {
-            @org.xwiki.gwt.wysiwyg.client.plugin.rt.RealTimePlugin::disconnect()();
-        }
-    }-*/;
-
-    private static void disconnect()
-    {
-        clientJupiter.disconnect();
     }
 
     private void logRange(Range r)

@@ -47,4 +47,7 @@ public interface Images extends ClientBundle
 
     @Source("underline.gif")
     ImageResource underline();
+
+    @Source("charmap.gif")
+    ImageResource charmap();
 }

@@ -594,7 +594,7 @@ HL2ph7uN448AAAAASUVORK5CYII=
 <menuBar>[{"feature": "link", "subMenu":["linkEdit", "linkRemove", "linkWikiPage", "linkAttachment", "|", "linkWebPage", "linkEmail"]}, {"feature":"image", "subMenu":["imageInsertAttached", "imageInsertURL", "imageEdit", "imageRemove"]}, {"feature":"table", "subMenu":["inserttable", "insertcolbefore", "insertcolafter", "deletecol", "|", "insertrowbefore", "insertrowafter", "deleterow", "|", "deletetable"]}, {"feature":"macro", "subMenu":["macroInsert", "macroEdit", "|", "macroRefresh", "|", "macroCollapse", "macroExpand"]}, {"feature":"import", "subMenu":["importOffice"]}]</menuBar>
 </property>
 <property>
-<plugins>rt submit readonly</plugins>
+<plugins>rt submit readonly rt-symbol</plugins>
 </property>
 <property>
 <sourceEditorEnabled>1</sourceEditorEnabled>
