@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * 
  * @version $Id: 7d2605a0009a82f5b6e42de7d02fa65ddc348300 $
  */
-public class RealTimeSymbolCell extends FlowPanel
+public class RTSymbolCell extends FlowPanel
 {
     /**
      * The CSS class name used when the symbol cell is not hovered.
@@ -54,7 +54,7 @@ public class RealTimeSymbolCell extends FlowPanel
      * 
      * @param symbol the symbol to put inside the new cell
      */
-    public RealTimeSymbolCell(String symbol)
+    public RTSymbolCell(String symbol)
     {
         super();
 

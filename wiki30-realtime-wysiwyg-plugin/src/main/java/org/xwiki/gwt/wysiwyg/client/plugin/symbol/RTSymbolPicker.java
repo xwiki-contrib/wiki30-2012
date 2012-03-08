@@ -32,7 +32,7 @@ import com.google.gwt.user.client.ui.Image;
  * 
  * @version $Id: 604d7dde909a34a4d409544fd17b8553954f78fe $
  */
-public class RealTimeSymbolPicker extends CompositeDialogBox implements SelectionHandler<String>
+public class RTSymbolPicker extends CompositeDialogBox implements SelectionHandler<String>
 {
     /**
      * The default list of symbols.
@@ -314,12 +314,12 @@ public class RealTimeSymbolPicker extends CompositeDialogBox implements Selectio
     /**
      * The symbol palette used for picking the symbol.
      */
-    private final RealTimeSymbolPalette symbolPalette;
+    private final RTSymbolPalette symbolPalette;
 
     /**
      * Creates a new symbol picker using the default list of symbols.
      */
-    public RealTimeSymbolPicker()
+    public RTSymbolPicker()
     {
         super(false, true);
 
@@ -327,7 +327,7 @@ public class RealTimeSymbolPicker extends CompositeDialogBox implements Selectio
         getDialog().setCaption(Strings.INSTANCE.charmap());
         getDialog().addStyleName("xSymbolPicker");
 
-        symbolPalette = new RealTimeSymbolPalette(RT_SYMBOLS, SYMBOLS_PER_ROW, SYMBOLS_PER_COL);
+        symbolPalette = new RTSymbolPalette(RT_SYMBOLS, SYMBOLS_PER_ROW, SYMBOLS_PER_COL);
         symbolPalette.addSelectionHandler(this);
 
         initWidget(symbolPalette);

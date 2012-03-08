@@ -48,7 +48,7 @@ import fr.loria.score.jupiter.tree.operation.TreeOperation;
  * Allows the user to insert a special symbol chosen with a symbol picker in place of the current selection.
  *
  */
-public class RealTimeSymbolPlugin extends BaseRealTimePlugin implements ClickHandler, CloseHandler<CompositeDialogBox>
+public class RTSymbolPlugin extends BaseRealTimePlugin implements ClickHandler, CloseHandler<CompositeDialogBox>
 {
     /**
      * The insert button to be placed on the tool bar.
@@ -58,14 +58,14 @@ public class RealTimeSymbolPlugin extends BaseRealTimePlugin implements ClickHan
     /**
      * The symbol picker used for choosing the symbol to insert.
      */
-    private RealTimeSymbolPicker picker;
+    private RTSymbolPicker picker;
 
     /**
      * Tool bar extension.
      */
     private final FocusWidgetUIExtension toolBarExtension = new FocusWidgetUIExtension("toolbar");
 
-    private static Logger log = Logger.getLogger(RealTimeSymbolPlugin.class.getName());
+    private static Logger log = Logger.getLogger(RTSymbolPlugin.class.getName());
 
     /**
      * {@inheritDoc}
@@ -173,10 +173,10 @@ public class RealTimeSymbolPlugin extends BaseRealTimePlugin implements ClickHan
      * 
      * @return the symbol picker to be used for selecting the symbol.
      */
-    private RealTimeSymbolPicker getSymbolPicker()
+    private RTSymbolPicker getSymbolPicker()
     {
         if (picker == null) {
-            picker = new RealTimeSymbolPicker();
+            picker = new RTSymbolPicker();
             saveRegistration(picker.addCloseHandler(this));
         }
         return picker;

@@ -35,12 +35,12 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
  * 
  * @version $Id: 169c2b70202888cf3dd3295a6684f69a8da95a8e $
  */
-public class RealTimeSymbolPalette extends Composite implements HasSelectionHandlers<String>, ClickHandler
+public class RTSymbolPalette extends Composite implements HasSelectionHandlers<String>, ClickHandler
 {
     /**
      * The selected cell in {@link #symbolGrid}.
      */
-    private RealTimeSymbolCell selectedCell;
+    private RTSymbolCell selectedCell;
 
     /**
      * Creates a new symbol palette using the given list of symbols to fill a symbol grid with the specified number of
@@ -50,7 +50,7 @@ public class RealTimeSymbolPalette extends Composite implements HasSelectionHand
      * @param rows the number of rows in the symbol grid
      * @param columns the number of columns in the symbol grid
      */
-    public RealTimeSymbolPalette(Object[][] symbols, int rows, int columns)
+    public RTSymbolPalette(Object[][] symbols, int rows, int columns)
     {
         Grid symbolGrid = new Grid(columns, rows);
         symbolGrid.addStyleName("xSymbolPalette");
@@ -59,12 +59,12 @@ public class RealTimeSymbolPalette extends Composite implements HasSelectionHand
         symbolGrid.setCellSpacing(1);
         symbolGrid.addClickHandler(this);
 
-        RealTimeSymbolCell charCell;
+        RTSymbolCell charCell;
         int j = 0;
         int k = 0;
         for (int i = 0; i < symbols.length; i++) {
             if ((Boolean) symbols[i][2]) {
-                charCell = new RealTimeSymbolCell(symbols[i][0].toString());
+                charCell = new RTSymbolCell(symbols[i][0].toString());
                 charCell.setTitle(symbols[i][3].toString());
                 symbolGrid.setWidget(k, j, charCell);
                 symbolGrid.getCellFormatter().setHorizontalAlignment(k, j, HasHorizontalAlignment.ALIGN_CENTER);
@@ -107,7 +107,7 @@ public class RealTimeSymbolPalette extends Composite implements HasSelectionHand
         if (event.getSource() == getSymbolGrid()) {
             Cell cell = getSymbolGrid().getCellForEvent(event);
             if (cell != null) {
-                setSelectedCell((RealTimeSymbolCell) getSymbolGrid().getWidget(cell.getRowIndex(), cell.getCellIndex()));
+                setSelectedCell((RTSymbolCell) getSymbolGrid().getWidget(cell.getRowIndex(), cell.getCellIndex()));
                 SelectionEvent.fire(this, getSelectedSymbol());
             }
         }
@@ -118,7 +118,7 @@ public class RealTimeSymbolPalette extends Composite implements HasSelectionHand
      * 
      * @param cell the symbol cell to be selected
      */
-    private void setSelectedCell(RealTimeSymbolCell cell)
+    private void setSelectedCell(RTSymbolCell cell)
     {
         if (selectedCell != cell) {
             if (selectedCell != null) {
@@ -149,7 +149,7 @@ public class RealTimeSymbolPalette extends Composite implements HasSelectionHand
         if (symbol != null) {
             for (int i = 0; i < getSymbolGrid().getRowCount(); i++) {
                 for (int j = 0; j < getSymbolGrid().getColumnCount(); j++) {
-                    RealTimeSymbolCell cell = (RealTimeSymbolCell) getSymbolGrid().getWidget(i, j);
+                    RTSymbolCell cell = (RTSymbolCell) getSymbolGrid().getWidget(i, j);
                     if (cell.getSymbol().equals(symbol)) {
                         setSelectedCell(cell);
                         return;

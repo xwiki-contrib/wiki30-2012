@@ -23,21 +23,21 @@ import org.xwiki.gwt.wysiwyg.client.plugin.Plugin;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractPluginFactory;
 
 /**
- * Factory for {@link RealTimeSymbolPlugin}.
+ * Factory for {@link RTSymbolPlugin}.
  * 
  * @version $Id: 71e60f5f579c96ec66a6554e7ab734cc0b2d13c8 $
  */
-public final class RealTimeSymbolPluginFactory extends AbstractPluginFactory
+public final class RTSymbolPluginFactory extends AbstractPluginFactory
 {
     /**
      * The singleton instance.
      */
-    private static RealTimeSymbolPluginFactory instance;
+    private static RTSymbolPluginFactory instance;
 
     /**
-     * Creates a new factory for {@link RealTimeSymbolPlugin}.
+     * Creates a new factory for {@link RTSymbolPlugin}.
      */
-    private RealTimeSymbolPluginFactory()
+    private RTSymbolPluginFactory()
     {
         super("rt-symbol");
     }
@@ -45,10 +45,10 @@ public final class RealTimeSymbolPluginFactory extends AbstractPluginFactory
     /**
      * @return the singleton instance.
      */
-    public static synchronized RealTimeSymbolPluginFactory getInstance()
+    public static synchronized RTSymbolPluginFactory getInstance()
     {
         if (instance == null) {
-            instance = new RealTimeSymbolPluginFactory();
+            instance = new RTSymbolPluginFactory();
         }
         return instance;
     }
@@ -60,6 +60,6 @@ public final class RealTimeSymbolPluginFactory extends AbstractPluginFactory
      */
     public Plugin newInstance()
     {
-        return new RealTimeSymbolPlugin();
+        return new RTSymbolPlugin();
     }
 }
