@@ -186,10 +186,8 @@ public class RTFormatPlugin extends BaseRealTimePlugin implements ChangeHandler,
             String level = levels.getValue(levels.getSelectedIndex()); // p, h1, h2, h3
             getTextArea().setFocus(true);
 
-//            getTextArea().getCommandManager().execute(Command.FORMAT_BLOCK, level);
             Range range = getTextArea().getDocument().getSelection().getRangeAt(0);
             if (range != null) {
-//                range = EditorUtils.normalizeCaretPosition(range);
                 Node node = range.getStartContainer();
                 node = DOMUtils.getInstance().getNearestBlockContainer(node); // p, or h1, h2, h3
                 log.severe("Nearest block container is: " + node.getNodeName());

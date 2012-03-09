@@ -26,6 +26,7 @@ import fr.loria.score.jupiter.tree.operation.TreeMergeParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import fr.loria.score.jupiter.tree.operation.TreeStyle;
+import fr.loria.score.jupiter.tree.operation.TreeUpdateElement;
 
 /**
  * Creates DOM operations from Tree operations. This class is used to map Tree operations to DOM operations. Whenever a
@@ -56,6 +57,8 @@ public class DomOperationFactory
             return new DomMergeParagraph(operation);
         } else if (operation instanceof TreeStyle) {
             return new DomStyle(operation, isRemote);
+        } else if (operation instanceof TreeUpdateElement) {
+            return new DomUpdateElement(operation);
         }
         return null;
     }
