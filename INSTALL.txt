@@ -1,13 +1,11 @@
 INSTALL & USE:
 
 * Important: This project contains Git submodules (i.e., xwiki-platform-wiki30, application-ratings).
-Once you cloned the project, clone the actual submodules code.
-Type in the console:
+Once you cloned the project, clone the actual submodules.
+Type in the console (from the wiki30 directory):
 git submodule init
 git submodule update
 
-As this module is forked from the xwiki-platform project, you might also want to have it synched with the main repository.
-Type in the console (from the wiki30 directory):
 cd xwiki-platform-wiki30
 git checkout master
 git pull
