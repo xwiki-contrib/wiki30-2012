@@ -260,7 +260,13 @@ public class TreeMergeParagraph extends TreeOperation {
 
     @Override
     protected TreeOperation handleTreeUpdateElement(TreeUpdateElement op1) {
-        //todo !
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(op1.getPath()[0]==position){
+            return new TreeIdOp();
+        }
+        if(op1.getPath()[0]<position){
+            return op1;
+        }
+        return new TreeUpdateElement(op1.getSiteId(),TreeUtils.addP(op1.path, -1),
+                op1.tag, op1.value);
     }
 }
