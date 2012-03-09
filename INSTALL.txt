@@ -10,6 +10,7 @@ As this module is forked from the xwiki-platform project, you might also want to
 Type in the console (from the wiki30 directory):
 cd xwiki-platform-wiki30
 git checkout master
+git pull
 cd ..
 
 Prerequisites: Maven 3.0.4+, JDK 1.5+, and MySQL if you want to enable the Workspace feature
