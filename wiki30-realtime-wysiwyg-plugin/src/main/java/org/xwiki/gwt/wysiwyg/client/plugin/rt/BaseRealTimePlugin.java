@@ -59,8 +59,11 @@ public class BaseRealTimePlugin extends AbstractStatefulPlugin
         }
     }
 
-    public void logRange(Range r)
+    public void logRange(String msg, Range r)
     {
+        if (msg != null) {
+            log.info(msg);
+        }
         log.info("Start container: " + r.getStartContainer().getNodeName() +
             ", " + " locator: " + EditorUtils.getLocator(r.getStartContainer()) + " offset: " + r.getStartOffset()
         );

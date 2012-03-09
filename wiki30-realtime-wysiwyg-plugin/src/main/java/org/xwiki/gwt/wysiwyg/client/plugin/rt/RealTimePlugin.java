@@ -209,12 +209,11 @@ public class RealTimePlugin extends BaseRealTimePlugin
         Selection selection = getTextArea().getDocument().getSelection();
         if (selection.getRangeCount() > 0) {
             Range range = selection.getRangeAt(0);
-            logRange(range);
+            logRange(null, range);
 
             if (keyCode == KeyCodes.KEY_BACKSPACE || keyCode == KeyCodes.KEY_DELETE || keyCode == KeyCodes.KEY_ENTER) {
                 range = EditorUtils.normalizeCaretPosition(range);
-                log.fine("New range");
-                logRange(range);
+                logRange("New range", range);
             }
             Node startContainer = range.getStartContainer();
             Node endContainer = range.getEndContainer();
@@ -291,8 +290,7 @@ public class RealTimePlugin extends BaseRealTimePlugin
                 Range range = selection.getRangeAt(0);
                 range = EditorUtils.normalizeCaretPosition(range);
 
-                log.fine("New range");
-                logRange(range);
+                logRange("New range", range);
 
                 char character = new String(new int[]{ event.getUnicodeCharCode() }, 0, 1).charAt(0);
                 clientJupiter.generate(treeOperationFactory.createTreeInsertText(clientJupiter.getSiteId(), range,
