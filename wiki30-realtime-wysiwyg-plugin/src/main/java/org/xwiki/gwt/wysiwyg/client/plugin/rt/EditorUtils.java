@@ -79,19 +79,15 @@ public final class EditorUtils
      * @param node the node whose ancestor is to be returned
      * @return the ancestor for this node which is just below the paragraph ancestor
      */
-    public static Node getAncestorBelowParagraph(Node node) {
-        Node ancestor = node;
-        while (!"p".equalsIgnoreCase(ancestor.getParentNode().getNodeName())) {
-            ancestor = ancestor.getParentNode();
-        }
-        return ancestor;
+    public static Node getAncestorBelowParagraph(Node node) {  //todo: verify check usages!
+        return DOMUtils.getInstance().getFarthestInlineAncestor(node);
     }
 
     /**
      * @param node a node
      * @return the paragraph ancestor of the node
      */
-    public static Node getAncestorParagraph(Node node)
+    public static Node getAncestorParagraph(Node node)  // todo: replace with nearestBlockAncestor
     {
         // We can't have nested paragraphs
         if (node.getNodeName().equalsIgnoreCase("p")) {
