@@ -20,6 +20,11 @@ public class TreeUpdateElement extends TreeOperation
         this.value = value;
     }
 
+    public String getValue()
+    {
+        return value;
+    }
+
     @Override
     public void execute(Tree root)
     {
