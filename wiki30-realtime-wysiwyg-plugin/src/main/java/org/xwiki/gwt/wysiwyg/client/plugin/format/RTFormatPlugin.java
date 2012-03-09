@@ -190,7 +190,7 @@ public class RTFormatPlugin extends BaseRealTimePlugin implements ChangeHandler,
             if (range != null) {
                 Node node = range.getStartContainer();
                 node = DOMUtils.getInstance().getNearestBlockContainer(node); // p, or h1, h2, h3
-                log.severe("Nearest block container is: " + node.getNodeName());
+                log.fine("Nearest block container is: " + node.getNodeName());
 
                 TreeOperation op = treeOperationFactory.createHeadingOrParagraphOperation(clientJupiter.getSiteId(), range, level);
                 if (op != null) {
