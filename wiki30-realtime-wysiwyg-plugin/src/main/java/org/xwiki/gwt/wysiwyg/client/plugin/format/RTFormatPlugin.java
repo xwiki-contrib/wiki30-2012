@@ -29,8 +29,6 @@ import org.xwiki.gwt.user.client.Config;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
 import org.xwiki.gwt.user.client.ui.rta.cmd.Command;
 import org.xwiki.gwt.wysiwyg.client.Strings;
-import org.xwiki.gwt.wysiwyg.client.plugin.format.exec.RTFormatBlockExecutable;
-import org.xwiki.gwt.wysiwyg.client.plugin.format.exec.RTRemoveFormatExecutable;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractStatefulPlugin;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.FocusWidgetUIExtension;
 import org.xwiki.gwt.wysiwyg.client.plugin.rt.BaseRealTimePlugin;
@@ -40,9 +38,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PushButton;
 
@@ -75,19 +71,10 @@ public class RTFormatPlugin extends BaseRealTimePlugin implements ChangeHandler,
 
     /**
      * {@inheritDoc}
-     * 
-     * @see AbstractStatefullPlugin#init(RichTextArea, Config)
      */
     public void init(RichTextArea textArea, Config config)
     {
         super.init(textArea, config);
-
-        // Register custom executables.
-        getTextArea().getCommandManager().registerCommand(Command.FORMAT_BLOCK, new RTFormatBlockExecutable(textArea));
-        getTextArea().getCommandManager().registerCommand(Command.REMOVE_FORMAT, new RTRemoveFormatExecutable(textArea));
-
-//        addFeature("removeformat", Command.REMOVE_FORMAT, Images.INSTANCE.removeFormat(), Strings.INSTANCE
-//            .removeFormat());
 
         if (getTextArea().getCommandManager().isSupported(Command.FORMAT_BLOCK)) {
             levels = new ListBox(false);
@@ -113,28 +100,7 @@ public class RTFormatPlugin extends BaseRealTimePlugin implements ChangeHandler,
     }
 
     /**
-     * Creates a tool bar feature and adds it to the tool bar.
-     * 
-     * @param name the feature name
-     * @param command the rich text area command that is executed by this feature
-     * @param imageResource the image displayed on the tool bar
-     * @param title the tool tip used on the tool bar button
-     */
-    private void addFeature(String name, Command command, ImageResource imageResource, String title)
-    {
-        if (getTextArea().getCommandManager().isSupported(command)) {
-            PushButton button = new PushButton(new Image(imageResource));
-            saveRegistration(button.addClickHandler(this));
-            button.setTitle(title);
-            toolBarExtension.addFeature(name, button);
-            buttons.put(button, command);
-        }
-    }
-
-    /**
      * {@inheritDoc}
-     * 
-     * @see AbstractStatefullPlugin#destroy()
      */
     public void destroy()
     {
@@ -163,15 +129,7 @@ public class RTFormatPlugin extends BaseRealTimePlugin implements ChangeHandler,
         Command command = buttons.get(event.getSource());
         if (command != null && ((FocusWidget) event.getSource()).isEnabled()) {
             getTextArea().setFocus(true);
-            Range range = getTextArea().getDocument().getSelection().getRangeAt(0);
-            if (range != null) {
-                TreeOperation op = null;
-
-                if (op != null) {
-                    clientJupiter.generate(op);
-                }
-            }
-//            getTextArea().getCommandManager().execute(command);
+            //getTextArea().getCommandManager().execute(command);
         }
     }
 
@@ -187,6 +145,13 @@ public class RTFormatPlugin extends BaseRealTimePlugin implements ChangeHandler,
             getTextArea().setFocus(true);
 
             Range range = getTextArea().getDocument().getSelection().getRangeAt(0);
+            logRange(null, range);
+            if ("body".equalsIgnoreCase(range.getStartContainer().getNodeName())) {
+                range.setStart(range.getStartContainer().getChild(range.getStartOffset()), 0);
+                range.collapse(true);
+                logRange("New range", range);
+            }
+
             if (range != null) {
                 Node node = range.getStartContainer();
                 node = DOMUtils.getInstance().getNearestBlockContainer(node); // p, or h1, h2, h3
