@@ -7,7 +7,11 @@ import fr.loria.score.jupiter.tree.TreeFactory;
 public class TreeNewItem extends TreeOperation{
     
     public int posItem;
-    
+
+    public TreeNewItem()
+    {
+    }
+
     public TreeNewItem(int siteId,int position, int posItem){
         super(siteId,position);
         this.posItem=posItem;

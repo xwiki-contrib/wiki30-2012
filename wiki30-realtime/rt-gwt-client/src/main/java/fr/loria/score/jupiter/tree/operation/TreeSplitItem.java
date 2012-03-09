@@ -8,7 +8,11 @@ import fr.loria.score.jupiter.tree.TreeFactory;
 public class TreeSplitItem extends TreeOperation{
     
     public boolean splitLeft;//split left : true if position<>0(generation)
-    
+
+    public TreeSplitItem()
+    {
+    }
+
     public TreeSplitItem(int siteId, int position, int[] path)
     {
         super(siteId, position);

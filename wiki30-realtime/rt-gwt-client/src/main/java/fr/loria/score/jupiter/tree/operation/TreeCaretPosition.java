@@ -12,6 +12,10 @@ import fr.loria.score.jupiter.tree.Tree;
  */
 public class TreeCaretPosition extends TreeOperation{
 
+    public TreeCaretPosition()
+    {
+    }
+
     public TreeCaretPosition(int siteId, int position, int[] path) {
         this.siteId=siteId;
         this.position=position;
@@ -19,8 +23,8 @@ public class TreeCaretPosition extends TreeOperation{
     }
 
     @Override
-    public void execute(Tree root) {
-        
+    public void execute(Tree root)
+    {
     }
 
     @Override

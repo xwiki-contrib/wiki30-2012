@@ -8,6 +8,10 @@ public class TreeUpdateElement extends TreeOperation
 
     public String value;
 
+    public TreeUpdateElement()
+    {
+    }
+
     public TreeUpdateElement(int siteId, int[] path, String tag, String value)
     {
         this.setPath(path);

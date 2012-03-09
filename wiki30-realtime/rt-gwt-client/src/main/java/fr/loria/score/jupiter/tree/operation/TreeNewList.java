@@ -5,7 +5,11 @@ import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.TreeFactory;
 
 public class TreeNewList extends TreeOperation{
-    
+
+    public TreeNewList()
+    {
+    }
+
     public TreeNewList(int siteId, int position) {
         super(siteId, position);
     }

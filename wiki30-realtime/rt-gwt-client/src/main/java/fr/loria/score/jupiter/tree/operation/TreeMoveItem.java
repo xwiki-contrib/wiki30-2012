@@ -2,12 +2,15 @@ package fr.loria.score.jupiter.tree.operation;
 
 
 import fr.loria.score.jupiter.tree.Tree;
-import fr.loria.score.jupiter.tree.TreeUtils;
 
 public class TreeMoveItem extends TreeOperation{
     
     public int sp;//initial position
     public int ep;//new position
+
+    public TreeMoveItem()
+    {
+    }
 
     public TreeMoveItem(int siteId, int position, int s, int e) {
         super(siteId,position);

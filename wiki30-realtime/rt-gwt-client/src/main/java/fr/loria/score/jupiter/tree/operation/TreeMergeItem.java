@@ -16,7 +16,11 @@ public class TreeMergeItem extends TreeOperation{
      * Nr of children of the tree before the merge
      */
     public int childrenNr;
-    
+
+    public TreeMergeItem()
+    {
+    }
+
     public TreeMergeItem(int siteId,int position,int posItem,int lc,int rc){
         super(siteId,position);
         this.posItem=posItem;
