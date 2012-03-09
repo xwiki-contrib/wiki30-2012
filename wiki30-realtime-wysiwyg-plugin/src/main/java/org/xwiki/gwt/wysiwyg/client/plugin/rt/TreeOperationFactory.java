@@ -141,6 +141,6 @@ public class TreeOperationFactory
     public TreeOperation createHeadingOrParagraphOperation(int siteId, Range range, String headingOrParagraphValue)
     {
         List<Integer> path = EditorUtils.getLocator(range.getStartContainer());
-        return new TreeUpdateElement(siteId, new int[] {path.get(0)}, Tree.NODE_NAME, headingOrParagraphValue);
+        return new TreeUpdateElement(siteId, range.getStartOffset(), new int[] {path.get(0)}, Tree.NODE_NAME, headingOrParagraphValue);
     }
 }

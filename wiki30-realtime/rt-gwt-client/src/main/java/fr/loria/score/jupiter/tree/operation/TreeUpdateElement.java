@@ -20,6 +20,12 @@ public class TreeUpdateElement extends TreeOperation
         this.value = value;
     }
 
+    public TreeUpdateElement(int siteId, int position, int[] path, String tag, String value)
+    {
+        this(siteId, path, tag, value);
+        this.position = position;
+    }
+
     public String getValue()
     {
         return value;
