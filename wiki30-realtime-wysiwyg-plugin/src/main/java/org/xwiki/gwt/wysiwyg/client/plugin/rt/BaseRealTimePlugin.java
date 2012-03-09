@@ -2,6 +2,7 @@ package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
 import java.util.logging.Logger;
 
+import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.user.client.Config;
 import org.xwiki.gwt.user.client.Console;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
@@ -56,6 +57,17 @@ public class BaseRealTimePlugin extends AbstractStatefulPlugin
             isInitialized = true;
             customizeActionListeners();
         }
+    }
+
+    public void logRange(Range r)
+    {
+        log.info("Start container: " + r.getStartContainer().getNodeName() +
+            ", " + " locator: " + EditorUtils.getLocator(r.getStartContainer()) + " offset: " + r.getStartOffset()
+        );
+
+        log.info("End container: " + r.getEndContainer().getNodeName() +
+            ", " + " locator: " + EditorUtils.getLocator(r.getStartContainer()) + " offset: " + r.getEndOffset()
+        );
     }
 
     private static void initJupiterClient(RichTextArea textArea, Config config)

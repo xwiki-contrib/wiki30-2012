@@ -303,17 +303,6 @@ public class RealTimePlugin extends BaseRealTimePlugin
         }
     }
 
-    private void logRange(Range r)
-    {
-        log.info("Start container: " + r.getStartContainer().getNodeName() +
-            ", " + " locator: " + EditorUtils.getLocator(r.getStartContainer()) + " offset: " + r.getStartOffset()
-        );
-
-        log.info("End container: " + r.getEndContainer().getNodeName() +
-            ", " + " locator: " + EditorUtils.getLocator(r.getStartContainer()) + " offset: " + r.getEndOffset()
-        );
-    }
-
     /**
      * Creates a tool bar feature and adds it to the tool bar.
      *
