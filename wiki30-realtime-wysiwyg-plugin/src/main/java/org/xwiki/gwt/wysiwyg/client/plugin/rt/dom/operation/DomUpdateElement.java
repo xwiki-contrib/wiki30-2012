@@ -24,6 +24,9 @@ public class DomUpdateElement extends AbstractDomOperation
         String newNodeName = op.getValue();
         Node node = getTargetNode(document);
 
+        Range caret = document.createRange();
+        caret.setStart(node, op.getPosition());
+
         if (shouldUpdate(node.getNodeName(), newNodeName)) {
             Node newNode = document.createElement(newNodeName);
             for (int i = 0; i < node.getChildCount(); i++) {
@@ -33,9 +36,13 @@ public class DomUpdateElement extends AbstractDomOperation
             if (node.getParentElement() != null) {
                 node.getParentElement().replaceChild(newNode, node);
             }
+
+            // No change for caret position
+            caret.setStart(newNode, op.getPosition());
         }
-        // No change for caret position
-        return null;
+
+        caret.collapse(true);
+        return caret;
     }
 
     private boolean shouldUpdate(String nodeName, String newNodeName)
