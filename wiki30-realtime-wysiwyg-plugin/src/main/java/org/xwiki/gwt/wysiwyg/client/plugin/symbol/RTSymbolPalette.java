@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
+
 /**
  * A set of symbols from which the user can choose one by clicking.
  * 
@@ -63,9 +64,9 @@ public class RTSymbolPalette extends Composite implements HasSelectionHandlers<S
         int j = 0;
         int k = 0;
         for (int i = 0; i < symbols.length; i++) {
-            if ((Boolean) symbols[i][2]) {
-                charCell = new RTSymbolCell(symbols[i][0].toString());
-                charCell.setTitle(symbols[i][3].toString());
+            if ((Boolean) symbols[i][RTSymbolPicker.CHAR_ENABLED]) {
+                charCell = new RTSymbolCell(symbols[i][RTSymbolPicker.CHAR_UNICODE].toString());
+                charCell.setTitle(symbols[i][RTSymbolPicker.CHAR_TITLE].toString());
                 symbolGrid.setWidget(k, j, charCell);
                 symbolGrid.getCellFormatter().setHorizontalAlignment(k, j, HasHorizontalAlignment.ALIGN_CENTER);
                 j++;
