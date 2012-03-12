@@ -54,7 +54,7 @@ public class RTSeparatorPlugin extends BaseRealTimePlugin implements ClickHandle
     /**
      * Tool bar extension that includes the horizontal rule button.
      */
-    private final FocusWidgetUIExtension toolBarFocusWidgets = new FocusWidgetUIExtension("toolbar");
+    private final FocusWidgetUIExtension toolBarExtension = new FocusWidgetUIExtension("toolbar");
 
     /**
      * {@inheritDoc}
@@ -65,16 +65,14 @@ public class RTSeparatorPlugin extends BaseRealTimePlugin implements ClickHandle
     {
         super.init(textArea, config);
 
-        // Register custom executables.
-        //getTextArea().getCommandManager().registerCommand(Command.INSERT_HORIZONTAL_RULE,
-        //    new InsertHRExecutable(textArea));
-
-        //if (getTextArea().getCommandManager().isSupported(Command.INSERT_HORIZONTAL_RULE)) {
         hr = new PushButton(new Image(Images.INSTANCE.hr()));
         saveRegistration(hr.addClickHandler(this));
         hr.setTitle(Strings.INSTANCE.hr());
-        toolBarFocusWidgets.addFeature("hr", hr);
-        //}
+        toolBarExtension.addFeature("hr", hr);
+        
+        if (toolBarExtension.getFeatures().length > 0) {
+            getUIExtensionList().add(toolBarExtension);
+        }
     }
 
     /**
@@ -89,7 +87,7 @@ public class RTSeparatorPlugin extends BaseRealTimePlugin implements ClickHandle
             hr = null;
         }
 
-        toolBarFocusWidgets.clearFeatures();
+        toolBarExtension.clearFeatures();
 
         super.destroy();
     }
