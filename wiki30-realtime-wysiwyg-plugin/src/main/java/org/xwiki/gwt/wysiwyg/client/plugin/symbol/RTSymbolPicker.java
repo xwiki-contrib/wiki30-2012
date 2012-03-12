@@ -39,7 +39,8 @@ public class RTSymbolPicker extends CompositeDialogBox implements SelectionHandl
      */
     private static final Object[][] RT_SYMBOLS = {
         {"&amp;",     "\u0026", "&#38;",   true, "ampersand"},
-        {"&quot;",   "\\u0022", "&#34;",   true, "quotation mark"},
+//      {"&quot;",    "\u0022", "&#34;",   true, "quotation mark"},
+        {"&quot;",    "\"",     "&#34;",   true, "quotation mark"},
         // finance    
         {"&cent;",    "\u00A2", "&#162;",  true, "cent sign"},
         {"&euro;",    "\u20AC", "&#8364;", true, "euro sign"},
@@ -313,12 +314,17 @@ public class RTSymbolPicker extends CompositeDialogBox implements SelectionHandl
     /**
      * Column index of the flag to enable/disable the character
      */
-    static final int CHAR_ENABLED = 2;
+    static final int CHAR_HTML_CODE = 2;
+
+    /**
+     * Column index of the flag to enable/disable the character
+     */
+    static final int CHAR_ENABLED = 3;
     
     /**
      * Column index of the description of the character
      */    
-    static final int CHAR_TITLE = 3;
+    static final int CHAR_TITLE = 4;
     
     /**
      * The default number of rows in the grid that makes up the symbol palette.
