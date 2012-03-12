@@ -50,4 +50,7 @@ public interface Images extends ClientBundle
 
     @Source("charmap.gif")
     ImageResource charmap();
+    
+    @Source("hr.gif")
+    ImageResource hr();
 }
