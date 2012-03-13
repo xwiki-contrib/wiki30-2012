@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.xwiki.gwt.dom.client.DOMUtils;
 import org.xwiki.gwt.dom.client.Property;
 import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.dom.client.Selection;
@@ -64,8 +65,6 @@ import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import fr.loria.score.jupiter.tree.operation.TreeStyle;
 
 import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.NON__EMPTY;
-import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getAncestorBelowParagraph;
-import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getAncestorParagraph;
 import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getTextNodes;
 
 /**
@@ -125,7 +124,8 @@ public class RealTimePlugin extends BaseRealTimePlugin
         addFeature("bold", Command.BOLD, Images.INSTANCE.bold(), Strings.INSTANCE.bold());
         addFeature("italic", Command.ITALIC, Images.INSTANCE.italic(), Strings.INSTANCE.italic());
         addFeature("underline", Command.UNDERLINE, Images.INSTANCE.underline(), Strings.INSTANCE.underline());
-        addFeature("strikethrough", Command.LINE_THROUGH, Images.INSTANCE.strikeThrough(),
+//        Console.getInstance().addBreakPoint();
+        addFeature("line-through", Command.LINE_THROUGH, Images.INSTANCE.strikeThrough(),
             Strings.INSTANCE.strikeThrough());
 
         if (toolBarExtension.getFeatures().length > 0) {
@@ -346,7 +346,7 @@ public class RealTimePlugin extends BaseRealTimePlugin
             }
         } else { // assume element is a span or other element contained in a paragraph
             log.severe("It shouldn't happen but I'm trying to handle it"); //todo: check this!
-            rightParagraph = Element.as(getAncestorParagraph(element));
+            rightParagraph = Element.as(DOMUtils.getInstance().getNearestBlockContainer(element));
             op = skipBackspaceOnEmptyTexts(element, path, rightParagraph, rightParagraph.getPreviousSibling());
         }
         return op;
@@ -359,8 +359,8 @@ public class RealTimePlugin extends BaseRealTimePlugin
         List<Integer> path = EditorUtils.getLocator(startContainer);
         TreeOperation op = null;
 
-        Node ancestorBelowParagraph = getAncestorBelowParagraph(startContainer);
-        Element rightParagraph = ancestorBelowParagraph.getParentElement();
+        Node ancestorBelowContainer = DOMUtils.getInstance().getFarthestInlineAncestor(startContainer);
+        Element rightParagraph = ancestorBelowContainer.getParentElement();
         Node leftParagraph = rightParagraph
             .getPreviousSibling(); // Go up below the parent paragraph node, because we might have span tags with text nodes
 
@@ -426,7 +426,7 @@ public class RealTimePlugin extends BaseRealTimePlugin
         boolean isNewParagraph = false;
 
         // Go up below the parent paragraph node, because we might have span tags with text nodes
-        Node ancestorBelowParagraph = getAncestorBelowParagraph(textNode);
+        Node ancestorBelowParagraph = DOMUtils.getInstance().getFarthestInlineAncestor(textNode);
 
         // Start of the line: textNode is the first child of it's ancestor (directly or indirectly)
         boolean isFirstChild = false;
@@ -482,7 +482,7 @@ public class RealTimePlugin extends BaseRealTimePlugin
             leftParagraph = element;
         } else { //assume element is a span or other element contained in a paragraph
             log.severe("It shouldn't happen but I'm handling it anyway!");
-            leftParagraph = getAncestorBelowParagraph(element).getParentElement();
+            leftParagraph = DOMUtils.getInstance().getFarthestInlineAncestor(element).getParentElement();
         }
         rightParagraph = leftParagraph.getNextSiblingElement();
 
@@ -503,7 +503,7 @@ public class RealTimePlugin extends BaseRealTimePlugin
         TreeOperation op = null;
 
         // Go up below the parent paragraph node, because we might have span tags with text nodes
-        final Node ancestorParagraph = getAncestorParagraph(startContainer);
+        final Node ancestorParagraph = DOMUtils.getInstance().getFarthestInlineAncestor(startContainer);
         Element leftParagraph = Element.as(ancestorParagraph);
         Element rightParagraph = leftParagraph.getNextSiblingElement();
 

@@ -76,27 +76,6 @@ public final class EditorUtils
     }
 
     /**
-     * @param node the node whose ancestor is to be returned
-     * @return the ancestor for this node which is just below the paragraph ancestor
-     */
-    public static Node getAncestorBelowParagraph(Node node) {  //todo: verify check usages!
-        return DOMUtils.getInstance().getFarthestInlineAncestor(node);
-    }
-
-    /**
-     * @param node a node
-     * @return the paragraph ancestor of the node
-     */
-    public static Node getAncestorParagraph(Node node)  // todo: replace with nearestBlockAncestor
-    {
-        // We can't have nested paragraphs
-        if (node.getNodeName().equalsIgnoreCase("p")) {
-            return node;
-        }
-        return getAncestorBelowParagraph(node).getParentNode();
-    }
-
-    /**
      * Converts a DOM range to an list of operation targets.
      *
      * @param range a DOM range
@@ -172,8 +151,8 @@ public final class EditorUtils
     {
         Range leftRange = range.cloneRange();
         leftRange.setEnd(range.getStartContainer(), range.getStartOffset());
-        Node parentPNode = getAncestorParagraph(range.getStartContainer());
-        leftRange.setStart(parentPNode, 0);
+        Node parentContainer = DOMUtils.getInstance().getNearestBlockContainer(range.getStartContainer());
+        leftRange.setStart(parentContainer, 0);
 
         return getTextNodes(leftRange);
     }
@@ -185,8 +164,8 @@ public final class EditorUtils
     private static Map<String, List<Text>> getRightTextNodesInSameP(Range range)
     {
         Range rightRange = range.cloneRange();
-        Node parentPNode = getAncestorParagraph(range.getEndContainer());
-        rightRange.setEnd(parentPNode, parentPNode.getChildCount());
+        Node parentContainer = DOMUtils.getInstance().getNearestBlockContainer(range.getEndContainer());
+        rightRange.setEnd(parentContainer, parentContainer.getChildCount());
 
         return getTextNodes(rightRange);
     }
