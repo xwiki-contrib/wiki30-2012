@@ -27,18 +27,19 @@ import org.xwiki.gwt.wysiwyg.client.Strings;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractPlugin;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.FocusWidgetUIExtension;
 import org.xwiki.gwt.wysiwyg.client.plugin.rt.BaseRealTimePlugin;
+import org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
-import fr.loria.score.jupiter.tree.operation.TreeOperation;
+
 import fr.loria.score.jupiter.tree.Tree;
-import fr.loria.score.jupiter.tree.operation.*;
-import java.util.List;
-import org.xwiki.gwt.dom.client.Range;
-import org.xwiki.gwt.wysiwyg.client.plugin.rt.BaseRealTimePlugin;
-import org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils;
+import fr.loria.score.jupiter.tree.operation.TreeCompositeOperation;
+import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
+import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
+import fr.loria.score.jupiter.tree.operation.TreeOperation;
+import fr.loria.score.jupiter.tree.operation.TreeUpdateElement;
 
 /**
  * Does not inherit the standard SeparatorPlugin because it is so simple code.
@@ -109,7 +110,7 @@ public class RTSeparatorPlugin extends BaseRealTimePlugin implements ClickHandle
                int siteId = clientJupiter.getSiteId();
                               
                TreeCompositeOperation seq = null;               
-               if (range.getStartOffset() == 0) {
+               if (range.getStartOffset() == 0) { //todo: detect properly if is new paragraph
                   TreeOperation newP = new TreeNewParagraph(siteId, path[0]);
                   TreeOperation updateP = new TreeUpdateElement(siteId, new int[] { path[0] }, Tree.NODE_NAME, "hr"); 
                   TreeOperation newP2 = new TreeNewParagraph(siteId, path[0]);
