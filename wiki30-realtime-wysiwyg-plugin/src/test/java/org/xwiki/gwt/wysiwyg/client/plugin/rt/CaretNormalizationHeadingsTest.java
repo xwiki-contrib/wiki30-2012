@@ -11,7 +11,7 @@ import com.google.gwt.dom.client.Node;
  */
 public class CaretNormalizationHeadingsTest extends RtPluginTestCase
 {
-    public static final String INNER_HTML = "ab";
+    public static final String INNER_HTML = "abc";
 
     private Range oldCaretPos;
 
@@ -26,7 +26,7 @@ public class CaretNormalizationHeadingsTest extends RtPluginTestCase
         assertTrue("Invalid tag name", "h1".equalsIgnoreCase(getContainer().getNodeName()));
     }
 
-    public void testOne()
+    public void testCaretInsideHeadingBeforeTextNode()
     {
         oldCaretPos.setStart(container, 0);
         oldCaretPos.setEnd(container, 0);
@@ -35,5 +35,20 @@ public class CaretNormalizationHeadingsTest extends RtPluginTestCase
         assertNotNull(newCaretPos);
         assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
         assertEquals(container.getFirstChild(), newCaretPos.getStartContainer());
+        assertEquals(0, newCaretPos.getStartOffset());
+        assertTrue(newCaretPos.isCollapsed());
+    }
+
+    public void testCaretInsideHeadingAfterTextNode()
+    {
+        oldCaretPos.setStart(container, 1);
+        oldCaretPos.setEnd(container, 1);
+
+        Range newCaretPos = EditorUtils.normalizeCaretPosition(oldCaretPos);
+        assertNotNull(newCaretPos);
+        assertEquals(Node.TEXT_NODE, newCaretPos.getStartContainer().getNodeType());
+        assertEquals(container.getFirstChild(), newCaretPos.getStartContainer());
+        assertEquals(container.getFirstChild().getNodeValue().length(), newCaretPos.getStartOffset());
+        assertTrue(newCaretPos.isCollapsed());
     }
 }
