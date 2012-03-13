@@ -19,25 +19,21 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.separator;
 
+import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.user.client.Config;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
-import org.xwiki.gwt.user.client.ui.rta.cmd.Command;
 import org.xwiki.gwt.wysiwyg.client.Images;
 import org.xwiki.gwt.wysiwyg.client.Strings;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractPlugin;
-import org.xwiki.gwt.wysiwyg.client.plugin.internal.CompositeUIExtension;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.FocusWidgetUIExtension;
+import org.xwiki.gwt.wysiwyg.client.plugin.rt.BaseRealTimePlugin;
 
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
+
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
-import org.xwiki.gwt.dom.client.Range;
-import org.xwiki.gwt.wysiwyg.client.plugin.rt.BaseRealTimePlugin;
-import org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils;
 
 /**
  * Does not inherit the standard SeparatorPlugin because it is so simple code.
@@ -101,14 +97,14 @@ public class RTSeparatorPlugin extends BaseRealTimePlugin implements ClickHandle
     {
         if (event.getSource() == hr && hr.isEnabled()) {
             getTextArea().setFocus(true);
- 
-            Range r = getTextArea().getDocument().getSelection().getRangeAt(0);
-            if (r != null) {
-               r = EditorUtils.normalizeCaretPosition(r);               
-               TreeOperation op = treeOperationFactory.createHeadingOrParagraphOperation(clientJupiter.getSiteId(), r, "hr");
-               clientJupiter.generate(op);
-            }
 
+            Range range = getTextArea().getDocument().getSelection().getRangeAt(0);
+            range = getNearestBlockContainerRange(range);
+
+            TreeOperation op = treeOperationFactory.createHeadingOrParagraphOperation(clientJupiter.getSiteId(), range, "hr");
+            if (op != null) {
+                clientJupiter.generate(op);
+            }
         }
     }
 }

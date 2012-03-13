@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.xwiki.gwt.dom.client.DOMUtils;
 import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.user.client.Config;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
@@ -33,7 +32,6 @@ import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractStatefulPlugin;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.FocusWidgetUIExtension;
 import org.xwiki.gwt.wysiwyg.client.plugin.rt.BaseRealTimePlugin;
 
-import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -144,24 +142,11 @@ public class RTFormatPlugin extends BaseRealTimePlugin implements ChangeHandler,
             getTextArea().setFocus(true);
 
             Range range = getTextArea().getDocument().getSelection().getRangeAt(0);
-            logRange(null, range);
-            if ("body".equalsIgnoreCase(range.getStartContainer().getNodeName())) {
-                range.setStart(range.getStartContainer().getChild(range.getStartOffset()), 0);
-                range.collapse(true);
-                logRange("New range", range);
-            }
+            range = getNearestBlockContainerRange(range);
 
-            if (range != null) {
-                Node node = range.getStartContainer();
-                node = DOMUtils.getInstance().getNearestBlockContainer(node); // p, or h1, h2, h3
-                log.fine("Nearest block container is: " + node.getNodeName());
-                range.setStart(node, 0);
-                range.setEnd(range.getEndContainer(), range.getEndOffset());
-
-                TreeOperation op = treeOperationFactory.createHeadingOrParagraphOperation(clientJupiter.getSiteId(), range, level);
-                if (op != null) {
-                    clientJupiter.generate(op);
-                }
+            TreeOperation op = treeOperationFactory.createHeadingOrParagraphOperation(clientJupiter.getSiteId(), range, level);
+            if (op != null) {
+                clientJupiter.generate(op);
             }
         }
     }
