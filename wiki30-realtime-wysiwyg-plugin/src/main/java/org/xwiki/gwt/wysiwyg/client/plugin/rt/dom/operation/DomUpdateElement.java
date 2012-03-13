@@ -38,7 +38,7 @@ public class DomUpdateElement extends AbstractDomOperation
             }
 
             // No change for caret position
-            caret.setStart(newNode, op.getPosition());
+            caret.setStart(newNode, 0);
         }
 
         caret.collapse(true);

@@ -129,7 +129,6 @@ public class RTFormatPlugin extends BaseRealTimePlugin implements ChangeHandler,
         Command command = buttons.get(event.getSource());
         if (command != null && ((FocusWidget) event.getSource()).isEnabled()) {
             getTextArea().setFocus(true);
-            //getTextArea().getCommandManager().execute(command);
         }
     }
 
@@ -156,6 +155,8 @@ public class RTFormatPlugin extends BaseRealTimePlugin implements ChangeHandler,
                 Node node = range.getStartContainer();
                 node = DOMUtils.getInstance().getNearestBlockContainer(node); // p, or h1, h2, h3
                 log.fine("Nearest block container is: " + node.getNodeName());
+                range.setStart(node, 0);
+                range.setEnd(range.getEndContainer(), range.getEndOffset());
 
                 TreeOperation op = treeOperationFactory.createHeadingOrParagraphOperation(clientJupiter.getSiteId(), range, level);
                 if (op != null) {
