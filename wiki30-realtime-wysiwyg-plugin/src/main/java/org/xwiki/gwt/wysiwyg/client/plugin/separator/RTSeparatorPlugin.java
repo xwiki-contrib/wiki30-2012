@@ -32,8 +32,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
-
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
+import fr.loria.score.jupiter.tree.Tree;
+import fr.loria.score.jupiter.tree.operation.*;
+import java.util.List;
+import org.xwiki.gwt.dom.client.Range;
+import org.xwiki.gwt.wysiwyg.client.plugin.rt.BaseRealTimePlugin;
+import org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils;
 
 /**
  * Does not inherit the standard SeparatorPlugin because it is so simple code.
@@ -96,15 +101,21 @@ public class RTSeparatorPlugin extends BaseRealTimePlugin implements ClickHandle
     public void onClick(ClickEvent event)
     {
         if (event.getSource() == hr && hr.isEnabled()) {
-            getTextArea().setFocus(true);
-
+            getTextArea().setFocus(true); 
             Range range = getTextArea().getDocument().getSelection().getRangeAt(0);
-            range = getNearestBlockContainerRange(range);
+            if (range != null) {
+               range = EditorUtils.normalizeCaretPosition(range);               
+               int[] path = EditorUtils.toIntArray(EditorUtils.getLocator(range.getStartContainer()));
+               int siteId = clientJupiter.getSiteId();
+               
+               TreeOperation splitP = new TreeInsertParagraph(siteId, range.getStartOffset(), path);              
+               TreeOperation newP = new TreeNewParagraph(siteId, path[0] + 1);
+               TreeOperation updateP = new TreeUpdateElement(siteId, new int[] { path[0] + 1 }, Tree.NODE_NAME, "hr");;
+               
+               TreeCompositeOperation seq = new TreeCompositeOperation(splitP, newP, updateP);
 
-            TreeOperation op = treeOperationFactory.createHeadingOrParagraphOperation(clientJupiter.getSiteId(), range, "hr");
-            if (op != null) {
-                clientJupiter.generate(op);
-            }
+               clientJupiter.generate(seq);
+            }            
         }
     }
 }

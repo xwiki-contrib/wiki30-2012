@@ -15,7 +15,7 @@ mvn -nsu clean install -DskipTests=true -DfailIfNoTests=false
 cd $dir
 
 #To effectively work with no snapshot updates, please update to maven 3.0.4
-mvn -nsu clean install -Pdev -DskipTests=true -DfailIfNoTests=false
+mvn -nsu clean install -Pdev -DskipTests=true -DfailIfNoTests=false -Dlicense.skip=true
 
 echo ">>> Changing directory to: wiki30-distribution-zip"
 cd wiki30-distribution/wiki30-distribution-zip/target
