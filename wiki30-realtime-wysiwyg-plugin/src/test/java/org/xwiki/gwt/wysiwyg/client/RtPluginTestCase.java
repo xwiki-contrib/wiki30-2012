@@ -20,7 +20,7 @@ public class RtPluginTestCase extends GWTTestCase
     /**
      * The paragraph DOM element in which we run the tests.
      */
-    private Element container;
+    protected Element container;
 
     @Override public String getModuleName()
     {
