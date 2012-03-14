@@ -14,7 +14,8 @@ import org.junit.runners.Suite;
     TreeInsertParagraphTest.class,
     TreeNewParagraphTest.class,
     TreeStyleTest.class,
-    TreeCaretOperationTest.class
+    TreeCaretOperationTest.class,
+    TreeMergeParagraphTest.class
 })
 public class ClientTestsSuite
 {

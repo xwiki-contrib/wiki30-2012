@@ -56,6 +56,11 @@ public class TreeMergeParagraph extends TreeOperation {
             leftSibling.addChild(t4);
         }
         tree.removeChild(position);
+        
+        
+        if ("hr".equalsIgnoreCase(leftSibling.getNodeName()) && (! "hr".equalsIgnoreCase(rightSibling.getNodeName()))) {
+            leftSibling.setNodeName(rightSibling.getNodeName());
+        }                
     }
 
     public String toString() {
