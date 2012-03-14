@@ -47,6 +47,7 @@ public class DomUpdateElement extends AbstractDomOperation
 
     private boolean shouldUpdate(String nodeName, String newNodeName)
     {
+        // todo: be carefull, "h".equalsIgnoreCase(nodeName.substring(0, 1)) matches any tag that starts with "h" (including 'hr')
         if (nodeName != null && ("p".equalsIgnoreCase(nodeName) || "h".equalsIgnoreCase(nodeName.substring(0, 1)))) {
              return true;
         }
