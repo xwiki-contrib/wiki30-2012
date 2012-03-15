@@ -2,6 +2,7 @@ package fr.loria.score.jupiter.tree.operation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import fr.loria.score.jupiter.tree.Tree;
 
@@ -40,6 +41,10 @@ public class TreeCompositeOperation extends TreeOperation {
             s = s + ", " + it.next().toString();
         }
         return "Composite(" + s + ")";
+    }
+
+    public List<TreeOperation> getOperations() {
+        return new ArrayList<TreeOperation>(operations);
     }
 
     public TreeOperation transform(TreeOperation op1) {
