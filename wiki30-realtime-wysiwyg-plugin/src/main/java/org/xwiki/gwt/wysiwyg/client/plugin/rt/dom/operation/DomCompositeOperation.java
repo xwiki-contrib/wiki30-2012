@@ -74,7 +74,7 @@ public class DomCompositeOperation extends AbstractDomOperation
         TreeCaretPosition startSelection = treeOperationFactory.createCaretPosition(getOperation().getSiteId(), caret, caret.getStartOffset());
         TreeCaretPosition endSelection = treeOperationFactory.createCaretPosition(getOperation().getSiteId(), caret, caret.getEndOffset());
         
-        Iterator<TreeOperation> it = ((TreeCompositeOperation) getOperation()).operations.iterator();
+        Iterator<TreeOperation> it = ((TreeCompositeOperation) getOperation()).getOperations().iterator();
         while (it.hasNext()) {
             
             TreeOperation op = it.next();
