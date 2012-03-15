@@ -19,6 +19,7 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -142,5 +143,10 @@ public class TreeOperationFactory
     {
         List<Integer> path = EditorUtils.getLocator(range.getStartContainer());
         return new TreeUpdateElement(siteId, range.getStartOffset(), new int[] {path.get(0)}, Tree.NODE_NAME, headingOrParagraphValue);
+    }
+    
+    public TreeOperation createLink(int siteId,Range range,Map<String,String> attributes)
+    {
+        return null;
     }
 }
