@@ -73,6 +73,11 @@ public class TreeDSL
         span.setAttribute(styleName, styleValue);
         return new TreeDSL(span);
     }
+       
+    public static TreeDSL hr()
+    {
+        return new TreeDSL(TreeFactory.createHorizontalRuleTree());
+    }
 
     public Tree getTree()
     {

@@ -1,5 +1,6 @@
 package org.xwiki.gwt.wysiwyg;
 
+import org.xwiki.gwt.wysiwyg.client.plugin.rt.CaretNormalizationHeadingsTest;
 import org.xwiki.gwt.wysiwyg.client.plugin.rt.CaretPositionInEmptyTextTest;
 import org.xwiki.gwt.wysiwyg.client.plugin.rt.CaretPositionTest;
 
@@ -21,6 +22,7 @@ public class RtPluginTestSuite extends GWTTestSuite
         TestSuite suite = new TestSuite("Realtime plugin GWT Unit Tests");
         suite.addTestSuite(CaretPositionTest.class);
         suite.addTestSuite(CaretPositionInEmptyTextTest.class);
+        suite.addTestSuite(CaretNormalizationHeadingsTest.class);
         return suite;
     }
 }

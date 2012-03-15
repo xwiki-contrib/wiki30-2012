@@ -60,16 +60,33 @@ public class DomMergeParagraph extends AbstractDomOperation
         }
 
         // The caret should be at the merging point.
-        Range caret = document.createRange();
-        caret.setStart(left, left.getChildCount());
-        caret.collapse(true);
-
+        int mergingPoint = left.getChildCount();
+        
+        
         // Move the nodes from the right paragraph to the left paragraph.
         left.appendChild(Element.as(right).extractContents());
 
         // Remove the right paragraph.
         right.removeFromParent();
+        
+        
+        if ("hr".equalsIgnoreCase(left.getNodeName()) && (! "hr".equalsIgnoreCase(right.getNodeName()))) {           
+            // we have to change the left node name
+            Node newNode = document.createElement(right.getNodeName());
+            //append all child nodes
+            newNode.appendChild(Element.as(left).extractContents());
 
+            if (left.getParentElement() != null) {
+                left.getParentElement().replaceChild(newNode, left);
+            }
+            
+            left = newNode;
+        }    
+        
+        Range caret = document.createRange();
+        caret.setStart(left, mergingPoint);
+        caret.collapse(true);
+           
         return caret;
     }
 }

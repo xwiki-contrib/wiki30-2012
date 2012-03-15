@@ -2,6 +2,7 @@ package org.xwiki.gwt.wysiwyg.client.plugin.rt;
 
 import java.util.logging.Logger;
 
+import org.xwiki.gwt.dom.client.DOMUtils;
 import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.user.client.Config;
 import org.xwiki.gwt.user.client.Console;
@@ -96,9 +97,32 @@ public class BaseRealTimePlugin extends AbstractStatefulPlugin
     }
 
     /**
+     * To apply headings or horizontal rule (for now), we have to compute the nearest block container range
+     * @param range the initial range
+     * @return the range corresponding to the nearest block container element
+     */
+    protected Range getNearestBlockContainerRange(Range range)
+    {
+        logRange(null, range);
+        if ("body".equalsIgnoreCase(range.getStartContainer().getNodeName())) {
+            range.setStart(range.getStartContainer().getChild(range.getStartOffset()), 0);
+            range.collapse(true);
+            logRange("New range", range);
+        }
+        if (range != null) {
+            Node node = range.getStartContainer();
+            node = DOMUtils.getInstance().getNearestBlockContainer(node); // p, hr, h1, h2, h3
+            log.fine("Nearest block container is: " + node.getNodeName());
+            range.setStart(node, 0);
+            range.setEnd(range.getEndContainer(), range.getEndOffset());
+        }
+        return range;
+    }
+
+    /**
      * Customize the action listeners found in actionButtonsRT.js
      */
-    protected static native void customizeActionListeners() /*-{
+    private static native void customizeActionListeners() /*-{
         $wnd.onCancelHook = function()
         {
             @org.xwiki.gwt.wysiwyg.client.plugin.rt.BaseRealTimePlugin::disconnect()();

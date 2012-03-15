@@ -37,6 +37,15 @@ public class TreeFactory {
     }
 
     /**
+     * @return a horizontal rule tree
+     */
+    public static Tree createHorizontalRuleTree() {
+        Tree t = createElementTree("hr");
+        t.setValue(null);
+        return t;
+    }
+    
+    /**
      * @param text the value of this text tree
      * @return a text tree
      */

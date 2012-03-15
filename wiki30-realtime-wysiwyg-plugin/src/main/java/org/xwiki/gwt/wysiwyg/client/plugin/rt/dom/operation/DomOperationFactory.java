@@ -19,14 +19,7 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.rt.dom.operation;
 
-import fr.loria.score.jupiter.tree.operation.TreeDeleteText;
-import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
-import fr.loria.score.jupiter.tree.operation.TreeInsertText;
-import fr.loria.score.jupiter.tree.operation.TreeMergeParagraph;
-import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
-import fr.loria.score.jupiter.tree.operation.TreeOperation;
-import fr.loria.score.jupiter.tree.operation.TreeStyle;
-import fr.loria.score.jupiter.tree.operation.TreeUpdateElement;
+import fr.loria.score.jupiter.tree.operation.*;
 
 /**
  * Creates DOM operations from Tree operations. This class is used to map Tree operations to DOM operations. Whenever a
@@ -59,7 +52,11 @@ public class DomOperationFactory
             return new DomStyle(operation, isRemote);
         } else if (operation instanceof TreeUpdateElement) {
             return new DomUpdateElement(operation);
+        } else if (operation instanceof TreeCompositeOperation) {
+            return new DomCompositeOperation(operation, isRemote);
         }
+        
+        
         return null;
     }
 }

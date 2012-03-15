@@ -1,6 +1,7 @@
 package org.xwiki.gwt.wysiwyg.client.plugin.rt.dom.operation;
 
 import org.xwiki.gwt.dom.client.Document;
+import org.xwiki.gwt.dom.client.Element;
 import org.xwiki.gwt.dom.client.Range;
 
 import com.google.gwt.dom.client.Node;
@@ -29,16 +30,15 @@ public class DomUpdateElement extends AbstractDomOperation
 
         if (shouldUpdate(node.getNodeName(), newNodeName)) {
             Node newNode = document.createElement(newNodeName);
-            for (int i = 0; i < node.getChildCount(); i++) {
-                newNode.appendChild(node.getChild(i));
-            }
+            //append all child nodes
+            newNode.appendChild(Element.as(node).extractContents());
 
             if (node.getParentElement() != null) {
                 node.getParentElement().replaceChild(newNode, node);
             }
 
             // No change for caret position
-            caret.setStart(newNode, op.getPosition());
+            caret.setStart(newNode, 0);
         }
 
         caret.collapse(true);
@@ -47,6 +47,7 @@ public class DomUpdateElement extends AbstractDomOperation
 
     private boolean shouldUpdate(String nodeName, String newNodeName)
     {
+        // todo: be carefull, "h".equalsIgnoreCase(nodeName.substring(0, 1)) matches any tag that starts with "h" (including 'hr')
         if (nodeName != null && ("p".equalsIgnoreCase(nodeName) || "h".equalsIgnoreCase(nodeName.substring(0, 1)))) {
              return true;
         }

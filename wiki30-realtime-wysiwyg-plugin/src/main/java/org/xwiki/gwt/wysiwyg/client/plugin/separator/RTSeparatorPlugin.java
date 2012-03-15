@@ -19,22 +19,23 @@
  */
 package org.xwiki.gwt.wysiwyg.client.plugin.separator;
 
+import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.user.client.Config;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
-import org.xwiki.gwt.user.client.ui.rta.cmd.Command;
 import org.xwiki.gwt.wysiwyg.client.Images;
 import org.xwiki.gwt.wysiwyg.client.Strings;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractPlugin;
-import org.xwiki.gwt.wysiwyg.client.plugin.internal.CompositeUIExtension;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.FocusWidgetUIExtension;
+import org.xwiki.gwt.wysiwyg.client.plugin.rt.BaseRealTimePlugin;
 
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
+import fr.loria.score.jupiter.tree.Tree;
+import fr.loria.score.jupiter.tree.operation.*;
+import java.util.List;
 import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.wysiwyg.client.plugin.rt.BaseRealTimePlugin;
 import org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils;
@@ -100,15 +101,27 @@ public class RTSeparatorPlugin extends BaseRealTimePlugin implements ClickHandle
     public void onClick(ClickEvent event)
     {
         if (event.getSource() == hr && hr.isEnabled()) {
-            getTextArea().setFocus(true);
- 
-            Range r = getTextArea().getDocument().getSelection().getRangeAt(0);
-            if (r != null) {
-               r = EditorUtils.normalizeCaretPosition(r);               
-               TreeOperation op = treeOperationFactory.createHeadingOrParagraphOperation(clientJupiter.getSiteId(), r, "hr");
-               clientJupiter.generate(op);
-            }
-
+            getTextArea().setFocus(true); 
+            Range range = getTextArea().getDocument().getSelection().getRangeAt(0);
+            if (range != null) {
+               range = EditorUtils.normalizeCaretPosition(range);               
+               int[] path = EditorUtils.toIntArray(EditorUtils.getLocator(range.getStartContainer()));
+               int siteId = clientJupiter.getSiteId();
+                              
+               TreeCompositeOperation seq = null;               
+               if (range.getStartOffset() == 0) {
+                  TreeOperation newP = new TreeNewParagraph(siteId, path[0]);
+                  TreeOperation updateP = new TreeUpdateElement(siteId, new int[] { path[0] }, Tree.NODE_NAME, "hr"); 
+                  TreeOperation newP2 = new TreeNewParagraph(siteId, path[0]);
+                  seq = new TreeCompositeOperation(newP, updateP, newP2);                   
+               } else {
+                  TreeOperation splitP = new TreeInsertParagraph(siteId, range.getStartOffset(), path);              
+                  TreeOperation newP = new TreeNewParagraph(siteId, path[0] + 1);
+                  TreeOperation updateP = new TreeUpdateElement(siteId, new int[] { path[0] + 1 }, Tree.NODE_NAME, "hr");               
+                  seq = new TreeCompositeOperation(splitP, newP, updateP);
+               }
+               clientJupiter.generate(seq);
+            }                           
         }
     }
 }
