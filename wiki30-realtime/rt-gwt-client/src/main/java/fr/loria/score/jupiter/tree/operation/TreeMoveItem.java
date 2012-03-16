@@ -135,21 +135,21 @@ public class TreeMoveItem extends TreeOperation{
         if(op1.path[0]==position){
             if (op1.path[1] == sp) {
                 if (sp >= ep) {
-                    return new TreeStyle(op1.getSiteId(), TreeUtils.addC(op1.path,1, ep-op1.path[1]), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
+                    return new TreeStyle(op1.getSiteId(), TreeUtils.addC(op1.path,1, ep-op1.path[1]), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight,op1.getTagName());
                 } else {
-                    return new TreeStyle(op1.getSiteId(), TreeUtils.addC(op1.path,1, ep-op1.path[1]-1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
+                    return new TreeStyle(op1.getSiteId(), TreeUtils.addC(op1.path,1, ep-op1.path[1]-1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight,op1.getTagName());
                 }
             }
             if (op1.path[1] < sp) {
                 if (op1.path[1] < ep) {
                     return op1;
                 } else {
-                    return new TreeStyle(op1.getSiteId(), TreeUtils.addC(op1.path,1,1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
+                    return new TreeStyle(op1.getSiteId(), TreeUtils.addC(op1.path,1,1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight,op1.getTagName());
                 }
             }
             //op1.path[1]>sp
             if (op1.path[1] < ep) {
-                return new TreeStyle(op1.getSiteId(), TreeUtils.addC(op1.path,1,-1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
+                return new TreeStyle(op1.getSiteId(), TreeUtils.addC(op1.path,1,-1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight,op1.getTagName());
             } else {
                 return op1;
             }

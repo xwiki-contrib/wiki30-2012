@@ -85,7 +85,7 @@ public class TreeNewItem extends TreeOperation{
                 return op1;
             }
             int[] tab = TreeUtils.addC(op1.path,1,1);
-            return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
+            return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight,op1.getTagName());
         }
         return op1;
     }
