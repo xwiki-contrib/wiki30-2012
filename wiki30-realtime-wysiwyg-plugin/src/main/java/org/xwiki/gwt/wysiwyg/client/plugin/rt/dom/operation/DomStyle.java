@@ -81,8 +81,8 @@ public class DomStyle extends AbstractDomOperation
     @Override
     public Range execute(Document document) {
         TreeStyle treeStyleOp = getOperation();
-        String stylePropertyName = treeStyleOp.param; // href
-        String stylePropertyValue = treeStyleOp.value;// url
+        String stylePropertyName = treeStyleOp.param;
+        String stylePropertyValue = treeStyleOp.value;
 
         Property property = null;
         if (stylePropertyName.equalsIgnoreCase("font-weight")) {
