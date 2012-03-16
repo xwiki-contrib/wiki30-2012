@@ -410,6 +410,10 @@ public class RealTimePlugin extends BaseRealTimePlugin
         return op;
     }
 
+    /**
+     * @param caret the caret location in the editor
+     * @return a new paragraph or split paragraph operation
+     */
     public TreeOperation handleEnterOnTextNode(Range caret)
     {
         int pos = caret.getEndOffset();

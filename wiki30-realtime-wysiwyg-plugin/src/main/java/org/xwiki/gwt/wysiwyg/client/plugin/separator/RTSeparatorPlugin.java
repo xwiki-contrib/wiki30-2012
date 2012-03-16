@@ -109,8 +109,9 @@ public class RTSeparatorPlugin extends BaseRealTimePlugin implements ClickHandle
                int[] path = EditorUtils.toIntArray(EditorUtils.getLocator(range.getStartContainer()));
                int siteId = clientJupiter.getSiteId();
                               
-               TreeCompositeOperation seq = null;               
-               if (range.getStartOffset() == 0) { //todo: detect properly if is new paragraph
+                TreeCompositeOperation seq = null;
+                //todo: detect properly if is new paragraph, use RealTimePlugin.handleEnterOnTextNode
+                if (range.getStartOffset() == 0) {
                   TreeOperation newP = new TreeNewParagraph(siteId, path[0]);
                   TreeOperation updateP = new TreeUpdateElement(siteId, new int[] { path[0] }, Tree.NODE_NAME, "hr"); 
                   TreeOperation newP2 = new TreeNewParagraph(siteId, path[0]);
