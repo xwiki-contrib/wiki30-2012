@@ -34,6 +34,7 @@ import org.xwiki.gwt.dom.client.TextFragment;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
 import org.xwiki.gwt.user.client.ui.rta.cmd.internal.ToggleInlineStyleExecutable;
 
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.SpanElement;
 
@@ -50,9 +51,9 @@ public class DomStyle extends AbstractDomOperation
     private static final Logger log = Logger.getLogger(DomStyle.class.getName());
 
     /**
-     * The real executable which applies the style to the DOM document
+     * The real executable which applies the style or creates a link to the DOM document
      */
-    private DomStyleExecutable realDomStyleExecutable;
+    private DomStyleExecutable realDomExecutable;
 
     /**
      * {@code true} if the {@code TreeOperation} is received from server, and {@code false} if it's generated locally
@@ -80,8 +81,8 @@ public class DomStyle extends AbstractDomOperation
     @Override
     public Range execute(Document document) {
         TreeStyle treeStyleOp = getOperation();
-        String stylePropertyName = treeStyleOp.param;
-        String stylePropertyValue = treeStyleOp.value;
+        String stylePropertyName = treeStyleOp.param; // href
+        String stylePropertyValue = treeStyleOp.value;// url
 
         Property property = null;
         if (stylePropertyName.equalsIgnoreCase("font-weight")) {
@@ -91,8 +92,6 @@ public class DomStyle extends AbstractDomOperation
         } else if (stylePropertyName.equalsIgnoreCase("text-decoration")) {
              property = Style.TEXT_DECORATION;
         }
-
-        realDomStyleExecutable = new DomStyleExecutable(document, property, stylePropertyValue);
 
         // Create range object from the op context
         Range styleRange = document.createRange();
@@ -105,7 +104,15 @@ public class DomStyle extends AbstractDomOperation
         Range localRange = document.getSelection().getRangeAt(0);
         log.info("Local range: " + localRange.toString());
 
-        return realDomStyleExecutable.execute(styleRange, stylePropertyValue);
+        // Such a dirty hack because Link is modeled as a Style with a different tag name
+        if (property != null) {
+            //Apply style
+            realDomExecutable = new DomStyleExecutable(document, property, stylePropertyValue);
+        } else {
+            //Apply Link
+            realDomExecutable = new DomLinkExecutable(document, property, stylePropertyValue);
+        }
+        return realDomExecutable.execute(styleRange, stylePropertyValue);
     }
 
 
@@ -125,7 +132,7 @@ public class DomStyle extends AbstractDomOperation
          */
         private static final String TAG_NAME = "";
 
-        private static final String SPAN = "span";
+        protected static final String SPAN = "span";
 
         /**
          * The document target
@@ -138,7 +145,8 @@ public class DomStyle extends AbstractDomOperation
         private Range styleRange;
 
         //todo: commit changes in gwt-user to have access to it
-        private String propertyValue;
+        protected String propertyValue;
+
         /**
          * Creates a new executable of this type.
          *
@@ -222,6 +230,13 @@ public class DomStyle extends AbstractDomOperation
             // Make sure we apply the style only to the selected text.
             text.crop(firstCharIndex, lastCharIndex);
             Element element = (Element) text.getParentElement();
+
+            return handleTag(text, element);
+        }
+
+        //handles the SPAN tag
+        protected TextFragment handleTag(Text text, Element element)
+        {
             if (SPAN.equalsIgnoreCase(element.getNodeName())) {
                 if (element.getChildCount() != 1) {
                     splitParentNode(text, element);
@@ -302,6 +317,36 @@ public class DomStyle extends AbstractDomOperation
                     newParent.insertFirst(node);
                 }
             }
+        }
+    }
+
+    class DomLinkExecutable extends DomStyleExecutable
+    {
+        protected static final String A = "a";
+
+        DomLinkExecutable(Document document, Property propertyName, String propertyValue)
+        {
+            super(document, propertyName, propertyValue);
+        }
+
+        //handles the A tag
+        @Override protected TextFragment handleTag(Text text, Element element)
+        {
+            if (A.equalsIgnoreCase(element.getNodeName())) {
+                // todo: unlink ?
+            } else {
+                AnchorElement anchorElement = Document.get().createAnchorElement();
+                anchorElement.setHref(propertyValue);
+
+                element.replaceChild(anchorElement, text);
+                anchorElement.appendChild(text);
+            }
+            return new TextFragment(text, 0, text.getLength());
+        }
+
+        @Override protected boolean matchesStyle(Element inputElement)
+        {
+            return A.equalsIgnoreCase(inputElement.getNodeName());
         }
     }
 }
