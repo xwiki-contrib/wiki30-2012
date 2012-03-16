@@ -57,6 +57,13 @@ public class TreeCompositeOperation extends TreeOperation {
     }
 
     @Override
+    public void setSiteId(int siteId) {
+        for (TreeOperation op : operations) {
+            op.setSiteId(siteId);
+        }
+    }
+
+    @Override
     protected TreeOperation handleTreeInsertText(TreeInsertText op1) {
         return null;
     }
