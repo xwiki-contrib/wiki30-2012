@@ -114,13 +114,15 @@ public class RTSeparatorPlugin extends BaseRealTimePlugin implements ClickHandle
                   TreeOperation newP = new TreeNewParagraph(siteId, path[0]);
                   TreeOperation updateP = new TreeUpdateElement(siteId, new int[] { path[0] }, Tree.NODE_NAME, "hr"); 
                   TreeOperation newP2 = new TreeNewParagraph(siteId, path[0]);
-                  seq = new TreeCompositeOperation(newP, updateP, newP2);                   
+                  seq = new TreeCompositeOperation(newP, updateP, newP2);
                } else {
                   TreeOperation splitP = new TreeInsertParagraph(siteId, range.getStartOffset(), path);              
                   TreeOperation newP = new TreeNewParagraph(siteId, path[0] + 1);
                   TreeOperation updateP = new TreeUpdateElement(siteId, new int[] { path[0] + 1 }, Tree.NODE_NAME, "hr");               
                   seq = new TreeCompositeOperation(splitP, newP, updateP);
                }
+               // A composite operation needs a siteId
+               seq.setSiteId(siteId);
                clientJupiter.generate(seq);
             }                           
         }
