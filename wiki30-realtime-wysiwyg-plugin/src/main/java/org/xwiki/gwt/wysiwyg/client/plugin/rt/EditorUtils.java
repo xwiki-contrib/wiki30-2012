@@ -76,7 +76,7 @@ public final class EditorUtils
     }
 
     /**
-     * Converts a DOM range to an list of operation targets.
+     * Converts a DOM range to an list of operation targets.   TODO: remove it and Operation target too
      *
      * @param range a DOM range
      * @return the corresponding list of operation targets
@@ -100,6 +100,40 @@ public final class EditorUtils
             operationTargets.add(0, new OperationTarget(getLocator(text), startIndex, endIndex, text.getLength()));
         }
         return operationTargets;
+    }
+
+    /**
+     * Converts a DOM range to a list of simple ranges.
+     * A simple range spans across a single text node
+     *
+     * @param range a DOM range
+     * @return the corresponding list of simple ranges
+     */
+    public static List<Range> getIntermediaryRanges(Range range) {
+        // Iterate through all the text nodes within the given range and extract the simple ranges
+        List<Range> simpleRanges = new ArrayList<Range>();
+        // Create the simple ranges backwards because if we preserve the normal order when we modify the tree,
+        // the following targets will no longer reflect that
+        List<Text> textNodes = getTextNodes(range).get(NON__EMPTY);
+        for (int i = 0; i < textNodes.size(); i++) {
+            Text text = textNodes.get(i);
+            int startIndex = 0;
+            if (text == range.getStartContainer()) {
+                startIndex = range.getStartOffset();
+            }
+            int endIndex = text.getLength();
+            if (text == range.getEndContainer()) {
+                endIndex = range.getEndOffset();
+            }
+
+            Range simpleRange = range.cloneRange();
+            simpleRange.collapse(true);
+            simpleRange.setStart(text, startIndex);
+            simpleRange.setEnd(text, endIndex);
+
+            simpleRanges.add(0, simpleRange);
+        }
+        return simpleRanges;
     }
 
      /**

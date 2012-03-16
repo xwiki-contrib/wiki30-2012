@@ -11,7 +11,7 @@ public class TreeStyle extends TreeOperation {
     /**
      * Tag name (like DOM) used to mark a style
      */
-    public static final String SPAN = "span";
+    private String TAG_NAME = "span";
 
     public int start; // inclusive index
     public int end; //exclusive index
@@ -36,6 +36,12 @@ public class TreeStyle extends TreeOperation {
         this.splitRight = splitRight;
     }
 
+    // Added just to model a link: <a href=..> like a style
+    public TreeStyle(int siteId, int[] path, int start, int end, String param, String value, boolean addStyle, boolean splitLeft, boolean splitRight, String tagName) {
+       this (siteId, path, start, end, param, value, addStyle, splitLeft, splitRight);
+       this.TAG_NAME = tagName;
+    }
+
     public void execute(Tree root) {
         Tree tree = root;
         for (int i = 0; i < path.length - 1; i++) {
@@ -48,7 +54,7 @@ public class TreeStyle extends TreeOperation {
                 } else {
                     //addStyle=true;
                     Tree tc = tree.removeChild(path[path.length - 1]);
-                    Tree ts = TreeFactory.createElementTree(SPAN);
+                    Tree ts = TreeFactory.createElementTree(TAG_NAME);
                     ts.setAttribute(param, value);
                     ts.addChild(tc);
                     tree.addChild(ts, path[path.length - 1]);
@@ -72,7 +78,7 @@ public class TreeStyle extends TreeOperation {
                     //addStyle=true;
                     Tree t = tree.getChild(path[path.length - 1]);
                     Tree tc = TreeFactory.createTextTree(t.split(end));
-                    Tree ts = TreeFactory.createElementTree(SPAN);
+                    Tree ts = TreeFactory.createElementTree(TAG_NAME);
                     ts.setAttribute(param, value);
                     ts.addChild(tree.removeChild(path[path.length - 1]));
                     tree.addChild(tc, path[path.length - 1]);
@@ -99,7 +105,7 @@ public class TreeStyle extends TreeOperation {
                     //addStyle=true;
                     Tree t = tree.getChild(path[path.length - 1]);
                     Tree tc = TreeFactory.createTextTree(t.split(start));
-                    Tree ts = TreeFactory.createElementTree(SPAN);
+                    Tree ts = TreeFactory.createElementTree(TAG_NAME);
                     ts.setAttribute(param, value);
                     ts.addChild(tc);
                     tree.addChild(ts, path[path.length - 1] + 1);
@@ -129,7 +135,7 @@ public class TreeStyle extends TreeOperation {
                     Tree t = tree.getChild(path[path.length - 1]);
                     Tree tc = TreeFactory.createTextTree(t.split(start));
                     Tree tc2 = TreeFactory.createTextTree(tc.split(end - start));
-                    Tree ts = TreeFactory.createElementTree(SPAN);
+                    Tree ts = TreeFactory.createElementTree(TAG_NAME);
                     ts.setAttribute(param, value);
                     ts.addChild(tc);
                     tree.addChild(ts, path[path.length - 1] + 1);
