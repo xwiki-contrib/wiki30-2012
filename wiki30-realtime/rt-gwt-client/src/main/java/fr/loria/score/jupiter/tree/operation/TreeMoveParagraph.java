@@ -197,21 +197,21 @@ public class TreeMoveParagraph extends TreeOperation {
     public TreeOperation handleTreeStyle(TreeStyle op1) {
         if (op1.path[0] == sp) {
             if (sp >= ep) {
-                return new TreeStyle(op1.getSiteId(), TreeUtils.setP(op1.path, ep), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
+                return new TreeStyle(op1.getSiteId(), TreeUtils.setP(op1.path, ep), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight,op1.getTagName());
             } else {
-                return new TreeStyle(op1.getSiteId(), TreeUtils.setP(op1.path, ep - 1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
+                return new TreeStyle(op1.getSiteId(), TreeUtils.setP(op1.path, ep - 1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight,op1.getTagName());
             }
         }
         if (op1.path[0] < sp) {
             if (op1.path[0] < ep) {
                 return op1;
             } else {
-                return new TreeStyle(op1.getSiteId(), TreeUtils.addP(op1.path, 1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
+                return new TreeStyle(op1.getSiteId(), TreeUtils.addP(op1.path, 1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight,op1.getTagName());
             }
         }
         //op1.path[0]>sp
         if (op1.path[0] < ep) {
-            return new TreeStyle(op1.getSiteId(), TreeUtils.addP(op1.path, 1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
+            return new TreeStyle(op1.getSiteId(), TreeUtils.addP(op1.path, 1), op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight,op1.getTagName());
         } else {
             return op1;
         }

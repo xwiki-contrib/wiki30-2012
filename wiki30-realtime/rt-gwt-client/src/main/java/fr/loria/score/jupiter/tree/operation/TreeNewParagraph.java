@@ -83,7 +83,7 @@ public class TreeNewParagraph extends TreeOperation {
             return op1;
         }
         int[] tab = TreeUtils.addP(op1.path, 1);
-        return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
+        return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle, op1.splitLeft, op1.splitRight,op1.getTagName());
     }
 
     public TreeOperation handleTreeMoveParagraph(TreeMoveParagraph op1) {//si deplacement au meme endroit que creation, depl<crea
