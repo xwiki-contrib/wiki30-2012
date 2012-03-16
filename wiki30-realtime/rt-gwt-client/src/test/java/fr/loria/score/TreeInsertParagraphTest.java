@@ -5,12 +5,10 @@ import org.junit.Test;
 import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 
-import static fr.loria.score.TestUtils.path;
 import static fr.loria.score.TreeDSL.paragraph;
 import static fr.loria.score.TreeDSL.span;
 import static fr.loria.score.TreeDSL.text;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 /**
  * Tests TreeInsertParagraph operation in different cases

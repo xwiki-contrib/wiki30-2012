@@ -1,13 +1,8 @@
 package fr.loria.score;
 
 import org.junit.Before;
-import org.junit.Test;
 
 import fr.loria.score.jupiter.tree.TreeFactory;
-
-import static fr.loria.score.TreeDSL.paragraph;
-import static fr.loria.score.TreeDSL.text;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Test the effect of executing tree operations on the tree model. It should test all Tree API
@@ -15,7 +10,7 @@ import static org.junit.Assert.assertEquals;
  * @author Bogdan.Flueras@inria.fr
  * @author Gerald.Oster@loria.fr
  */
-public abstract class AbstractTreeOperationTest
+public class AbstractTreeOperationTest
 {
     // TODO: naming convention
     protected TreeDSL rootDSL;
@@ -43,12 +38,9 @@ public abstract class AbstractTreeOperationTest
         expectedRootDSL = new TreeDSL(TreeFactory.createEmptyTree());
     }
 
-    @Test
-    public void testCloneTree()
+    public static int[] path(int... positions)
     {
-        rootDSL.addChild(paragraph().addChild(text("abcd")));
-        expectedRootDSL.addChild(paragraph().addChild(text("abcd")));
-
-        assertEquals("Invalid tree result", expectedRootDSL.getTree(), rootDSL.getTree().deepCloneNode());
+        int[] path = positions;
+        return path;
     }
 }

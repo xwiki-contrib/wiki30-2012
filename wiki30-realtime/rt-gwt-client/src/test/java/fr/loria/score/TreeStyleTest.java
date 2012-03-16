@@ -6,7 +6,6 @@ import fr.loria.score.jupiter.tree.Tree;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import fr.loria.score.jupiter.tree.operation.TreeStyle;
 
-import static fr.loria.score.TestUtils.path;
 import static fr.loria.score.TreeDSL.paragraph;
 import static fr.loria.score.TreeDSL.span;
 import static fr.loria.score.TreeDSL.text;

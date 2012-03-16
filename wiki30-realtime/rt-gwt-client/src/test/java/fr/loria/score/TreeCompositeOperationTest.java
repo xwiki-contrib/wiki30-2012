@@ -7,7 +7,6 @@ import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeMergeParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeMoveParagraph;
 
-import static fr.loria.score.TestUtils.path;
 import static fr.loria.score.TreeDSL.paragraph;
 import static fr.loria.score.TreeDSL.text;
 import static org.junit.Assert.assertEquals;
