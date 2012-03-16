@@ -43,6 +43,10 @@ public class Message implements Serializable {
         return operation.getSiteId();
     }
 
+    public void setSiteId(int siteId) {
+        operation.setSiteId(siteId);
+    }
+
     public int getEditingSessionId() {
         return editingSessionId;
     }
