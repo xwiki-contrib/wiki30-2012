@@ -51,7 +51,6 @@ public class BaseRealTimePlugin extends AbstractStatefulPlugin
     @Override public void init(RichTextArea textArea, Config config)
     {
         super.init(textArea, config);
-        Console.getInstance().log("Loading Base RT Plugin... ");
 
         if (!isInitialized) {
             initJupiterClient(textArea, config);
