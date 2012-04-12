@@ -1,6 +1,6 @@
 [submodule "xwiki-platform-wiki30"]
 	path = xwiki-platform-wiki30
-	url = https://github.com/xwiki-contrib/xwiki-platform-wiki30.git
+	url = git@github.com:xwiki-contrib/xwiki-platform-wiki30.git
 [submodule "application-ratings"]
 	path = application-ratings
 	url = git://github.com/xwiki-contrib/application-ratings.git
