@@ -31,7 +31,6 @@ import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.dom.client.Selection;
 import org.xwiki.gwt.dom.client.Style;
 import org.xwiki.gwt.user.client.Config;
-import org.xwiki.gwt.user.client.Console;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
 import org.xwiki.gwt.user.client.ui.rta.cmd.Command;
 import org.xwiki.gwt.user.client.ui.rta.cmd.CommandListener;
@@ -62,7 +61,6 @@ import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeInsertText;
 import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
-import fr.loria.score.jupiter.tree.operation.TreeStyle;
 
 import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.NON__EMPTY;
 import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getTextNodes;
@@ -107,7 +105,6 @@ public class RealTimePlugin extends BaseRealTimePlugin
     public void init(RichTextArea textArea, Config config)
     {
         super.init(textArea, config);
-        Console.getInstance().log("Loading RT Plugin... ");
 
         saveRegistration(textArea.addKeyDownHandler(this));
         saveRegistration(textArea.addKeyPressHandler(this));
@@ -124,7 +121,7 @@ public class RealTimePlugin extends BaseRealTimePlugin
         addFeature("bold", Command.BOLD, Images.INSTANCE.bold(), Strings.INSTANCE.bold());
         addFeature("italic", Command.ITALIC, Images.INSTANCE.italic(), Strings.INSTANCE.italic());
         addFeature("underline", Command.UNDERLINE, Images.INSTANCE.underline(), Strings.INSTANCE.underline());
-//        Console.getInstance().addBreakPoint();
+        // Console.getInstance().addBreakPoint();
         addFeature("line-through", Command.LINE_THROUGH, Images.INSTANCE.strikeThrough(),
             Strings.INSTANCE.strikeThrough());
 
@@ -132,8 +129,6 @@ public class RealTimePlugin extends BaseRealTimePlugin
             registerTextAreaHandlers();
             getUIExtensionList().add(toolBarExtension);
         }
-
-        Console.getInstance().log("RT Plugin loaded ");
     }
 
     /**
@@ -167,9 +162,9 @@ public class RealTimePlugin extends BaseRealTimePlugin
 
                 //Use this range to get all intermediary paths
                 Range range = selection.getRangeAt(0);
-                List<TreeStyle> ops = treeOperationFactory.createStyleOperation(clientJupiter.getSiteId(), range,
+                List<TreeOperation> ops = treeOperationFactory.createStyleOperation(clientJupiter.getSiteId(), range,
                     styleKey, styleValue);
-                for (TreeStyle op : ops) {
+                for (TreeOperation op : ops) {
                     if (op != null) {
                         clientJupiter.generate(op);
                     }
@@ -415,6 +410,10 @@ public class RealTimePlugin extends BaseRealTimePlugin
         return op;
     }
 
+    /**
+     * @param caret the caret location in the editor
+     * @return a new paragraph or split paragraph operation
+     */
     public TreeOperation handleEnterOnTextNode(Range caret)
     {
         int pos = caret.getEndOffset();

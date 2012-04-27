@@ -27,18 +27,19 @@ import org.xwiki.gwt.wysiwyg.client.Strings;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractPlugin;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.FocusWidgetUIExtension;
 import org.xwiki.gwt.wysiwyg.client.plugin.rt.BaseRealTimePlugin;
+import org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
-import fr.loria.score.jupiter.tree.operation.TreeOperation;
+
 import fr.loria.score.jupiter.tree.Tree;
-import fr.loria.score.jupiter.tree.operation.*;
-import java.util.List;
-import org.xwiki.gwt.dom.client.Range;
-import org.xwiki.gwt.wysiwyg.client.plugin.rt.BaseRealTimePlugin;
-import org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils;
+import fr.loria.score.jupiter.tree.operation.TreeCompositeOperation;
+import fr.loria.score.jupiter.tree.operation.TreeInsertParagraph;
+import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
+import fr.loria.score.jupiter.tree.operation.TreeOperation;
+import fr.loria.score.jupiter.tree.operation.TreeUpdateElement;
 
 /**
  * Does not inherit the standard SeparatorPlugin because it is so simple code.
@@ -108,18 +109,21 @@ public class RTSeparatorPlugin extends BaseRealTimePlugin implements ClickHandle
                int[] path = EditorUtils.toIntArray(EditorUtils.getLocator(range.getStartContainer()));
                int siteId = clientJupiter.getSiteId();
                               
-               TreeCompositeOperation seq = null;               
-               if (range.getStartOffset() == 0) {
+                TreeCompositeOperation seq = null;
+                //todo: detect properly if is new paragraph, use RealTimePlugin.handleEnterOnTextNode
+                if (range.getStartOffset() == 0) {
                   TreeOperation newP = new TreeNewParagraph(siteId, path[0]);
                   TreeOperation updateP = new TreeUpdateElement(siteId, new int[] { path[0] }, Tree.NODE_NAME, "hr"); 
                   TreeOperation newP2 = new TreeNewParagraph(siteId, path[0]);
-                  seq = new TreeCompositeOperation(newP, updateP, newP2);                   
+                  seq = new TreeCompositeOperation(newP, updateP, newP2);
                } else {
                   TreeOperation splitP = new TreeInsertParagraph(siteId, range.getStartOffset(), path);              
                   TreeOperation newP = new TreeNewParagraph(siteId, path[0] + 1);
                   TreeOperation updateP = new TreeUpdateElement(siteId, new int[] { path[0] + 1 }, Tree.NODE_NAME, "hr");               
                   seq = new TreeCompositeOperation(splitP, newP, updateP);
                }
+               // A composite operation needs a siteId
+               seq.setSiteId(siteId);
                clientJupiter.generate(seq);
             }                           
         }

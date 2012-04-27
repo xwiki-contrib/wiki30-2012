@@ -36,7 +36,7 @@ import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import fr.loria.score.jupiter.tree.operation.TreeStyle;
 import fr.loria.score.jupiter.tree.operation.TreeUpdateElement;
 
-import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getIntermediaryTargets;
+import static org.xwiki.gwt.wysiwyg.client.plugin.rt.EditorUtils.getIntermediaryRanges;
 
 /**
  * Utility methods for creating {@link TreeOperation}s.
@@ -91,45 +91,51 @@ public class TreeOperationFactory
     /**
      *
      * @param siteId the site id
-     * @param range the range selection, which could span across multiple text nodes
+     * @param rangeSelection the range selection, which could span across multiple text nodes
      * @param styleKey the name of the style attribute
      * @param styleValue the value of the style attribute
-     * @return a List<TreeStyle> of operations, for every text node included in the selection range
+     * @return a List<TreeOperation> of operations, for every text node included in the selection range
      */
-    public List<TreeStyle> createStyleOperation(int siteId, Range range, String styleKey, String styleValue)
+    public List<TreeOperation> createStyleOperation(int siteId, Range rangeSelection, String styleKey, String styleValue)
     {
-        List<TreeStyle> styleOperations = new ArrayList<TreeStyle>();
+        List<TreeOperation> styleOperations = new ArrayList<TreeOperation>();
 
-        List<OperationTarget> targets = getIntermediaryTargets(range);
-        log.info(targets.toString());
+        List<Range> intermediaryRanges = getIntermediaryRanges(rangeSelection);  // create ranges
+        log.info(intermediaryRanges.toString());
 
-        for (OperationTarget target : targets) {
-            log.finest("Generate tree style op for :" + target.toString() + ", key: " + styleKey + ", val: " +
+        for (Range range : intermediaryRanges) {
+            log.finest("Generate tree style op for :" + range.toString() + ", key: " + styleKey + ", val: " +
                 styleValue);
+
+            styleOperations.add(createSimpleStyleOperation(siteId, range, styleKey, styleValue));
+        }
+
+        return styleOperations;
+    }
+
+    public TreeOperation createSimpleStyleOperation(int siteId, Range simpleRange, String styleKey, String styleValue)
+    {
             boolean addStyle = false;
-            int[] path = EditorUtils.toIntArray(target.getStartContainer());
+            int[] path = EditorUtils.toIntArray(EditorUtils.getLocator(simpleRange.getStartContainer()));
             if (path.length == 2) {
                 addStyle = true;
             }
 
             boolean splitLeft = true;
-            int start = target.getStartOffset();
+            int start = simpleRange.getStartOffset();
             if (start == 0) {
                 splitLeft = false;
             }
 
             boolean splitRight = true;
-            int end = target.getEndOffset();
-            if (end == target.getDataLength()) {
+            int end = simpleRange.getEndOffset();
+            if (end == simpleRange.getStartContainer().getNodeValue().length()) {
                 splitRight = false;
             }
 
             TreeStyle op = new TreeStyle(siteId, path, start, end, styleKey, styleValue, addStyle,
                     splitLeft, splitRight);
-            styleOperations.add(op);
-        }
-
-        return styleOperations;
+            return op;
     }
 
     /**
@@ -142,5 +148,31 @@ public class TreeOperationFactory
     {
         List<Integer> path = EditorUtils.getLocator(range.getStartContainer());
         return new TreeUpdateElement(siteId, range.getStartOffset(), new int[] {path.get(0)}, Tree.NODE_NAME, headingOrParagraphValue);
+    }
+    
+    public TreeOperation createLink(int siteId, Range range, String url)
+    {
+        //todo: I assume range is simple!
+        boolean addStyle = false;
+        int[] path = EditorUtils.toIntArray(EditorUtils.getLocator(range.getStartContainer()));
+        if (path.length == 2) {
+            addStyle = true;
+        }
+
+        boolean splitLeft = true;
+        int start = range.getStartOffset();
+        if (start == 0) {
+            splitLeft = false;
+        }
+
+        boolean splitRight = true;
+        int end = range.getEndOffset();
+        if (end == range.getStartContainer().getNodeValue().length()) {
+            splitRight = false;
+        }
+
+        TreeStyle op = new TreeStyle(siteId, path, start, end, "href", url, addStyle, splitLeft, splitRight, "a");
+
+        return op;
     }
 }

@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 
 import org.xwiki.gwt.dom.client.Range;
 import org.xwiki.gwt.user.client.Config;
-import org.xwiki.gwt.user.client.Console;
 import org.xwiki.gwt.user.client.ui.CompositeDialogBox;
 import org.xwiki.gwt.user.client.ui.rta.RichTextArea;
 import org.xwiki.gwt.user.client.ui.rta.cmd.Command;
@@ -76,8 +75,6 @@ public class RTSymbolPlugin extends BaseRealTimePlugin implements ClickHandler, 
     {
         super.init(textArea, config);
 
-        Console.getInstance().log("Loading RT Symbol Plugin...");
-
         if (getTextArea().getCommandManager().isSupported(Command.INSERT_HTML)) {
             insert = new PushButton(new Image(Images.INSTANCE.charmap()));
             saveRegistration(insert.addClickHandler(this));
@@ -89,7 +86,6 @@ public class RTSymbolPlugin extends BaseRealTimePlugin implements ClickHandler, 
         if (toolBarExtension.getFeatures().length > 0) {
             getUIExtensionList().add(toolBarExtension);
         }
-        Console.getInstance().log("RT Symbol Plugin loaded ");
     }
 
     /**

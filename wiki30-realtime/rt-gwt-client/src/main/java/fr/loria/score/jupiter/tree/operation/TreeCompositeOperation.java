@@ -1,13 +1,14 @@
 package fr.loria.score.jupiter.tree.operation;
 
-import fr.loria.score.jupiter.tree.Tree;
-
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
+import fr.loria.score.jupiter.tree.Tree;
 
 public class TreeCompositeOperation extends TreeOperation {
 
-    public ArrayList<TreeOperation> operations = new ArrayList<TreeOperation>();
+    private ArrayList<TreeOperation> operations = new ArrayList<TreeOperation>();
 
     public TreeCompositeOperation() {}
 
@@ -19,6 +20,11 @@ public class TreeCompositeOperation extends TreeOperation {
         for (TreeOperation tOp : ops) {
             operations.add(tOp);
         }
+    }
+
+    public TreeCompositeOperation add(TreeOperation op) {
+        operations.add(op);
+        return this;
     }
 
     public void execute(Tree root) {
@@ -37,6 +43,10 @@ public class TreeCompositeOperation extends TreeOperation {
         return "Composite(" + s + ")";
     }
 
+    public List<TreeOperation> getOperations() {
+        return new ArrayList<TreeOperation>(operations);
+    }
+
     public TreeOperation transform(TreeOperation op1) {
         Iterator<TreeOperation> it = operations.iterator();
         TreeOperation to = op1;
@@ -44,6 +54,13 @@ public class TreeCompositeOperation extends TreeOperation {
             to = (TreeOperation) it.next().transform(to);
         }
         return to;
+    }
+
+    @Override
+    public void setSiteId(int siteId) {
+        for (TreeOperation op : operations) {
+            op.setSiteId(siteId);
+        }
     }
 
     @Override

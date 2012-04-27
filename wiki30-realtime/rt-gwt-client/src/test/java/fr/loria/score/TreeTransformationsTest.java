@@ -11,12 +11,11 @@ import fr.loria.score.jupiter.tree.operation.TreeInsertText;
 import fr.loria.score.jupiter.tree.operation.TreeMergeParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeMoveParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
+import fr.loria.score.jupiter.tree.operation.TreeStyle;
 
-import static fr.loria.score.TestUtils.path;
 import static fr.loria.score.TreeDSL.paragraph;
-import static fr.loria.score.TreeDSL.text;
 import static fr.loria.score.TreeDSL.span;
-import fr.loria.score.jupiter.tree.operation.*;
+import static fr.loria.score.TreeDSL.text;
 import static org.junit.Assert.assertEquals;
 
 
@@ -52,6 +51,7 @@ public class TreeTransformationsTest extends AbstractTreeOperationTest
     @Before
     public void init()
     {
+        super.init();
         siteA = TreeFactory.createEmptyTree();
         siteADSL = new TreeDSL(siteA);
         expectedSiteA = TreeFactory.createEmptyTree();
@@ -239,7 +239,15 @@ public class TreeTransformationsTest extends AbstractTreeOperationTest
 
         expectedSiteADSL.addChild(paragraph().addChild(span("font-style", "italic").addChild(text("abcd"))));
         assertEquals(expectedSiteA, siteA);       
-        
+    }
+
+    @Test
+    public void testCloneTree()
+    {
+        rootDSL.addChild(paragraph().addChild(text("abcd")));
+        expectedRootDSL.addChild(paragraph().addChild(text("abcd")));
+
+        assertEquals("Invalid tree result", expectedRootDSL.getTree(), rootDSL.getTree().deepCloneNode());
     }
 }
 

@@ -1,14 +1,15 @@
 package fr.loria.score.client;
 
+import java.util.logging.Logger;
+
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
+
 import fr.loria.score.jupiter.JupiterAlg;
 import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
 import fr.loria.score.jupiter.transform.Transformation;
-
-import java.util.logging.Logger;
 
 /**
  * Client side implementation for Jupiter Algorithm
@@ -97,6 +98,8 @@ public class ClientJupiterAlg extends JupiterAlg {
 
     protected void send(Message m) {
         m.setEditingSessionId(this.editingSessionId);
+        m.setSiteId(this.siteId); // we've agreed that all operations are forced to have a siteId, but be defensive
+
         callback.beforeSend(m);
 
         logger.fine(this + "\t Client sends to server: " + m);

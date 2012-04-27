@@ -57,6 +57,18 @@ public class TreeFactory {
         return t;
     }
 
+    /**
+     * @param url the URL for the link
+     * @param labelText the text for the URL
+     * @return a link tree with a text tree child
+     */
+    public static Tree createLink(String url, String labelText) {  // todo: where it is used?
+        Tree link = createElementTree("a");
+        link.setAttribute("href", url);
+        link.addChild(createTextTree(labelText));
+        return link;
+    }
+
     public static Tree createElementTree(String tagName) {
         Tree t = createEmptyTree();
         t.setNodeName(tagName);

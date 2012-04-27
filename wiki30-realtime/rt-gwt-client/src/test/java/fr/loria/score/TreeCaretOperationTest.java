@@ -12,7 +12,6 @@ import fr.loria.score.jupiter.tree.operation.TreeNewParagraph;
 import fr.loria.score.jupiter.tree.operation.TreeOperation;
 import fr.loria.score.jupiter.tree.operation.TreeStyle;
 
-import static fr.loria.score.TestUtils.path;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 

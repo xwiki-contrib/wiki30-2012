@@ -111,7 +111,7 @@ public abstract class TreeOperation extends AbstractOperation {
 
     protected TreeOperation handleTreeComposite(TreeCompositeOperation op1) {
         ArrayList<TreeOperation> l = new ArrayList<TreeOperation>();
-        Iterator<TreeOperation> it = op1.operations.iterator();
+        Iterator<TreeOperation> it = op1.getOperations().iterator();
 
         TreeOperation to = this;
         TreeOperation n = it.next();

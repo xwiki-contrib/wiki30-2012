@@ -222,32 +222,32 @@ public class TreeSplitItem extends TreeOperation{
                 }
                 if (op1.end == position) {
                     return new TreeStyle(op1.getSiteId(), op1.path, op1.start, op1.end, op1.param, op1.value, op1.addStyle,
-                        op1.splitLeft, false);
+                        op1.splitLeft, false,op1.getTagName());
                 }
                 int[] tab = new int[op1.path.length];
                 tab[0] = op1.path[0];
                 tab[1] = op1.path[1] + 1;
                 if (op1.start > position) {
                     return new TreeStyle(op1.getSiteId(), tab, op1.start - position, op1.end - position, op1.param,
-                        op1.value, op1.addStyle, op1.splitLeft, op1.splitRight);
+                        op1.value, op1.addStyle, op1.splitLeft, op1.splitRight,op1.getTagName());
                 }
                 if (op1.start == position) {
                     return new TreeStyle(op1.getSiteId(), tab, op1.start - position, op1.end - position, op1.param,
-                        op1.value, op1.addStyle, false, op1.splitRight);
+                        op1.value, op1.addStyle, false, op1.splitRight,op1.getTagName());
                 }
                 //paragraphe entre start et end
                 return new TreeCompositeOperation(
                     new TreeStyle(op1.getSiteId(), op1.path, op1.start, position, op1.param, op1.value, op1.addStyle,
-                        op1.splitLeft, false),
+                        op1.splitLeft, false,op1.getTagName()),
                     new TreeStyle(op1.getSiteId(), tab, 0, op1.end - position, op1.param, op1.value, op1.addStyle, false,
-                        op1.splitRight)
+                        op1.splitRight,op1.getTagName())
                 );
             }
             //TreeUtils.inf(path,op1.path)
             if (op1.path[1] > path[1]) {
                 int[] tab = TreeUtils.addC(op1.path,1,1);
                 return new TreeStyle(op1.getSiteId(), tab, op1.start, op1.end, op1.param, op1.value, op1.addStyle,
-                    op1.splitLeft, op1.splitRight);
+                    op1.splitLeft, op1.splitRight,op1.getTagName());
             }
             int[] p1=new int[op1.path.length-1];
             int[] p2=new int[path.length-1];
@@ -264,7 +264,7 @@ public class TreeSplitItem extends TreeOperation{
             }
             tab2[0]=path[0];
             return new TreeStyle(op1.getSiteId(), tab2, op1.start, op1.end, op1.param, op1.value, op1.addStyle,
-                op1.splitLeft, op1.splitRight);   
+                op1.splitLeft, op1.splitRight,op1.getTagName());   
         }
         return op1;
     }
