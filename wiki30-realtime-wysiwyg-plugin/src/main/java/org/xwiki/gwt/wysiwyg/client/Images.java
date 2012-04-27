@@ -53,4 +53,10 @@ public interface Images extends ClientBundle
     
     @Source("hr.gif")
     ImageResource hr();
+
+    @Source("ol.gif")
+    ImageResource ol();
+    
+    @Source("ul.gif")
+    ImageResource ul();
 }

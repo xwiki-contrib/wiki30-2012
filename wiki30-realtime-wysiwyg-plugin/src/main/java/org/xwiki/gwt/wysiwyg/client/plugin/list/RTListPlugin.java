@@ -29,7 +29,6 @@ import org.xwiki.gwt.wysiwyg.client.Images;
 import org.xwiki.gwt.wysiwyg.client.Strings;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.AbstractStatefulPlugin;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.FocusWidgetUIExtension;
-import org.xwiki.gwt.wysiwyg.client.plugin.list.exec.ListExecutable;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -38,13 +37,15 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ToggleButton;
+import org.xwiki.gwt.wysiwyg.client.plugin.list.exec.InsertListExecutable;
+import org.xwiki.gwt.wysiwyg.client.plugin.rt.BaseRealTimePlugin;
 
 /**
  * Plug-in for inserting ordered (numbered) and unordered (bullet) lists. It installs two toggle buttons on the tool bar
  * and updates their status depending on the current cursor position.
  * 
  */
-public class RTListPlugin extends AbstractStatefulPlugin implements ClickHandler
+public class RTListPlugin extends BaseRealTimePlugin implements ClickHandler
 {
     /**
      * The association between tool bar buttons and the commands that are executed when these buttons are clicked.
@@ -72,9 +73,11 @@ public class RTListPlugin extends AbstractStatefulPlugin implements ClickHandler
 
         // Register custom executables in order to handle valid HTML lists.
         getTextArea().getCommandManager().registerCommand(Command.INSERT_ORDERED_LIST,
-            new ListExecutable(textArea, true));
+              new InsertListExecutable(textArea, true, this));
+        //    new ListExecutable(textArea, true));
         getTextArea().getCommandManager().registerCommand(Command.INSERT_UNORDERED_LIST,
-            new ListExecutable(textArea, false));
+              new InsertListExecutable(textArea, false, this));
+        //    new ListExecutable(textArea, false));
 
         addFeature("orderedlist", Command.INSERT_ORDERED_LIST, Images.INSTANCE.ol(), Strings.INSTANCE.ol());
         addFeature("unorderedlist", Command.INSERT_UNORDERED_LIST, Images.INSTANCE.ul(), Strings.INSTANCE.ul());

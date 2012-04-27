@@ -143,4 +143,9 @@ public class BaseRealTimePlugin extends AbstractStatefulPlugin
     {
         clientJupiter.disconnect();
     }
+    
+    
+    public ClientJupiterAlg getClientJupiter() {
+        return clientJupiter;
+    }
 }
