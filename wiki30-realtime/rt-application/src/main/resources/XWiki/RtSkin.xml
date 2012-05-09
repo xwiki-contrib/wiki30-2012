@@ -3,13 +3,13 @@
 <web>XWiki</web>
 <name>RtSkin</name>
 <language></language>
-<defaultLanguage>en</defaultLanguage>
+<defaultLanguage></defaultLanguage>
 <translation>0</translation>
 <parent>XWiki.XWikiSkins</parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
 <customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
 <creationDate>1286868436000</creationDate>
 <date>1303156007000</date>
 <contentUpdateDate>1303156007000</contentUpdateDate>
