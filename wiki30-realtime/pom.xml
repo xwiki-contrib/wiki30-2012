@@ -11,16 +11,9 @@
   <artifactId>realtime-editor</artifactId>
   <packaging>pom</packaging>
   
-  <name>Wiki30 Project - Real-time editor - Parent POM</name>
-  <description>Wiki30 Project - Real-time editor parent module</description>
+  <name>Wiki3.0 - Real-time editor - Parent POM</name>
+  <description>Wiki3.0 - Real-time editor parent module</description>
   <url>http://wiki30.xwikisas.com</url>
-
-  <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk
-        </developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk</url>
-  </scm>
 
   <distributionManagement>
     <repository>
@@ -52,7 +45,6 @@
     <module>rt-gwt-client</module>
     <module>rt-gwt-server</module>
     <module>rt-application</module>
-    <module>rt-distribution</module>
   </modules>
 
   <repositories>

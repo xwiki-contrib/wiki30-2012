@@ -1,7 +1,7 @@
 package fr.loria.score.server;
 
-
-import fr.loria.score.client.ClientJupiterAlg;
+import fr.loria.score.client.ClientDTO;
+import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,7 @@ import java.util.*;
  * Each site has a pair of a client and a server
  */
 public final class ClientServerCorrespondents {
-
+    // the mapping between the site id's and the corresponding server pair
     private final Map<Integer, ServerJupiterAlg> correspondents = new HashMap<Integer, ServerJupiterAlg>();
 
     //the mapping between the editing session id and the list of ids of the clients that share the same editing session
@@ -32,43 +32,57 @@ public final class ClientServerCorrespondents {
     /**
      * Creates a new server correspondent for the given client
      *
-     * @param clientJupiterAlg the client for which to create a server correspondent
-     * @return the text on some server in same editing session if any, otherwise the text sent by the client
+     * @param clientDTO the client for which to create a server correspondent
+     * @return the document on some server in same editing session if any, otherwise the document sent by the client
      */
-    public String addServerForClient(ClientJupiterAlg clientJupiterAlg) {
+    public Document addServerForClient(ClientDTO clientDTO) {
         //Based on it's editing session id the client's id is added to the sessions map
-        int editingSessionId = clientJupiterAlg.getEditingSessionId();
+        int editingSessionId = clientDTO.getEditingSessionId();
         synchronized (editingSessions) {
             if (!editingSessions.containsKey(editingSessionId)) {
                 editingSessions.put(editingSessionId, new ArrayList<Integer>());
             }
-            editingSessions.get(editingSessionId).add(clientJupiterAlg.getSiteId());
+            editingSessions.get(editingSessionId).add(clientDTO.getSiteId());
         }
 
         // the client receives the content available on an existing 'jupiter server' in same editing session (if any)
-        int siteId = clientJupiterAlg.getSiteId();
-        String availableContent = clientJupiterAlg.getData();
+        int siteId = clientDTO.getSiteId();
+
+        Document document = clientDTO.getDocument();
+
         List<Integer> serverIds = editingSessions.get(editingSessionId);
         if (serverIds.size() > 0) {
             ServerJupiterAlg serverPair = correspondents.get(serverIds.get(0));
             if (serverPair != null) {
-                availableContent = serverPair.getData();
+                document = serverPair.getDocument().deepCloneDocument();
             }
         }
-        ServerJupiterAlg serverJupiter = new ServerJupiterAlg(availableContent, siteId);
+
+        ServerJupiterAlg serverJupiter = new ServerJupiterAlg(document);
+        serverJupiter.setSiteId(siteId);
+//        serverJupiter.setEditingSessionId(editingSessionId);
+
         synchronized (correspondents) {
             correspondents.put(siteId, serverJupiter);
         }
-        return availableContent;
+        return document;
     }
 
-    public void removeServerForClient(ClientJupiterAlg clientJupiterAlg) {
-        int editingSessionId = clientJupiterAlg.getEditingSessionId();
-        int siteId = clientJupiterAlg.getSiteId();
+    public void removeServerForClient(ClientDTO clientDTO) {
+        int editingSessionId = clientDTO.getEditingSessionId();
+        int siteId = clientDTO.getSiteId();
          //1. remove it from the editing session id
         if (editingSessions.containsKey(editingSessionId)) {
             synchronized (editingSessions) {
-                editingSessions.get(editingSessionId).remove(Integer.valueOf(siteId));
+                List<Integer> serverIds = editingSessions.get(editingSessionId);
+                int idx = serverIds.indexOf(siteId);
+                if (idx > -1) {
+                    serverIds.remove(idx);
+                }
+                //remove the empty mapping
+                if (serverIds.size() == 0) {
+                    editingSessions.remove(editingSessionId);
+                }
             }
         }
 

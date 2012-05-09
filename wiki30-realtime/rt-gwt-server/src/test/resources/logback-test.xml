@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="RTJunit" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--See http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
+        <!--and http://logback.qos.ch/manual/appenders.html#TimeBasedRollingPolicy-->
+        <!--for further documentation-->
+        <file>${user.home}/jUnitRTEditor.log</file>
+        <append>true</append>
+
+        <encoder>
+            <pattern>%-4r [%d] [%t] %-5p %logger{5} %X - %m%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${user.home}/jUnitRTEditor.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-4r [%d] [%t] %-5p %logger{5} %X - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="fr.loria.score" level="ALL"/>
+
+    <root level="WARN">
+        <appender-ref ref="Console"/>
+        <appender-ref ref="RTJunit"/>
+    </root>
+</configuration>

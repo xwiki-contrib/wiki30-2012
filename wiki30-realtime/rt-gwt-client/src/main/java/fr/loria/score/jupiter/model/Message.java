@@ -7,31 +7,31 @@ import java.io.Serializable;
  */
 public class Message implements Serializable {
     private State state;
-    private Operation operation;
-    private int editingSessionId;
+    private AbstractOperation operation;
+    private int editingSessionId; // TODO: not sure esid is necessary here.
 
     public Message() {
     }
     
-    public Message(State state, Operation operation, int sessionId) {
+    public Message(State state, AbstractOperation operation, int sessionId) {
         this(state, operation);
         this.editingSessionId = sessionId;
     }
 
-    public Message(State state, Operation operation) {
-        this.state = state;
-        this.operation = operation;
+    public Message(State state, AbstractOperation operation) {
+        this.state = new State(state);
+        this.operation = operation;  // todo: clone operation
     }
 
     public Message(Message m) {
-        this(new State(m.getState()), m.getOperation());
+        this(new State(m.getState()), m.getOperation(), m.getEditingSessionId());
     }
 
-    public Operation getOperation() {
+    public AbstractOperation getOperation() {
         return operation;
     }
 
-    public void setOperation(Operation operation) {
+    public void setOperation(AbstractOperation operation) {
         this.operation = operation;
     }
 
@@ -41,6 +41,10 @@ public class Message implements Serializable {
 
     public int getSiteId() {
         return operation.getSiteId();
+    }
+
+    public void setSiteId(int siteId) {
+        operation.setSiteId(siteId);
     }
 
     public int getEditingSessionId() {

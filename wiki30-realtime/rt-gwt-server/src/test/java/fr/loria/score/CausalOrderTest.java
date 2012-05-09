@@ -1,8 +1,19 @@
 package fr.loria.score;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import fr.loria.score.client.ClientDTO;
+import fr.loria.score.client.CommunicationService;
+import fr.loria.score.jupiter.model.AbstractOperation;
+import fr.loria.score.jupiter.model.Message;
+import fr.loria.score.jupiter.plain.PlainDocument;
+import fr.loria.score.jupiter.plain.operation.InsertOperation;
+import fr.loria.score.server.ClientServerCorrespondents;
+import fr.loria.score.server.CommunicationServiceImpl;
+import fr.loria.score.server.ServerJupiterAlg;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,20 +22,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import fr.loria.score.jupiter.model.InsertOperation;
-import fr.loria.score.jupiter.model.Message;
-import fr.loria.score.jupiter.model.State;
-import fr.loria.score.server.ServerJupiterAlg;
+import static org.junit.Assert.*;
 
 /**
  * Test that messages received by a Jupiter server are causal ordered - that is they hold a specific invariant
- * @author: Bogdan Flueras (email: Bogdan.Flueras@inria.fr)
+ * @author Bogdan.Flueras@inria.fr
  */
 public class CausalOrderTest {
     private static final Logger LOG = LoggerFactory.getLogger(CausalOrderTest.class);
@@ -53,35 +55,45 @@ public class CausalOrderTest {
             "Non, je ne regrette rien\n" +
             "Car ma vie car mes joies\n" +
             "Aujourd'hui, ça commence avec toi";
-    private static final int ESID = 0;
 
-    private ServerJupiterAlg server;
+    private final int esid = 0;
+    private final int siteId = 42;
+    private CommunicationService commService;
 
     @Before
     public void setUp() throws Exception {
-        server = new MockServerJupiterAlg("", 1);
+        commService = new CommunicationServiceImpl();
+        ClientDTO dto = new ClientDTO().setEditingSessionId(esid).setSiteId(siteId).setDocument(new PlainDocument(""));
+        commService.createServerPairForClient(dto);
+    }
+
+    @After
+    public void afterTest() {
+        ClientServerCorrespondents.getInstance().getCorrespondents().clear();
+        ClientServerCorrespondents.getInstance().getEditingSessions().clear();
     }
 
     @Test
     public void testReceiveBySingleThread() { //causal order
-        List<Message> messages = createMessages(HELLO);
+        List<Message> messages = createMessages(HELLO, esid);
+        ServerJupiterAlg server = ClientServerCorrespondents.getInstance().getCorrespondents().get(siteId);
 
         int received = 1;
         for (ListIterator<Message> it = messages.listIterator(messages.size()); it.hasPrevious(); received++) {
-            server.receive(it.previous());
+            commService.serverReceive(it.previous());
             if (!it.hasPrevious()) {
                 assertEquals(0, server.getCausalOrderedMessages().size());
                 break;
             }
             assertEquals(received, server.getCausalOrderedMessages().size());
         }
-        assertEquals(HELLO, server.getData());
+        assertEquals(HELLO, server.getDocument().getContent());
     }
 
     @Test
     public void testReceiveByManyThreads() {
-        List<Message> messages = createMessages(HELLO);
-        receiveByThreads(messages, HELLO);
+        List<Message> messages = createMessages(HELLO, esid);
+        receiveByThreads(messages, HELLO, commService);
     }
 
     @Test
@@ -89,9 +101,9 @@ public class CausalOrderTest {
         String result = "do you like my editor? If you do so, do not hesitate to use it! Jerome est gai. Il gazouille toujours";
         int size = result.length();
         assertTrue("Invalid message size", size > 100);
-        List<Message> messages = createMessages(result);
+        List<Message> messages = createMessages(result, esid);
 
-        receiveByThreads(messages, result);
+        receiveByThreads(messages, result, commService);
     }
 
     @Test
@@ -105,9 +117,8 @@ public class CausalOrderTest {
         String bis = RIEN_DE_RIEN + RIEN_DE_RIEN;
         int size = bis.length();
         assertTrue("Invalid message size",size > 1000);
-        List<Message> messages = createMessages(bis);
-
-        receiveByThreads(messages, bis);
+        List<Message> messages = createMessages(bis, esid);
+        receiveByThreads(messages, bis, commService);
     }
 
 
@@ -116,9 +127,10 @@ public class CausalOrderTest {
      * This is how actually the web server works. <br>
      * To be called by test methods
      * @param messages the messages to be received
-     * @param finalOutcome the data that the server produced
+     * @param finalOutcome the document that the server produced
+     * @param commService
      */
-    private void receiveByThreads(List<Message> messages, String finalOutcome) {
+    private void receiveByThreads(List<Message> messages, String finalOutcome, final CommunicationService commService) {
         final CountDownLatch startSignal = new CountDownLatch(1);
         final CountDownLatch endSignal = new CountDownLatch(messages.size());
 
@@ -128,7 +140,7 @@ public class CausalOrderTest {
                 public void run() {
                     try {
                         startSignal.await();
-                        server.receive(clientSentMessage);
+                        commService.serverReceive(clientSentMessage);
                     } catch (InterruptedException e) {
                         fail(e.getMessage());
                     }
@@ -142,20 +154,18 @@ public class CausalOrderTest {
         startSignal.countDown();
         try {
             endSignal.await();
-            assertEquals(finalOutcome, server.getData());
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
+        ServerJupiterAlg server = ClientServerCorrespondents.getInstance().getCorrespondents().get(siteId);
+        assertEquals(finalOutcome, server.getDocument().getContent());
     }
 
-    private List<Message> createMessages(String result) {
-        int dummySiteId = 42;
-        List<Message> messages = new ArrayList<Message>();
+    private List<Message> createMessages(String result, int esid) {
+        List<AbstractOperation> ops = new ArrayList<AbstractOperation>();
         for (int i = 0; i < result.length(); i++) {
-            Message msg = new Message(new State(i, 0), new InsertOperation(i, result.charAt(i), dummySiteId));
-            msg.setEditingSessionId(ESID);
-            messages.add(msg);
+            ops.add(new InsertOperation(siteId, i, result.charAt(i)));
         }
-        return messages;
+        return TestUtils.createMessagesFromOperations(esid, ops);
     }
 }

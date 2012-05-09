@@ -17,7 +17,6 @@ public class State implements Serializable {
     public State() {
     }
 
-    //todo:clone instead of copy constr
     public State(State s) {
         this(s.generatedMsgs, s.receivedMsgs);
     }
@@ -55,5 +54,10 @@ public class State implements Serializable {
         }
         State other = (State)o;
         return other.generatedMsgs == this.generatedMsgs && other.receivedMsgs == this.receivedMsgs;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.generatedMsgs * 19 + this.receivedMsgs * 13;
     }
 }

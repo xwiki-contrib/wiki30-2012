@@ -1,8 +1,9 @@
 package fr.loria.score.server;
 
 import fr.loria.score.jupiter.JupiterAlg;
+import fr.loria.score.jupiter.model.AbstractOperation;
+import fr.loria.score.jupiter.model.Document;
 import fr.loria.score.jupiter.model.Message;
-import fr.loria.score.jupiter.model.Operation;
 import fr.loria.score.jupiter.transform.Transformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,20 +17,20 @@ public class ServerJupiterAlg extends JupiterAlg {
     
     private final List<Message> unsentMessages = new ArrayList<Message>();
     private final SortedSet<Message> causalOrderedMessages = new TreeSet<Message>(new Comparator<Message>() {
+        @Override
         public int compare(Message m1, Message m2) { //+1  if o1 > o2, 0 if o1 equals o2, -1 if o1 < o2
             return m1.getState().getGeneratedMsgs() - m2.getState().getGeneratedMsgs();
         }
     });
 
-    public ServerJupiterAlg() {
+    protected ServerJupiterAlg() {}
+
+    public ServerJupiterAlg(Document document) {
+        super(document);
     }
 
-    public ServerJupiterAlg(String initialData, int siteId) {
-        super(initialData, siteId);
-    }
-
-    public ServerJupiterAlg(String initialData, int siteId, Transformation transform) {
-        super(initialData, siteId, transform);
+    public ServerJupiterAlg(Document document, Transformation transform) {
+        super(document, transform);
     }
 
     @Override
@@ -37,16 +38,16 @@ public class ServerJupiterAlg extends JupiterAlg {
         doReceive(receivedMsg);
     }
 
-    private synchronized void doReceive(Message receivedMsg) {
+    private void doReceive(Message receivedMsg) {
         // Ensure causality processing
         if (receivedMsg.getState().getGeneratedMsgs() > currentState.getReceivedMsgs()) {
-            logger.debug("Adding " + receivedMsg + "to: " + causalOrderedMessages);
+            logger.debug(this + "\tEnsuring causal receival. Add " + receivedMsg + " to: " + causalOrderedMessages);
             causalOrderedMessages.add(receivedMsg);
         } else {
             super.receive(receivedMsg);
-                for (Iterator<Message> it = causalOrderedMessages.iterator(); it.hasNext();) {
+            for (Iterator<Message> it = causalOrderedMessages.iterator(); it.hasNext();) {
                 Message m = it.next();
-                if (m.getState().getGeneratedMsgs() == currentState.getReceivedMsgs()) { // or use a copy on write list
+                if (m.getState().getGeneratedMsgs() == currentState.getReceivedMsgs()) {
                     super.receive(m);
                     it.remove();
                 }
@@ -57,7 +58,7 @@ public class ServerJupiterAlg extends JupiterAlg {
     @Override
     protected void execute(Message m) {
         //Broadcasting to peers in the same editing session
-        Operation op = m.getOperation();
+        AbstractOperation op = m.getOperation();
         List<Integer> peersIdList = ClientServerCorrespondents.getInstance().getEditingSessions().get(m.getEditingSessionId());
         for (Integer peerId : peersIdList) {
             ServerJupiterAlg peerServer = ClientServerCorrespondents.getInstance().getCorrespondents().get(peerId);

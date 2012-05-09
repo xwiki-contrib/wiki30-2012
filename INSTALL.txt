@@ -1,33 +1,31 @@
 INSTALL & USE:
 
-* Important: This project contains a Git submodule (i.e., xwiki-platform-wiki30).
-Once you cloned the project, please do a "git submodule init" followed by a "git submodule update" in order to clone the actual submodule code.
-As this module is forked from the xwiki-platform project, you might also want to have it synched with the main repository.
-To do so you have to type in console (from the wiki30 directory):
-cd xwiki-platform-wiki30
-git remote add upstream https://github.com/xwiki/xwiki-platform.git
-git pull upstream master
+* Important: This project contains Git submodules (i.e., xwiki-platform-wiki30, application-ratings).
+Once you cloned the project, clone the actual submodules.
+Type in the console (from the wiki30 directory):
+git submodule init
+git submodule update
 
-Prerequisites: Maven 2.x+, JDK 1.5+, MySQL (If you want to enable the Workspace feature)
+cd xwiki-platform-wiki30
+git checkout master
+git pull
+cd ..
+
+Prerequisites: Maven 3.0.4+, JDK 1.5+, and MySQL if you want to enable the Workspace feature
 
 * Building with the Workspace and Real-Time editor enabled (Requires MySQL)
 
 1) Create an 'xwiki' user on MySQL, grant him all privileges and create an xwiki database (this is required for enabling the Workspace feature!)
 1.1) Type in the console: mysql -u root -p -e "grant all privileges on *.* to xwiki@127.0.0.1 identified by 'xwiki'"
 1.2) Type in the console: mysql -u root -p -e "create database xwiki"
+1.3) Proceed to step 2)
+
+* Building only with the Real-Time editor enabled (in memory DB)
+
+Proceed to step 2)
 
 2) Build the Wiki30 distribution
-2.1) Type in the console: mvn clean install -Pmysql
-2.2) Unpack the wiki30-distribution/wiki30-distribution-zip/target/wiki30-distribution-zip-1.0-SNAPSHOT.zip to a directory of your choice referred from now as WIKI30_UNZIPPED_DIR
-2.3) Navigate to WIKI30_UNZIPPED_DIR and start XWiki by executing the script: start_xwiki.sh (start_xwiki.bat for Windows platforms)
-2.4) Proceed with step 3)
-
-* Building only with the Real-Time editor enabled
-
-1) No MySQL required
-2.1) Type in the console: mvn clean install
-2.2) Unpack the wiki30-distribution/wiki30-distribution-zip/target/wiki30-distribution-zip-1.0-SNAPSHOT.zip to a directory of your choice referred from now as WIKI30_UNZIPPED_DIR
-2.3) Navigate to WIKI30_UNZIPPED_DIR and start XWiki by executing the script: start_xwiki.sh (start_xwiki.bat for Windows platforms)
+2.1) Execute in the console: ./runWeb.sh
 
 3) Import the wiki30-distribution-xar.xar file located in wiki30-distribution/wiki30-distribution-xar/target directory
 3.1) Point your browser to: http://localhost:8080/xwiki/bin/import/XWiki/XWikiPreferences?editor=globaladmin&section=Import
@@ -38,16 +36,19 @@ Prerequisites: Maven 2.x+, JDK 1.5+, MySQL (If you want to enable the Workspace 
 
 4) Point your browser to: http://localhost:8080/xwiki and login as "Admin/admin" to complete the installation.
 
-5) All participants using real-time editor must have the "Advanced" user type set. For each of them, follow the steps:
-5.1) Login with user credentials
-5.2) Hover the mouse over the Profile category (upper right) and select the Preferences category
-5.3) In the Preferences form, click on the "Pencil" icon to edit user profile
-5.4) Select "Advanced" for User type then click on "Save&View"
+5) There are 2 modes of real-time collaboration: WYSIWYG and wiki.
+WYSIWYG mode: Editing a document/page using real-time editor in WYSIWYG mode is straightforward: just select the option "WYSIWYG" from the "Edit" menu then proceed step 7)
+Wiki mode: proceed with step 6)
 
-6) To edit a document/page using real-time editor, select the option "Real Time" located in the "Edit" menu.
+6) All participants using real-time editor must have the "Advanced" user type set. For each of them, follow the steps:
+6.1) Login with user credentials
+6.2) Hover the mouse over the Profile category (upper right) and select the Preferences category
+6.3) In the Preferences form, click on the "Pencil" icon to edit user profile
+6.4) Select "Advanced" for User type then click on "Save&View"
+6.5) Editing a document/page using real-time editor in wiki mode implies selecting the option "Real Time" located in the "Edit" menu.
 Lets say you create a new "TestPage" in "Sandbox" space then select "Real Time" option from the "Edit" menu.
 
-7) To collaboratively edit the same page in real-time, each participant would use the "Real Time" edit mode in the same wiki page.
-Prior to use the real time editor, some participants would be notified that somebody is already modifying the page and would
-then click the "Join editing session" and start typing.
-All remote changes are now reflected and merged in real time into each of the user's editor.
+7) To collaborate in real-time (WYSIWYG or wiki mode), each participant edits(in the same mode) the same wiki page.
+Prior to use the real-time editor, some participants would be notified that somebody is already modifying the page and would
+then click the "Join editing session" and start editing.
+All remote changes are now reflected and merged in real time in each editor.

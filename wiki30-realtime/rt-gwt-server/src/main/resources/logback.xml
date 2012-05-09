@@ -14,15 +14,15 @@
     <!--for further documentation-->
     <File>${user.home}/rtEditor.log</File>
     <encoder>
-      <pattern>%-4r [%t] %-5p %c %x - %m%n</pattern>
+      <pattern>%d [%t] %-5p %c %X - %m%n</pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>${user.home}/rtEditor.log.%d{'.'yyyy-MM-dd}</fileNamePattern>
+      <fileNamePattern>${user.home}/rtEditor.log.%d{yyyy-MM-dd}</fileNamePattern>
     </rollingPolicy>
   </appender>
   <appender name="A1" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d [%t] %-5p %c - %m%n</pattern>
+        <pattern>%d [%t] %-5p %logger{5} %X - %m%n</pattern>
     </encoder>
   </appender>
   <logger name="fr.loria.score" level="DEBUG">

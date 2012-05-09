@@ -1,12 +1,37 @@
-<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.6//EN"
-        "http://google-web-toolkit.googlecode.com/svn/releases/1.6/distro-source/core/src/gwt-module.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
 <module>
     <inherits name="com.google.gwt.user.User"/>
     <inherits name='org.xwiki.gwt.user.User'/>
-    
+
     <source path="jupiter"/>
+    <source path="client"/> <!--either refactor code in client package-->
 
     <!--Development options-->
     <set-property name="user.agent" value="safari, gecko1_8"/>  <!--Chrome and FF-->
     <set-property name="locale" value="default"/>
+
+    <!--Client side logging config-->
+    <inherits name="com.google.gwt.logging.Logging"/>
+    <set-property name="gwt.logging.enabled" value="TRUE"/>
+
+    <!--by default, set to INFO. Other available values are: ALL, FINEST, FINER, FINE, CONFIG, INFO, WARNING, SEVERE-->
+    <set-property name="gwt.logging.logLevel" value="INFO"/>
+
+    <!--log message into the IDE console, by default, set to ENABLED. It doesn't have any effect in production mode-->
+    <set-property name="gwt.logging.consoleHandler" value="DISABLED" />
+
+    <!--log message into dev mode console. By default, set to ENABLED-->
+    <set-property name="gwt.logging.developmentModeHandler" value="DISABLED" />
+
+    <!--log message into a popup window into the GWT application. By default, set to ENABLED-->
+    <!--<set-property name="gwt.logging.popupHandler" value="DISABLED" />-->
+
+    <!--log message with a level upper than WARNING on System.err, else, on System.out. By default, set to ENABLED,-->
+    <set-property name="gwt.logging.systemHandler" value="DISABLED" />
+
+    <!--log message into Firebug console. By default, set to ENABLED-->
+    <set-property name="gwt.logging.firebugHandler" value="DISABLED" />
+
+    <!--log message on server side by using a service defined by GWT. By default, set to ENABLED-->
+    <set-property name="gwt.logging.simpleRemoteHandler" value="DISABLED" />
 </module>

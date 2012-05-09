@@ -11,7 +11,7 @@
   <artifactId>rt-gwt-server</artifactId>
   <packaging>war</packaging>
 
-  <name>Wiki30 Project - Real-time editor - GWT server side module</name>
+  <name>Wiki3.0 - Real-time editor - GWT server side module</name>
 
   <dependencies>
     <dependency>
@@ -36,7 +36,13 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- Make sure we provide a default implementation of SLF4J for any test 
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>1.6.4</version>
+    </dependency>
+
+    <!-- Make sure we provide a default implementation of SLF4J for any test
       indirectly use it -->
     <dependency>
       <groupId>ch.qos.logback</groupId>

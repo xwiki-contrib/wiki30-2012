@@ -12,16 +12,14 @@
   <version>1.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
-  <name>Wiki30 Project - Parent POM</name>
+  <name>Wiki3.0 - Parent POM</name>
   <description>Wiki30 Project</description>
   <url>http://wiki30.xwikisas.com</url>
 
   <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk
-    </developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/contrib/projects/wiki30/trunk
-    </url>
+    <connection>scm:git:git://github.com/xwiki-contrib/wiki30.git</connection>
+    <developerConnection>scm:git:git@github.com:xwiki-contrib/wiki30.git</developerConnection>
+    <url>https://github.com/xwiki-contrib/wiki30</url>
   </scm>
 
   <developers>
@@ -61,7 +59,7 @@
 
   <modules>
     <module>wiki30-realtime</module>
-    <module>wiki30-realtime-wysiwyg</module>
+    <module>wiki30-realtime-wysiwyg-plugin</module>
     <!-- Note: Using xwiki-platform-workspace that is included in xwiki-platform 
       instead of wiki30-social. -->
     <!-- <module>wiki30-social</module> -->
