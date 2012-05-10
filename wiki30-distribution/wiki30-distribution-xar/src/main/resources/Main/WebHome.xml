@@ -3,17 +3,17 @@
 <web>Main</web>
 <name>WebHome</name>
 <language></language>
-<defaultLanguage>en</defaultLanguage>
+<defaultLanguage></defaultLanguage>
 <translation>0</translation>
 <parent></parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
 <customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
 <creationDate>1166007764000</creationDate>
 <date>1303423544000</date>
 <contentUpdateDate>1303423544000</contentUpdateDate>
-<version>3.1</version>
+<version>1.1</version>
 <title>Wiki3.0 distribution Main Wiki WebHome</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
