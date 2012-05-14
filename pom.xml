@@ -66,6 +66,7 @@
     <module>wiki30-distribution</module>
     <!-- We rebuild the whole WYSIWYG module. Depending of what modules we put here we need to exclude duplicated JARs in wiki30-distribution-war -->
     <module>xwiki-platform-wiki30/xwiki-platform-core/xwiki-platform-wysiwyg</module>
+    <module>xwiki-platform-wiki30/xwiki-platform-core/xwiki-platform-gwt</module>
     <module>application-ratings</module>
   </modules>
 
@@ -206,6 +207,7 @@
       <dependency>
         <groupId>org.xwiki.platform</groupId>
         <artifactId>xwiki-platform-gwt-user</artifactId>
+        <classifier>wiki30</classifier>
         <version>${platform.version}</version>
       </dependency>
       <dependency>
