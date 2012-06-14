@@ -476,7 +476,8 @@ XWiki.ActivityFilters = Class.create({
         var filterNameSelect = activityContainer.down('.addFilters .filterName');
         var filterName = filterNameSelect.options[filterNameSelect.selectedIndex].value;
         var filterNameLabel = filterNameSelect.options[filterNameSelect.selectedIndex].innerHTML;
-        var filterValue = activityContainer.down('.addFilters .filterValue').value;
+        var filterValueElement = activityContainer.down('.addFilters .filterValue');
+        var filterValue = filterValueElement.value;
 
         // Empty filter value check
         if (filterValue.replace(/\s*/,'') == '') {
@@ -520,8 +521,11 @@ XWiki.ActivityFilters = Class.create({
             newFilterNameElement.insert({bottom : newFilterValueElement});
           }
 
-          // Clear the filter value element's input
+          // Clear the filter value element's input and current suggestions if any.
           activityContainer.down('.addFilters .filterValue').value = '';
+          if (filterValueElement.__x_suggest) {
+            filterValueElement.__x_suggest.clearSuggestions();
+          }
 
           // Add the new filter to the activity's updateURL
           var filter = filterName + '=' + encodeURIComponent(filterValue);
@@ -1154,6 +1158,10 @@ input.blurred { /* Functionality form WysiwygEditorConfigSheet jsx */
 
 .currentFilters .tag-wrapper:hover {
   background-color: $theme.highlightColor;
+}
+
+.activityContainer {
+  margin-bottom: 1em;
 }</code>
     </property>
     <property>
