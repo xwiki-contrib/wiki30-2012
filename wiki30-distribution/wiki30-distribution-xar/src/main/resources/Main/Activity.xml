@@ -361,97 +361,96 @@ XWiki.ActivityFilters = Class.create({
     }.bind(this));
   },
   initSuggestParameters: function() {
-     this.suggestParameters  = {
-          'authors' : {
-              script: XWiki.currentDocument.getURL('get', 'xpage=uorgsuggest&amp;classname=XWiki.XWikiUsers&amp;wiki=local&amp;uorg=user&amp;'),
-              varname: 'input',
-              icon: "$xwiki.getSkinFile('icons/silk/user.png')",
-              noresults: "$msg.get('xe.activity.filters.authors.noResults')",
-              timeout : 30000
-          },
-          /*'wikis' : {
-              script: "${request.contextPath}/rest/wikis/",
-              varname: 'q',
-              icon: "$xwiki.getSkinFile('icons/silk/page_white_text.png')",
-              noresults: 'Document not found',
-              json: true,
-              resultsParameter : 'searchResults',
-              resultId : 'id',
-              resultValue : 'pageFullName',
-              resultInfo : 'pageFullName',
-              timeout : 30000
-          },*/
-          'spaces' : {
-              script: XWiki.Document.getRestSearchURL('scope=spaces&amp;number=10&amp;media=json&amp;'),
-              varname: 'q',
-              icon: "$xwiki.getSkinFile('icons/silk/folder.png')",
-              noresults: "$msg.get('xe.activity.filters.spaces.noResults')",
-              json: true,
-              resultsParameter : 'searchResults',
-              resultId : 'id',
-              resultValue : 'space',
-              resultInfo : 'space',
-              timeout : 30000
-          },
-          'documents' : {
-              script: XWiki.Document.getRestSearchURL('scope=name&amp;number=10&amp;media=json&amp;'),
-              varname: 'q',
-              icon: "$xwiki.getSkinFile('icons/silk/page_white_text.png')",
-              noresults: "$msg.get('xe.activity.filters.documents.noResults')",
-              json: true,
-              resultsParameter : 'searchResults',
-              resultId : 'id',
-              resultValue : 'pageFullName',
-              resultInfo : 'pageFullName',
-              timeout : 30000
-          },
-          'documentTitles': {
-              script: XWiki.Document.getRestSearchURL('scope=title&amp;number=10&amp;media=json&amp;'),
-              varname: 'q',
-              icon: "$xwiki.getSkinFile('icons/silk/page_white_h.png')",
-              highlight : false,
-              noresults: "$msg.get('xe.activity.filters.documentTitles.noResults')",
-              json: true,
-              resultsParameter : 'searchResults',
-              resultId : 'id',
-              resultValue : 'pageFullName',
-              resultInfo : 'pageFullName',
-              timeout : 30000
-          },
-          'tags' : {
-              script: XWiki.currentDocument.getURL('get', 'xpage=suggest&amp;classname=XWiki.TagClass&amp;fieldname=tags&amp;firCol=-&amp;secCol=-&amp;'),
-              varname: 'input',
-              shownoresults : false,
-              icon: "${xwiki.getSkinFile('icons/silk/tag_yellow.png')}",
-              noresults: "$msg.get('xe.activity.filters.tags.noResults')",
-              timeout : 30000
-          },
-          /* TODO: 'applications': {
-            
-          },*/
-          /* TODO: 'types': {
-            
-          },*/
-          'related' : {
-              script: XWiki.Document.getRestSearchURL('scope=name&amp;number=10&amp;media=json&amp;'),
-              varname: 'q',
-              icon: "$xwiki.getSkinFile('icons/silk/arrow_right.png')",
-              noresults: "$msg.get('xe.activity.filters.related.noResults')",
-              json: true,
-              resultsParameter : 'searchResults',
-              resultId : 'id',
-              resultValue : 'pageFullName',
-              resultInfo : 'pageFullName',
-              timeout : 30000
-          },
-          // Unused:
-          'groups' : {
-              script: XWiki.currentDocument.getURL('get', 'xpage=uorgsuggest&amp;classname=XWiki.XWikiGroups&amp;wiki=local&amp;uorg=group&amp;'),
-              varname: 'input',
-              icon: "$xwiki.getSkinFile('icons/silk/group.png')",
-              noresults: 'Group not found',
-              timeout : 30000
-          }
+    #set ($activityFilterValueSuggestServiceReference = $services.model.createDocumentReference($xcontext.database, 'XWiki', 'ActivityFilterValueSuggestService'))
+    #set ($userSuggestScope = 'local')
+    #if ($services.workspace &amp;&amp; $services.workspace.isWorkspace($xcontext.database))
+      #set ($userSuggestScope = 'global')
+    #end
+
+    this.suggestParameters  = {
+      'authors' : {
+          script: XWiki.currentDocument.getURL('get', "xpage=uorgsuggest&amp;classname=XWiki.XWikiUsers&amp;wiki=${userSuggestScope}&amp;uorg=user&amp;"),
+          varname: 'input',
+          icon: "$xwiki.getSkinFile('icons/silk/user.png')",
+          noresults: "$msg.get('xe.activity.filters.authors.noResults')",
+          timeout : 30000
+      },
+      'wikis' : {
+          script: "${xwiki.getURL($activityFilterValueSuggestServiceReference, 'get', 'outputSyntax=plain&amp;filterName=wikis')}&amp;",
+          varname: 'input',
+          icon: "$xwiki.getSkinFile('icons/silk/world.png')",
+          highlight : true,
+          noresults: "$msg.get('xe.activity.filters.wikis.noResults')",
+          timeout : 30000
+      },
+      'spaces' : {
+          script: XWiki.Document.getRestSearchURL('scope=spaces&amp;number=10&amp;media=json&amp;'),
+          varname: 'q',
+          icon: "$xwiki.getSkinFile('icons/silk/folder.png')",
+          noresults: "$msg.get('xe.activity.filters.spaces.noResults')",
+          json: true,
+          resultsParameter : 'searchResults',
+          resultId : 'id',
+          resultValue : 'space',
+          resultInfo : 'space',
+          timeout : 30000
+      },
+      'documents' : {
+          script: XWiki.Document.getRestSearchURL('scope=name&amp;number=10&amp;media=json&amp;'),
+          varname: 'q',
+          icon: "$xwiki.getSkinFile('icons/silk/page_white_text.png')",
+          noresults: "$msg.get('xe.activity.filters.documents.noResults')",
+          json: true,
+          resultsParameter : 'searchResults',
+          resultId : 'id',
+          resultValue : 'pageFullName',
+          resultInfo : 'pageFullName',
+          timeout : 30000
+      },
+      'documentTitles': {
+          script: XWiki.Document.getRestSearchURL('scope=title&amp;number=10&amp;media=json&amp;'),
+          varname: 'q',
+          icon: "$xwiki.getSkinFile('icons/silk/page_white_h.png')",
+          highlight : false,
+          noresults: "$msg.get('xe.activity.filters.documentTitles.noResults')",
+          json: true,
+          resultsParameter : 'searchResults',
+          resultId : 'id',
+          resultValue : 'pageFullName',
+          resultInfo : 'pageFullName',
+          timeout : 30000
+      },
+      'tags' : {
+          script: XWiki.currentDocument.getURL('get', 'xpage=suggest&amp;classname=XWiki.TagClass&amp;fieldname=tags&amp;firCol=-&amp;secCol=-&amp;'),
+          varname: 'input',
+          icon: "${xwiki.getSkinFile('icons/silk/tag_yellow.png')}",
+          noresults: "$msg.get('xe.activity.filters.tags.noResults')",
+          timeout : 30000
+      },
+      'applications': {
+          script: "${xwiki.getURL($activityFilterValueSuggestServiceReference, 'get', 'outputSyntax=plain&amp;filterName=applications')}&amp;",
+          varname: 'input',
+          icon: "$xwiki.getSkinFile('icons/silk/application.png')",
+          highlight : true,
+          noresults: "$msg.get('xe.activity.filters.applications.noResults')",
+          timeout : 30000
+      },
+      'types': {
+          script: "${xwiki.getURL($activityFilterValueSuggestServiceReference, 'get', 'outputSyntax=plain&amp;filterName=types')}&amp;",
+          varname: 'input',
+          icon: "$xwiki.getSkinFile('icons/silk/bullet_blue.png')",
+          highlight : true,
+          noresults: "$msg.get('xe.activity.filters.types.noResults')",
+          timeout : 30000
+      },
+      'related' : {
+          script: "${xwiki.getURL($activityFilterValueSuggestServiceReference, 'get', 'outputSyntax=plain&amp;filterName=related')}&amp;",
+          varname: 'input',
+          icon: "$xwiki.getSkinFile('icons/silk/arrow_right.png')",
+          highlight : true,
+          noresults: "$msg.get('xe.activity.filters.related.noResults')",
+          timeout : 30000
+      }
     };
   },
   updateSuggestion: function(event, suggestInput, suggestTypeSelect) {
@@ -2320,18 +2319,21 @@ $xwiki.ssx.use('Main.Activity')##
       #set ($queryString = "$queryString&amp;amp;showFilters=true")
     #end
     #set ($showFiltersURL = $doc.getURL($xcontext.action, $queryString))
+    ##
+    ## Toggle filters button
     &lt;a class='toggleFilters hasIcon iconPreferencesSmall' href="$showFiltersURL"&gt;$msg.get("xe.activity.filters.showFilters.$oppositeShowFiltersState")&lt;/a&gt;
-    #*&lt;span class='buttonwrapper'&gt;
-      &lt;a class='button toggleFilters' href="$showFiltersURL"&gt;$msg.get("xe.activity.filters.showFilters.$oppositeShowFiltersState")&lt;/a&gt;
-    &lt;/span&gt;*#
     ##
     ## Filters section
     &lt;div class='activityFilters#if ($request.showFilters != 'true') hidden#end'&gt;
       #set ($parameterNames = ['authors', 'wikis', 'spaces', 'documents', 'documentTitles', 'tags', 'applications', 'types', 'related'])
+      #if (!$xwiki.isVirtualMode())
+        ## Remove the wikis filter if this is not in virtual mode since there are no other wikis around.
+        #set ($discard = $parameterNames.remove('wikis'))
+      #end
       ##
       ## Add filters
       &lt;div class='xformInline addFilters'&gt;
-        &lt;form method='POST' action="$xwiki.getURL('Main.Activity', 'get')" &gt;
+        &lt;form method='post' action="$xwiki.getURL('Main.Activity', 'get')" &gt;
           &lt;label&gt;$msg.get("xe.activity.filters.title")&lt;/label&gt;
           &lt;select class='filterName' name='filterName' size='1'&gt;
             #foreach ($param in $parameterNames)
@@ -2341,7 +2343,7 @@ $xwiki.ssx.use('Main.Activity')##
           &lt;input class='filterValue' type='text' name='filterValue' size='30' /&gt;
           &lt;input type='hidden' name='xaction' value='addFilter' /&gt;
           &lt;input type='hidden' name='xredirect' value="$doc.getURL($xcontext.action, $!request.queryString)" /&gt;
-          &lt;input type='submit' class='icon-button add-button addFilter' title='Add' /&gt;
+          &lt;input type='submit' class='icon-button add-button addFilter' title="$msg.get('xe.activity.filters.addButton')" /&gt;
         &lt;/form&gt;
       &lt;/div&gt;
       ##
