@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>XWiki</web>
+  <name>XWikiUserMessagesSheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent/>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1340643569000</creationDate>
+  <date>1340657917000</date>
+  <contentUpdateDate>1340657917000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+#set($obj = $doc.getObject('XWiki.XWikiUsers'))
+#if (!$obj)
+  = $msg.get('xe.admin.users.sheet') =
+
+  {{info}}$msg.get('xe.admin.users.applyonusers'){{/info}}##
+#else
+  #set ($discard = $xwiki.ssx.use('XWiki.XWikiUserMessagesSheet'))
+  {{html clean='false' wiki='true'}}
+  &lt;div class='half column'&gt;
+    &lt;div class='profile-section highlighted-profile-section'&gt;
+      = $msg.get('platform.core.profile.section.messages.sendMessage') =
+
+      {{messageSender /}}
+
+      = $msg.get('platform.core.profile.section.messages.showMessages') =
+
+      * &lt;a id='allMessages' href="$doc.getURL($xcontext.action, 'category=messages&amp;showMessages=all')"&gt;$msg.get('platform.core.profile.section.messages.showMessages.all')&lt;/a&gt;
+      * &lt;a id='receivedMessages' href="$doc.getURL($xcontext.action, 'category=messages&amp;showMessages=received')"&gt;$msg.get('platform.core.profile.section.messages.showMessages.received')&lt;/a&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class='half column'&gt;
+    &lt;div class='profile-section'&gt;
+      #if ("$!request.showMessages" == 'received')
+        = $msg.get('platform.core.profile.section.messages.receivedMessages') =
+
+        {{activity applications='MessageStream' types='directMessage' related="$doc.prefixedFullName^XWiki.XWikiUsers" /}}
+      #else
+        = $msg.get('platform.core.profile.section.messages.allMessages') =
+
+        {{activity applications='MessageStream' types='directMessage' authors="$doc.prefixedFullName" /}}
+      #end
+
+    &lt;/div&gt;
+  &lt;/div&gt;
+  {{/html}}
+#end
+{{/velocity}}</content>
+</xwikidoc>
