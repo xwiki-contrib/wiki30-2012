@@ -30,13 +30,13 @@
 
   {{info}}$msg.get('xe.admin.users.applyonusers'){{/info}}##
 #else
-  #set ($discard = $xwiki.ssx.use('XWiki.XWikiUserMessagesSheet'))
+  ##set ($discard = $xwiki.jsx.use('XWiki.XWikiUserMessagesSheet'))
   {{html clean='false' wiki='true'}}
   &lt;div class='half column'&gt;
     &lt;div class='profile-section highlighted-profile-section'&gt;
       = $msg.get('platform.core.profile.section.messages.sendMessage') =
 
-      {{messageSender /}}
+      {{messageSender visibility='user' visibilityOptions='user' /}}
 
       = $msg.get('platform.core.profile.section.messages.showMessages') =
 
