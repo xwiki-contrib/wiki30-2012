@@ -27,35 +27,44 @@
 import org.xwiki.model.reference.*
 def user = request.get("user")
 
-if(user != null) {
+if (user != null) {
+  def userReference = services.componentManager.lookup(DocumentReferenceResolver.class).resolve(user);
+  user = services.componentManager.lookup(EntityReferenceSerializer.class).serialize(userReference);
+  def localUser = services.componentManager.lookup(EntityReferenceSerializer.class, "compactwiki").serialize(userReference);
 
   def userPageReference = new DocumentReference(xcontext.getDatabase(), "ActivityRanking", user);
   def totalScore = xwiki.getDocument(userPageReference).getObject("ActivityRanking.UserRankingClass", true).getProperty("score")?.getValue() ?: 0
   println "Total score: ${totalScore}"
 
-  def events = xwiki.get("activitystream").searchEvents("act.user = '${user}' AND act.space &lt;&gt; 'ActivityRanking'", false, 25, 0)
+  def events = xwiki.get("activitystream").searchEvents("(act.user = '${user}' OR act.user = '${localUser}') AND act.space &lt;&gt; 'ActivityRanking'", false, 25, 0)
 
   // Find all Ranking Rules Objects and call them  
   xcontext.put("events", events)     
-  def rules = xwiki.getQueryManager().xwql("select obj.rule, doc.syntaxId from Document doc, doc.object('ActivityRanking.RankingRuleClass') as obj  where doc.space = 'ActivityRanking'").execute()
+  def rules = xwiki.getQueryManager().xwql("select doc, obj.rule, doc.syntaxId from Document doc, doc.object('ActivityRanking.RankingRuleClass') as obj where doc.space = 'ActivityRanking'").execute()
 
-  println "|=Event Type|=Document|=Score"
+  println "|=Date|=Event Type|=Document|=Score|=Note"
 
   events.each() {
     def score = 0
 
-     xcontext.put("event", it)   
-     rules.each() {
-       try {
-       def result = doc.getRenderedContent(it[0], it[1], "plain/1.0")
-       score += Integer.parseInt(result)
-       }
-       catch(Exception e) {
-         println "{{code}}${it[0]} - ${it[1]}{{/code}} - ${e.getMessage()}"
-       }
-     }
+    xcontext.put("event", it)
+    rules.each() {
+      try {
+        // Using the actual document of the rule to render it. Can't use doc.getRenderedContent because it acts weirdly: All printlns after the call no longer print anything in the page but only in the the jetty console.
+        def result = it[0].getRenderedContent(it[1], it[2], "plain/1.0", xcontext.getContext());
+        score += Integer.parseInt(result.split(',')[0])
+      }
+      catch(Exception e) {
+        println "{{code}}${it[0]} - ${it[1]}{{/code}} - ${e.getMessage()}"
+      }
+    }
 
-     println "|${it.getType()}|[[${it.getPage()}]]|${score}" 
+    print "|${it.getDate()}|${it.getType()}|[[${it.getPage()}]]|${score}"
+    if ("scoreModified" == it.getType()) {
+      println "|$it.title"
+    } else {
+      println "| "
+    }
   }
 }
 

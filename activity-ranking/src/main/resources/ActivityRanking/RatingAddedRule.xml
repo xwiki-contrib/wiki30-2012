@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>ActivityRanking</web>
+  <name>RatingAddedRule</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>ActivityRanking.RankingRuleClass</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1340919006000</creationDate>
+  <date>1341320307000</date>
+  <contentUpdateDate>1341320307000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <object>
+    <class>
+      <name>ActivityRanking.RankingRuleClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <rule>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>rule</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>rule</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </rule>
+    </class>
+    <name>ActivityRanking.RatingAddedRule</name>
+    <number>0</number>
+    <className>ActivityRanking.RankingRuleClass</className>
+    <guid>e9602fb5-8afb-4db7-8d25-07095a3cb59c</guid>
+    <property>
+      <rule>{{groovy}}
+import org.xwiki.model.reference.*
+
+def event = xcontext.get("event")
+def type = event.getType()
+if (type == 'addRating') {
+  // Give credit to the rating user to encourage the activity. We must consider the update action (2p): 2 - 1 = 1p of credit for the 'addRating' action.
+  print "-1"
+
+  // Give credit to the creator of the rated document, proportional to the value of the rating.
+  def document = xwiki.getDocument(event.getPage())
+  def documentCreator = document.getCreator();
+  def rating = Integer.parseInt(event.getBody())
+
+  // A rating of 3 is considered neutral. Above 3 is considered a positive rating, below is considered a negative rating. The creator's score is impacted according to this logic.
+  def score = (rating - 3) * 5
+  print ",${documentCreator}=${score}"
+} else {
+  println "0"
+}
+{{/groovy}}</rule>
+    </property>
+  </object>
+  <content/>
+</xwikidoc>

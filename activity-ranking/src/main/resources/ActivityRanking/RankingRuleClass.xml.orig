@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>ActivityRanking</web>
+  <name>RankingRuleClass</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>ActivityRanking.Ranking</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1312200145000</creationDate>
+  <date>1312200175000</date>
+  <contentUpdateDate>1312200175000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <class>
+    <name>ActivityRanking.RankingRuleClass</name>
+    <customClass/>
+    <customMapping/>
+    <defaultViewSheet/>
+    <defaultEditSheet/>
+    <defaultWeb/>
+    <nameField/>
+    <validationScript/>
+    <rule>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>---</editor>
+      <name>rule</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>rule</prettyName>
+      <rows>10</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </rule>
+  </class>
+  <content/>
+</xwikidoc>

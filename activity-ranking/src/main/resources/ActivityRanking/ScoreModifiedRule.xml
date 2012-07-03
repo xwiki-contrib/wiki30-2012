@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>ActivityRanking</web>
+  <name>ScoreModifiedRule</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>ActivityRanking.RankingRuleClass</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1341316796000</creationDate>
+  <date>1341316982000</date>
+  <contentUpdateDate>1341316982000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <object>
+    <class>
+      <name>ActivityRanking.RankingRuleClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <rule>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>rule</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>rule</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </rule>
+    </class>
+    <name>ActivityRanking.ScoreModifiedRule</name>
+    <number>0</number>
+    <className>ActivityRanking.RankingRuleClass</className>
+    <guid>4afe7d72-222c-44c3-ba10-c64fe3807f25</guid>
+    <property>
+      <rule>{{groovy}}
+import org.xwiki.model.reference.*
+
+def event = xcontext.get("event")
+def type = event.getType()
+if (type == 'scoreModified') {
+  // The event body contains the score modifier to be applied.
+  println event.getBody()
+} else {
+  println "0"
+}
+{{/groovy}}</rule>
+    </property>
+  </object>
+  <content/>
+</xwikidoc>
