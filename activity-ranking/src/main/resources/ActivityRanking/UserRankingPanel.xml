@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>ActivityRanking</web>
+  <name>UserRankingPanel</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>Panels.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1312189867000</creationDate>
+  <date>1312193194000</date>
+  <contentUpdateDate>1312193194000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <object>
+    <class>
+      <name>Panels.PanelClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <category>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>category</name>
+        <number>5</number>
+        <prettyName>Category</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>Information|Navigation|Tools|Administration|Other</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </category>
+      <content>
+        <disabled>0</disabled>
+        <editor>Text</editor>
+        <name>content</name>
+        <number>4</number>
+        <prettyName>Content</prettyName>
+        <rows>25</rows>
+        <size>60</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <description>
+        <disabled>0</disabled>
+        <editor>Text</editor>
+        <name>description</name>
+        <number>3</number>
+        <prettyName>Description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <type>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>type</name>
+        <number>2</number>
+        <prettyName>Panel type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>view|edit</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </type>
+    </class>
+    <name>ActivityRanking.UserRankingPanel</name>
+    <number>0</number>
+    <className>Panels.PanelClass</className>
+    <guid>bb28fa20-fb95-4540-91a2-52a105a878a4</guid>
+    <property>
+      <category>Information</category>
+    </property>
+    <property>
+      <content>{{velocity}}
+#panelheader('User Ranking')
+#set ($ranks = $xwiki.queryManager.xwql("select doc.name, rank.score from Document as doc, doc.object(ActivityRanking.UserRankingClass) as rank where doc.space = 'ActivityRanking' and doc.name &lt;&gt; 'XWiki.superadmin' order by rank.score desc").execute())
+|=User|=Score
+#foreach ($rank in $ranks)
+|[[$rank.get(0)]]|$rank.get(1)
+#end
+#panelfooter()
+{{/velocity}}</content>
+    </property>
+    <property>
+      <description>User rankings</description>
+    </property>
+    <property>
+      <name>User Rankings</name>
+    </property>
+    <property>
+      <type>view</type>
+    </property>
+  </object>
+  <content>{{include document="Panels.PanelSheet"/}}</content>
+</xwikidoc>

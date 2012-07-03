@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>ActivityRanking</web>
+  <name>UpdateRankings</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>Main.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1312190118000</creationDate>
+  <date>1312206755000</date>
+  <contentUpdateDate>1312206755000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Update User Rankings</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <attachment>
+    <filename>XWikiLogo.png</filename>
+    <filesize>1390</filesize>
+    <author>XWiki.Admin</author>
+    <date>1312190118000</date>
+    <version>1.2</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAAIgAAACFCAYAAACAJLCMAAAFNUlEQVR4Xu2dsY3rRhRF1YDB3AlL
+UAksYUtg8uFUJTBzaGVOWQJLYAEOWAIBN0D8CsZvARoLCNKDPsXZq8c5HzjJj3aJo+WcR83wxL/T
+6e/xt8bojItx/v//ATHOxmSkGwajQoCy5aiMxUgPGBGgbEGuqwgeHwhQKF+3FpcrAhSKIwW3GUAQ
+GT9+/FEZjXExOuPDqBFkt+tbr9e0W69xE0WM2uiN9IBx+y+DIKsU04Nruxi94aS5/odfjPQEPYL8
+Gvc+eI4o53eUI/0iPYLsJ4cviX69sRhpAx2CvCCHz2xU7yBIZ6QXaBHkoRzti9f2IhdkNTW9yBlB
+nNv2diZ5tTgCbLxnIogJcPZv28+jFqQx0k5MRhVQEP2azqeJJYjPVIQgvhyTkZSC6G8xPn3Bggx7
+X8+4i1SfLogg+pz1mWJnrk9biiDr85SUgUuMQdl2mgCCCGYdgkGZttn9/FULoshZyWyJT4JAEH+B
+v4S6PesXWv6MRCmIPmf1C3x9qvn0BxJkjHGNjGCfjqtCEEHOCpM2ftm0gm+1q3JW/5gi6Aq92UmQ
+7uV9MfqcXYw66peXG13+6nfW+Tmrvw7k7/N7c8c7cvRGJZBDkLN6Sa6C/N0iSrNSC3JWMEYvY0Yy
+vHHRTQFytoj87Qv6QIxH33E3a/JX/4Rbn7Pk70tJSs6Sv9nlf//fi/xdtpQNOUv+ChbgyEH+krNc
+YKXgoP4TzS3SIH9bFtlZIRP1mQ76QRODPh9G1TwqeAYedvGwkfwlZ/XE/8INOUv+sncWSTZkJTnr
+QP4Ktm1AhI1Hgo1fEGmDuGjrKETa/CzYfA6R8leQsxDgABYfcpb8JWfJ350hZ8lfcpb8FZwTBuHP
+RyNnyV/FOWHx+fOfymiNzhh3ZjA6o9acjxZ/1vHzr1NrdJlojcqT42zMRvoGWkH+hs1ZE+BszEbK
+zGKc78lROXLk4iPO8eA+meWojcURIIck9a0gFyN9M/NBZiRt5ttKb6Rvpr8VZBAIkgT5Gy5nTYBJ
+IMh8K8h4YEHGyEnr3F6ycitIJxBkOcjw7JpZkFEgyHgrSC0QpDvQ+L3NmbYCQdp7JdN+oxyTUR3s
+AV5zkIVq781CGmMwloxiXCQzkPizkEvmWchsdGyPyAB7XXgOw2459vGy35atEDz25ywRvlUGspzl
+1CDOM9sOG7XJWU4uJGdbXuXhwLFUHDd1H3J2EIgIgY+95oWEPrxbhnfA+PB2Kt4ixfvteA/dbvCG
+TPKXd+zyLlxydoMc5C8vOuR9/OTsbFSC89HIX8FeWkFOao4HhwDHXovyF0kEx16HPR48D+Ts9SjH
+gxeL4NjrkMeDM+sQ5Gyw4V6nFYCcJX/J2fhFJigbLh75S87KJCk+f1nAkb8kICnPp+jf0++dMRtp
+ZTI+GAYyhv6UozfSA9qC11+s5D8FWEXwqAt9IEnOmgDjE4J0hc6AmCZ+SeAyRpsik7N6QeI/hyJn
+9YKQv/otAXpByF99zqoFCb45TL8oFWxLlAkS7MvPdYBbiyzb9ILoN6hf30GQRZOzekEC5O8sH4gJ
+dpcJBAm9q7BSCtIIEk0gSOgabIIJ4ucsguyev2fp5HTPnEWQ/fP3HSpm3ivHEGT3/B0CPdb3cxZB
+vPyNPyybXjknDEGy5O8YazuDbzeC+JJ0cc6G9yWZnvrhVzkQJMutfHz3R/7tA1Fm4+osSBHkuede
+vbE8KME24CG4hi8FgmyXpbkzCAMEAQQBPV+bpVwGBChXkOEJQS4IUK4gjZEcFqNCgLIlaR05OIrS
++A9RR3TQati61AAAAABJRU5ErkJggg==
+</content>
+  </attachment>
+  <object>
+    <class>
+      <name>XWiki.XWikiComments</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <author>
+        <disabled>0</disabled>
+        <name>author</name>
+        <number>1</number>
+        <prettyName>Author</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </author>
+      <comment>
+        <disabled>0</disabled>
+        <name>comment</name>
+        <number>5</number>
+        <prettyName>Comment</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </comment>
+      <date>
+        <dateFormat>dd/MM/yyyy HH:mm:ss</dateFormat>
+        <disabled>0</disabled>
+        <emptyIsToday>1</emptyIsToday>
+        <name>date</name>
+        <number>4</number>
+        <picker>1</picker>
+        <prettyName>Date</prettyName>
+        <size>20</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
+      </date>
+      <highlight>
+        <disabled>0</disabled>
+        <name>highlight</name>
+        <number>2</number>
+        <prettyName>Highlighted Text</prettyName>
+        <rows>2</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </highlight>
+      <replyto>
+        <disabled>0</disabled>
+        <name>replyto</name>
+        <number>3</number>
+        <numberType>integer</numberType>
+        <prettyName>Reply To</prettyName>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </replyto>
+    </class>
+    <name>ActivityRanking.UpdateRankings</name>
+    <number>0</number>
+    <className>XWiki.XWikiComments</className>
+    <guid>d22346a7-8afb-4241-a813-a2d127722fc5</guid>
+    <property>
+      <author>XWiki.Admin</author>
+    </property>
+    <property>
+      <comment>ttttt</comment>
+    </property>
+    <property>
+      <date>2011-08-01 14:32:25.846</date>
+    </property>
+    <property>
+      <replyto/>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.XWikiComments</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <author>
+        <disabled>0</disabled>
+        <name>author</name>
+        <number>1</number>
+        <prettyName>Author</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </author>
+      <comment>
+        <disabled>0</disabled>
+        <name>comment</name>
+        <number>5</number>
+        <prettyName>Comment</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </comment>
+      <date>
+        <dateFormat>dd/MM/yyyy HH:mm:ss</dateFormat>
+        <disabled>0</disabled>
+        <emptyIsToday>1</emptyIsToday>
+        <name>date</name>
+        <number>4</number>
+        <picker>1</picker>
+        <prettyName>Date</prettyName>
+        <size>20</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
+      </date>
+      <highlight>
+        <disabled>0</disabled>
+        <name>highlight</name>
+        <number>2</number>
+        <prettyName>Highlighted Text</prettyName>
+        <rows>2</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </highlight>
+      <replyto>
+        <disabled>0</disabled>
+        <name>replyto</name>
+        <number>3</number>
+        <numberType>integer</numberType>
+        <prettyName>Reply To</prettyName>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </replyto>
+    </class>
+    <name>ActivityRanking.UpdateRankings</name>
+    <number>1</number>
+    <className>XWiki.XWikiComments</className>
+    <guid>3ad338f7-e519-46e7-b070-ffaea2ec2b1d</guid>
+    <property>
+      <author>XWiki.FabioMancinelli</author>
+    </property>
+    <property>
+      <comment>fhfh</comment>
+    </property>
+    <property>
+      <date>2011-08-01 15:44:58.422</date>
+    </property>
+    <property>
+      <replyto/>
+    </property>
+  </object>
+  <content>{{groovy}}
+import org.xwiki.model.reference.*
+
+def rankingDoc =  xwiki.getDocument("ActivityRanking.Ranking")
+def lastUpdateObject = rankingDoc.getObject("ActivityRanking.RankingClass")
+def lastUpdate = lastUpdateObject.getProperty("lastUpdate").getValue()
+def formattedUpdateDate = xwiki.formatDate(lastUpdate, 'yyyy-MM-dd HH:mm:ss')
+def currentDate = Calendar.getInstance().getTime()
+def events = xwiki.get("activitystream").searchEvents("act.date &gt; '${formattedUpdateDate}' AND act.space &lt;&gt; 'ActivityRanking'", false, 0, 0)
+if (events.size() &gt; 0) {
+  def ranks = [:]
+  events.each() {
+    def type = it.getType()
+    def user = it.getUser()
+
+    long score
+    if (ranks.get(user) == null) {
+      def userPageReference = new DocumentReference(xcontext.getDatabase(), "ActivityRanking", user);
+      score = xwiki.getDocument(userPageReference).getObject("ActivityRanking.UserRankingClass", true).getProperty("score")?.getValue() ?: 0
+      ranks.put(user, score)
+    } else {
+      score = ranks.get(user)
+    }
+
+   // Find all Ranking Rules Objects and call them
+   xcontext.put("event", it)
+   xcontext.put("events", events)
+   def rules = xwiki.getQueryManager().xwql("select obj.rule, doc.syntaxId from Document doc, doc.object('ActivityRanking.RankingRuleClass') as obj  where doc.space = 'ActivityRanking'").execute()
+   rules.each() {
+     def result = doc.getRenderedContent(it[0], it[1], "plain/1.0")
+     score += Integer.parseInt(result)
+   }
+
+    ranks.put(user, score)
+  }
+
+  // Update user score
+  ranks.each() { user, score -&gt;
+    def userPageReference = new DocumentReference(xcontext.getDatabase(), "ActivityRanking", user);
+    def userDoc = xwiki.getDocument(userPageReference)
+    userDoc.getObject("ActivityRanking.UserRankingClass", true).set("score", score)
+    userDoc.save("Update score", true)
+    println "Updated score for ${user} ... new score ${score}"
+  }
+
+  // Update Last Updated Date
+  lastUpdateObject.set("lastUpdate", currentDate)
+  rankingDoc.save("Update last update date", true)
+}
+{{/groovy}}</content>
+</xwikidoc>

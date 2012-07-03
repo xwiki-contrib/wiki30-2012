@@ -32,6 +32,12 @@
       <version>${ratings.version}</version>
       <type>xar</type>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib</groupId>
+      <artifactId>activity-ranking</artifactId>
+      <version>${activityranking.version}</version>
+      <type>xar</type>
+    </dependency>
 
     <!-- Runtime dependencies, just for the record. -->
     <dependency>

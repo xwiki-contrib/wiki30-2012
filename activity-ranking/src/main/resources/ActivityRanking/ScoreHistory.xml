@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>ActivityRanking</web>
+  <name>ScoreHistory</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>ActivityRanking.Scores</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1312203896000</creationDate>
+  <date>1312207219000</date>
+  <contentUpdateDate>1312207219000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Score History for $request.user</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <content>{{groovy}}
+import org.xwiki.model.reference.*
+def user = request.get("user")
+
+if(user != null) {
+
+  def userPageReference = new DocumentReference(xcontext.getDatabase(), "ActivityRanking", user);
+  def totalScore = xwiki.getDocument(userPageReference).getObject("ActivityRanking.UserRankingClass", true).getProperty("score")?.getValue() ?: 0
+  println "Total score: ${totalScore}"
+
+  def events = xwiki.get("activitystream").searchEvents("act.user = '${user}' AND act.space &lt;&gt; 'ActivityRanking'", false, 25, 0)
+
+  // Find all Ranking Rules Objects and call them  
+  xcontext.put("events", events)     
+  def rules = xwiki.getQueryManager().xwql("select obj.rule, doc.syntaxId from Document doc, doc.object('ActivityRanking.RankingRuleClass') as obj  where doc.space = 'ActivityRanking'").execute()
+
+  println "|=Event Type|=Document|=Score"
+
+  events.each() {
+    def score = 0
+
+     xcontext.put("event", it)   
+     rules.each() {
+       try {
+       def result = doc.getRenderedContent(it[0], it[1], "plain/1.0")
+       score += Integer.parseInt(result)
+       }
+       catch(Exception e) {
+         println "{{code}}${it[0]} - ${it[1]}{{/code}} - ${e.getMessage()}"
+       }
+     }
+
+     println "|${it.getType()}|[[${it.getPage()}]]|${score}" 
+  }
+}
+
+{{/groovy}}</content>
+</xwikidoc>

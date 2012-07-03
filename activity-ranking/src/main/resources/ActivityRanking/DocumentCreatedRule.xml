@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>ActivityRanking</web>
+  <name>DocumentCreatedRule</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>ActivityRanking.RankingRuleClass</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1312200230000</creationDate>
+  <date>1312201878000</date>
+  <contentUpdateDate>1312201878000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <object>
+    <class>
+      <name>ActivityRanking.RankingRuleClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <rule>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>rule</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>rule</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </rule>
+    </class>
+    <name>ActivityRanking.DocumentCreatedRule</name>
+    <number>0</number>
+    <className>ActivityRanking.RankingRuleClass</className>
+    <guid>1bd7a82a-581c-4979-9eef-3fa13b2e58fe</guid>
+    <property>
+      <rule>{{groovy}}
+def type = xcontext.get("event").getType()
+if (type == 'create') {
+  println 2
+} else {
+  println 0
+}
+{{/groovy}}</rule>
+    </property>
+  </object>
+  <content/>
+</xwikidoc>
