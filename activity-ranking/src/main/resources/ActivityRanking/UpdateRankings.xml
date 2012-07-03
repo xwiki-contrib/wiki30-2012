@@ -44,7 +44,8 @@ if (events.size() &gt; 0) {
     def user = event.getUser()
 
     // Seems that Main.WebHome is used as 'user' in the create events of documents XAppTemplates.XWikiApplicationClassTemplate, XAppSheets.XWikiApplicationClassSheet, XWikiServerClassTemplate and XWiki.XWikiServerClass
-    if (!user.equals("Main.WebHome")) {
+    // We want to avoid counting scoreModified events since they are there just for history purpose.
+    if (!user.equals("Main.WebHome") &amp;&amp; !"scoreModified".equals(type)) {
       // Find all Ranking Rules Objects and call them
       xcontext.put("event", event)
       xcontext.put("events", events)
