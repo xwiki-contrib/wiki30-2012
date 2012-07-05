@@ -35,68 +35,88 @@ def lastUpdateObject = rankingDoc.getObject("ActivityRanking.RankingClass")
 def lastUpdate = lastUpdateObject.getProperty("lastUpdate").getValue()
 def formattedUpdateDate = xwiki.formatDate(lastUpdate, 'yyyy-MM-dd HH:mm:ss')
 def currentDate = Calendar.getInstance().getTime()
-def events = xwiki.get("activitystream").searchEvents("act.date &gt; '${formattedUpdateDate}' AND act.space &lt;&gt; 'ActivityRanking'", false, 0, 0)
 
-if (events.size() &gt; 0) {
-  def ranks = [:]
+// Cache for the user ranking
+def ranks = [:]
+
+// Process the events in batches to avoid OutOfMemoryExceptions
+def batch = 300;
+def currentIndex = 0;
+def events = xwiki.get("activitystream").searchEvents("act.date &gt; '${formattedUpdateDate}' AND act.space &lt;&gt; 'ActivityRanking'", false, batch, currentIndex)
+while (events.size() &gt; 0) {
   events.each() { event -&gt;
     def type = event.getType()
     def user = event.getUser()
 
     // Seems that Main.WebHome is used as 'user' in the create events of documents XAppTemplates.XWikiApplicationClassTemplate, XAppSheets.XWikiApplicationClassSheet, XWikiServerClassTemplate and XWiki.XWikiServerClass
     // We want to avoid counting scoreModified events since they are there just for history purpose.
-    if (!user.equals("Main.WebHome") &amp;&amp; !"scoreModified".equals(type)) {
+    if (!user.equals("Main.WebHome") &amp;&amp; !user.equals("xwiki:Main.WebHome") &amp;&amp; !"scoreModified".equals(type)) {
       // Find all Ranking Rules Objects and call them
       xcontext.put("event", event)
       xcontext.put("events", events)
-      def rules = xwiki.getQueryManager().xwql("select doc, obj.rule, doc.syntaxId from Document doc, doc.object('ActivityRanking.RankingRuleClass') as obj  where doc.space = 'ActivityRanking'").execute()
+      def rules = services.query.xwql("select doc, obj.rule, doc.syntaxId from Document doc, doc.object('ActivityRanking.RankingRuleClass') as obj  where doc.space = 'ActivityRanking'").execute()
       rules.each() {
         def result = it[0].getRenderedContent(it[1], it[2], "plain/1.0", xcontext.context)
 
-        result.split(',').eachWithIndex() { scoring, i -&gt;
-          def scoringUser = user;
-          int scoringValue;
-          if (i == 0) {
-            scoringValue = Integer.parseInt(scoring);
-          } else {
-            def otherScoring = scoring.split('=');
-            scoringUser = otherScoring[0];
-            scoringValue = Integer.parseInt(otherScoring[1]);
+        // If the result does not start with a digit (disregarding the minus sign), then the rule did not execute correctly and an exception is displayed
+        if (!Character.isDigit(result.trim().replace("-", "").charAt(0))) {
+          println "Rule '${it[0]}' failed for event '${type}' by '${user}' on '${event.getPage()}[${event.getVersion()}]' at '${event.getDate()}' with the exception:"
+          println "{{{${result}}}}"
+        } else {
+          try {
+            result.split(',').eachWithIndex() { scoring, i -&gt;
+              def scoringUser = user;
+              int scoringValue;
+              if (i == 0) {
+                scoringValue = Integer.parseInt(scoring);
+              } else {
+                def otherScoring = scoring.split('=');
+                scoringUser = otherScoring[0];
+                scoringValue = Integer.parseInt(otherScoring[1]);
 
-            // Fire a scoreModified event on behalf on the indirectly affected user so that it is properly accounted for in his score history
-            fireScoreModifiedEvent(event, scoringUser, scoringValue, resolver, serializer)
+                // Fire a scoreModified event on behalf on the indirectly affected user so that it is properly accounted for in his score history
+                fireScoreModifiedEvent(event, scoringUser, scoringValue, resolver, serializer)
+              }
+
+              // Use references to normalize the user string
+              def scoringUserReference = resolver.resolve(scoringUser);
+              scoringUser = serializer.serialize(scoringUserReference);
+
+              Long score = ranks.get(scoringUser);
+              if (score == null) {
+                def userPageReference = new DocumentReference(xcontext.getDatabase(), "ActivityRanking", scoringUser);
+                score = xwiki.getDocument(userPageReference).getObject("ActivityRanking.UserRankingClass", true).getProperty("score")?.getValue() ?: 0
+              }
+
+              score += scoringValue
+              ranks.put(scoringUser, score)
+            }
+          } catch (Exception e) {
+            println "Rule '${it[0]}' produced invalid results for event '${type}' by '${user}' on '${event.getPage()}[${event.getVersion()}]' at '${event.getDate()}' causing the exception:"
+            println "{{{" + org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(e) + "}}}"
           }
-
-          // Use references to normalize the user string
-          def scoringUserReference = resolver.resolve(scoringUser);
-          scoringUser = serializer.serialize(scoringUserReference);
-
-          Long score = ranks.get(scoringUser);
-          if (score == null) {
-            def userPageReference = new DocumentReference(xcontext.getDatabase(), "ActivityRanking", scoringUser);
-            score = xwiki.getDocument(userPageReference).getObject("ActivityRanking.UserRankingClass", true).getProperty("score")?.getValue() ?: 0
-          }
-
-          score += scoringValue
-          ranks.put(scoringUser, score)
         }
       }
     }
   }
 
-  // Update user score
-  ranks.each() { user, score -&gt;
-    def userPageReference = new DocumentReference(xcontext.getDatabase(), "ActivityRanking", user);
-    def userDoc = xwiki.getDocument(userPageReference)
-    userDoc.getObject("ActivityRanking.UserRankingClass", true).set("score", score)
-    userDoc.save("Update score", true)
-    println "Updated score for ${user} ... new score ${score}"
-  }
-
-  // Update Last Updated Date
-  lastUpdateObject.set("lastUpdate", currentDate)
-  rankingDoc.save("Update last update date", true)
+  // Get new batch
+  currentIndex += events.size();
+  events = xwiki.get("activitystream").searchEvents("act.date &gt; '${formattedUpdateDate}' AND act.space &lt;&gt; 'ActivityRanking'", false, batch, currentIndex)
 }
+
+// Update user score
+ranks.each() { user, score -&gt;
+  def userPageReference = new DocumentReference(xcontext.getDatabase(), "ActivityRanking", user);
+  def userDoc = xwiki.getDocument(userPageReference)
+  userDoc.getObject("ActivityRanking.UserRankingClass", true).set("score", score)
+  userDoc.save("Update score", true)
+  println "Updated score for ${user} ... new score ${score}"
+}
+
+// Update Last Updated Date
+lastUpdateObject.set("lastUpdate", currentDate)
+rankingDoc.save("Update last update date", true)
 
 // Utility method to fire a scoreModified event.
 def fireScoreModifiedEvent(causeEvent, affectedUser, scoreModifier, resolver, serializer) {
