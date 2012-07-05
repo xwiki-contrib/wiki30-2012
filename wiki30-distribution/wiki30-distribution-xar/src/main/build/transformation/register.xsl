@@ -5,6 +5,7 @@
 
 <xsl:param name="translations"></xsl:param>
 <xsl:param name="skin">XWiki.DefaultSkin</xsl:param>
+<xsl:param name="panels"></xsl:param>
 
 <xsl:template match="@* | node()">
 
@@ -19,6 +20,10 @@
 
 <xsl:template match="property/skin">
   <skin><xsl:value-of select="$skin"/></skin>
+</xsl:template>
+
+<xsl:template match="property/rightPanels">
+  <rightPanels><xsl:value-of select="."/>,<xsl:value-of select="$panels"/></rightPanels>
 </xsl:template>
 
 </xsl:stylesheet>

@@ -115,6 +115,10 @@
                       <name>skin</name>
                       <value>XWiki.RtSkin</value>
                     </parameter>
+                    <parameter>
+                      <name>panels</name>
+                      <value>ActivityRanking.UserRankingPanel</value>
+                    </parameter>
                   </parameters>
                 </transformationSet>
               </transformationSets>
