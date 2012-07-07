@@ -40,6 +40,7 @@
   #if ($isWorkspaceManagerAppInstalled && $isMainWikiUser)
     #submenuitem($xwiki.getURL($xcontext.user, 'view', 'category=workspaces') $msg.get('workspacemanager.menu.user.workspaces') 'tmUserWorkspaces', '')
   #end
+  #submenuitem($xwiki.getURL($xcontext.user, 'view', 'category=ranking') $msg.get('platform.core.profile.category.ranking') 'tmUserRanking', '')
   ## TODO: also check if messagestream is active.
   #if ($xwiki.exists($services.model.createDocumentReference($xcontext.userReference.wikiReference.name, 'XWiki', 'XWikiUserMessagesSheet')))
     #submenuitem($xwiki.getURL($xcontext.user, 'view', 'category=messages') $msg.get('platform.messagestream.menuUserMessages') 'tmUserMessages', '')

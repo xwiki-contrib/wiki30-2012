@@ -21,28 +21,38 @@
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.0</syntaxId>
+  <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{groovy}}
 import org.xwiki.model.reference.*
+
 def user = request.get("user")
 
+// Allow this page to be included
+def displayScoreForUser = request.getSession().getAttribute('displayScoreForUser');
+if (displayScoreForUser) {
+  user = displayScoreForUser
+  // Clean the session
+  request.getSession().removeAttribute('displayScoreForUser')
+}
+
 if (user != null) {
-  def userReference = services.componentManager.lookup(DocumentReferenceResolver.class).resolve(user);
-  user = services.componentManager.lookup(EntityReferenceSerializer.class).serialize(userReference);
-  def localUser = services.componentManager.lookup(EntityReferenceSerializer.class, "compactwiki").serialize(userReference);
+  def userReference = services.componentManager.getInstance(DocumentReferenceResolver.class).resolve(user);
+  user = services.componentManager.getInstance(EntityReferenceSerializer.class).serialize(userReference);
+  def localUser = services.componentManager.getInstance(EntityReferenceSerializer.class, "compactwiki").serialize(userReference);
 
   def userPageReference = new DocumentReference(xcontext.getDatabase(), "ActivityRanking", user);
   def totalScore = xwiki.getDocument(userPageReference).getObject("ActivityRanking.UserRankingClass", true).getProperty("score")?.getValue() ?: 0
-  println "Total score: ${totalScore}"
+  println "**Total score**: ${totalScore}"
 
   def events = xwiki.get("activitystream").searchEvents("(act.user = '${user}' OR act.user = '${localUser}') AND act.space &lt;&gt; 'ActivityRanking'", false, 25, 0)
 
-  // Find all Ranking Rules Objects and call them  
-  xcontext.put("events", events)     
-  def rules = xwiki.getQueryManager().xwql("select doc, obj.rule, doc.syntaxId from Document doc, doc.object('ActivityRanking.RankingRuleClass') as obj where doc.space = 'ActivityRanking'").execute()
+  // Find all Ranking Rules Objects and call them
+  xcontext.put("events", events)
+  def rules = services.query.xwql("select doc, obj.rule, doc.syntaxId from Document doc, doc.object('ActivityRanking.RankingRuleClass') as obj where doc.space = 'ActivityRanking'").execute()
 
-  println "|=Date|=Event Type|=Document|=Score|=Note"
+  println "(%style='width:99.9%'%)"
+  println "|=(%width='15%'%)Date|=(%width='15%'%)Event Type|=Document|=(%width='5%'%)Score|=Note"
 
   events.each() {
     def score = 0
@@ -59,13 +69,24 @@ if (user != null) {
       }
     }
 
-    print "|${it.getDate()}|${it.getType()}|[[${it.getPage()}]]|${score}"
+    print "|${it.getDate()}|${it.getType()}|[[${it.getPage()}]]|"
+
+    def scoreImage = "bullet_black";
+    if (score &lt; 0) {
+      scoreImage = "bullet_arrow_down"
+    } else if (score &gt; 0) {
+      scoreImage = "bullet_arrow_up"
+    }
+
+    print "(%style='text-align: right'%) ${score} image:icon:${scoreImage} "
+
     if ("scoreModified" == it.getType()) {
       println "|$it.title"
     } else {
       println "| "
     }
   }
+  println "(%%)"
 }
 
 {{/groovy}}</content>

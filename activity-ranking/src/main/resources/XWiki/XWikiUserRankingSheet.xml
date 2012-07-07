@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>XWiki</web>
+  <name>XWikiUserRankingSheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>XWiki.XWikiUserSheet</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1341590381000</creationDate>
+  <date>1341614731000</date>
+  <contentUpdateDate>1341614731000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+#set($obj = $doc.getObject('XWiki.XWikiUsers'))
+#if (!$obj)
+  = $msg.get('xe.admin.users.sheet') =
+
+  {{info}}$msg.get('xe.admin.users.applyonusers'){{/info}}##
+#else
+  ##set ($discard = $xwiki.jsx.use('XWiki.XWikiUserMessagesSheet'))
+  {{html clean='false' wiki='true'}}
+  &lt;div&gt;
+    &lt;div class='profile-section highlighted-profile-section'&gt;
+      = $msg.get('platform.core.profile.section.ranking.latestScoreHistory') =
+
+      #set ($discard = $request.session.setAttribute('displayScoreForUser', $doc.prefixedFullName))
+      {{display reference="ActivityRanking.ScoreHistory" /}}
+    &lt;/div&gt;
+  &lt;/div&gt;
+  {{/html}}
+#end
+{{/velocity}}</content>
+</xwikidoc>

@@ -107,10 +107,11 @@
     <property>
       <content>{{velocity}}
 #panelheader('User Ranking')
-#set ($ranks = $xwiki.queryManager.xwql("select doc.name, rank.score from Document as doc, doc.object(ActivityRanking.UserRankingClass) as rank where doc.space = 'ActivityRanking' and doc.name &lt;&gt; 'XWiki.superadmin' order by rank.score desc").execute())
+#set ($ranks = $services.query.xwql("FROM doc.object(ActivityRanking.UserRankingClass) AS rank WHERE doc.space = 'ActivityRanking' AND doc.name &lt;&gt; 'xwiki:XWiki.superadmin' ORDER BY rank.score DESC").execute())
 |=User|=Score
 #foreach ($rank in $ranks)
-|[[$rank.get(0)]]|$rank.get(1)
+  #set ($scoreDocument = $xwiki.getDocument($rank))
+|[[$xwiki.getUserName($rank)]]|$scoreDocument.getObject('ActivityRanking.UserRankingClass').getProperty('score').value
 #end
 #panelfooter()
 {{/velocity}}</content>

@@ -27,13 +27,41 @@
 ## ----------------------------
 ## Display the title
 ## ----------------------------
-<div id="document-title"><h1>$titleToDisplay</h1></div>
+<div id="document-title">
+## ----------------------------------------------------------------------------
+## Display the user rating for a user profile
+## ----------------------------------------------------------------------------
+#if ($doc.getObject('XWiki.XWikiUsers'))
+  #set ($fullUserName = $doc.prefixedFullName)
+  #set ($userRankingDocumentReference = $services.model.createDocumentReference($xcontext.database, 'ActivityRanking', $fullUserName))
+  #set ($currentUserScore = $xwiki.getDocument($userRankingDocumentReference).getObject('ActivityRanking.UserRankingClass').getProperty('score').value)
+  #if (!$currentUserScore)
+    #set ($currentUserScore = 0)
+  #end
+  #set ($allRankings = $services.query.xwql('FROM doc.object(ActivityRanking.UserRankingClass) AS ranking ORDER BY ranking.score DESC').execute())
+  ##
+  #set ($totalRankings = $allRankings.size())
+  #if ($totalRankings == 0)
+    #set ($totalRankings = 1)
+  #end
+  ##
+  #set ($rankingPlace = $mathtool.add($allRankings.indexOf("ActivityRanking.${fullUserName.replace('.', '\.')}"), 1))
+  #if ($rankingPlace == 0)
+    #set ($rankingPlace = $totalRankings)
+  #end
+  <div class='rankingContainer' style='float: right; margin-right: 2em; text-align: center;'>
+    <span class='ranking' style='display: block; font-size: 0.9em;'>
+      Rank <span style='font-weight: 700; background-position: 100% 50%; padding-right: 16px; background-repeat: no-repeat; background-image: url("/xwiki/resources/icons/silk/medal_gold_3.png"); font-size: 1.4em;'>${rankingPlace}</span>
+    </span>
+    <span class="score" style="font-size: 0.7em; color: rgb(159, 159, 159);">$currentUserScore points</span>
+  </div>
+#end
+<h1>$titleToDisplay</h1></div>
 ## --------------------------------------------------------------------------
 ## Drop permissions as they are no longer needed. This allows us not to have
 ## to review the code below for security holes since nothing bad can happen.
 ## --------------------------------------------------------------------------
-## NOTE: This also does not allow us to have panels that require PR. Bad code.
-## $xcontext.dropPermissions()
+$xcontext.dropPermissions()
 ## ----------------------------
 ## Display the shortcuts
 ## ----------------------------

@@ -613,6 +613,9 @@ $xwiki.jsx.use("XWiki.XWikiUserSheet")##
   #set ($discard = $categories.add(['workspaces', $msg.get('workspacemanager.profile.category.workspaces'), $userWorkspaceSheet, 'icons/silk/chart_organisation.png']))
 #end
 #if ($isMyProfile)
+  #set ($discard = $categories.add(['ranking', $msg.get('platform.core.profile.category.ranking'), 'XWiki.XWikiUserRankingSheet', 'icons/silk/medal_gold_3.png']))
+#end
+#if ($isMyProfile)
   #set ($discard = $categories.add(['messages', $msg.get('platform.core.profile.category.messages'), 'XWiki.XWikiUserMessagesSheet', 'icons/silk/comments.png']))
 #end
 #if ($isMyProfile &amp;&amp; $hasDashboard)

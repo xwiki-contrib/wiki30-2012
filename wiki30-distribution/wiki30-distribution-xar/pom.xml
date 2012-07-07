@@ -109,7 +109,7 @@
                   <parameters>
                     <parameter>
                       <name>translations</name>
-                      <value>XWiki.RtI18N, XWiki.RatingsTranslations, XWiki.XWikiUserMessagesSheetTranslations</value>
+                      <value>XWiki.RtI18N, XWiki.RatingsTranslations, XWiki.XWikiUserMessagesSheetTranslations, XWiki.XWikiUserRankingSheetTranslations</value>
                     </parameter>
                     <parameter>
                       <name>skin</name>

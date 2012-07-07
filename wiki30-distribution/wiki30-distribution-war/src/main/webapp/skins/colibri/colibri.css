@@ -2337,3 +2337,8 @@ input#tags {
 .actionmenu #tmUserMessages {
   background-image: url("$xwiki.getSkinFile('icons/silk/comments.png')");
 }
+
+/** Messages user profile tab. **/
+.actionmenu #tmUserRanking {
+  background-image: url("$xwiki.getSkinFile('icons/silk/medal_gold_3.png')");
+}
