@@ -46,14 +46,31 @@
   &lt;/div&gt;
   &lt;div class='half column'&gt;
     &lt;div class='profile-section'&gt;
+      ## Compute the comma separated list of wikis to be passed to the activity macro. This way we make sure that messages from subwikis are properly received by the user.
+      #set ($wikiNames = [])
+      #if ($xwiki.isVirtualMode() &amp;&amp; $services.wikimanager)
+        #set ($resultsSoFar = 0)
+        #set ($wikis = $services.wikimanager.allWikis)
+        #foreach ($wiki in $wikis)
+          #set ($wikiAlias = $wiki.firstWikiAlias)
+          #set ($wikiName = $wikiAlias.wikiName)
+          #if (!$wikiAlias.isWikiTemplate())
+            #set ($discard = $wikiNames.add($wikiName))
+          #end
+        #end
+      #else
+        #set ($discard = $wikiNames.add($xcontext.database))
+      #end
+      #set ($wikiNamesString = $stringtool.join($wikiNames, ','))
+      ##
       #if ("$!request.showMessages" == 'received')
         = $msg.get('platform.core.profile.section.messages.receivedMessages') =
 
-        {{activity applications='MessageStream' types='directMessage' related="$doc.prefixedFullName^XWiki.XWikiUsers" /}}
+        {{activity applications='MessageStream' types='directMessage' wikis="$wikiNamesString" related="$doc.prefixedFullName^XWiki.XWikiUsers" /}}
       #else
         = $msg.get('platform.core.profile.section.messages.allMessages') =
 
-        {{activity applications='MessageStream' types='directMessage' authors="$doc.prefixedFullName" /}}
+        {{activity applications='MessageStream' types='directMessage' wikis="$wikiNamesString" authors="$doc.prefixedFullName" /}}
       #end
 
     &lt;/div&gt;
