@@ -27,8 +27,8 @@
 import org.xwiki.model.reference.*
 import org.xwiki.eventstream.*
 
-def resolver = services.componentManager.getInstance(DocumentReferenceResolver.class);
-def serializer = services.componentManager.getInstance(EntityReferenceSerializer.class);
+def resolver = services.component.getInstance(DocumentReferenceResolver.class);
+def serializer = services.component.getInstance(EntityReferenceSerializer.class);
 
 def rankingDoc =  xwiki.getDocument("ActivityRanking.Ranking")
 def lastUpdateObject = rankingDoc.getObject("ActivityRanking.RankingClass")
@@ -120,8 +120,8 @@ rankingDoc.save("Update last update date", true)
 
 // Utility method to fire a scoreModified event.
 def fireScoreModifiedEvent(causeEvent, affectedUser, scoreModifier, resolver, serializer) {
-  def eventStream = services.componentManager.getInstance(EventStream.class)
-  def eventFactory = services.componentManager.getInstance(EventFactory.class)
+  def eventStream = services.component.getInstance(EventStream.class)
+  def eventFactory = services.component.getInstance(EventFactory.class)
 
   def documentReference = resolver.resolve(causeEvent.getPage());
   def affectedUserReference = resolver.resolve(affectedUser);

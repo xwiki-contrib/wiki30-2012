@@ -37,9 +37,9 @@ if (displayScoreForUser) {
 }
 
 if (user != null) {
-  def userReference = services.componentManager.getInstance(DocumentReferenceResolver.class).resolve(user);
-  user = services.componentManager.getInstance(EntityReferenceSerializer.class).serialize(userReference);
-  def localUser = services.componentManager.getInstance(EntityReferenceSerializer.class, "compactwiki").serialize(userReference);
+  def userReference = services.component.getInstance(DocumentReferenceResolver.class).resolve(user);
+  user = services.component.getInstance(EntityReferenceSerializer.class).serialize(userReference);
+  def localUser = services.component.getInstance(EntityReferenceSerializer.class, "compactwiki").serialize(userReference);
 
   def userPageReference = new DocumentReference(xcontext.getDatabase(), "ActivityRanking", user);
   def totalScore = xwiki.getDocument(userPageReference).getObject("ActivityRanking.UserRankingClass", true).getProperty("score")?.getValue() ?: 0

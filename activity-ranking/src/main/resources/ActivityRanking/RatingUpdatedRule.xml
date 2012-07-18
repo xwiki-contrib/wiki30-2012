@@ -72,7 +72,7 @@ if (type == 'updateRating') {
   def newScore = (newRating - 3) * 5
 
   def previousDocument = document.getPreviousDocument();
-  def resolver = services.componentManager.getInstance(EntityReferenceResolver.class, 'explicit')
+  def resolver = services.component.getInstance(EntityReferenceResolver.class, 'explicit')
   def ratingObjectReference = resolver.resolve(event.getParam2(), org.xwiki.model.EntityType.OBJECT, previousDocument.getDocumentReference())
 
   def previousRatingObject = previousDocument.getDocument().getXObject(ratingObjectReference)
