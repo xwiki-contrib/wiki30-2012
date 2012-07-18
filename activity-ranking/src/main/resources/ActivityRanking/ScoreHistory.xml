@@ -69,7 +69,7 @@ if (user != null) {
       }
     }
 
-    print "|${it.getDate()}|${it.getType()}|[[${it.getPage()}]]|"
+    print "|${it.getDate()}|${it.getType()}|[[${it.getWiki()}:${it.getPage()}]]|"
 
     def scoreImage = "bullet_black";
     if (score &lt; 0) {
