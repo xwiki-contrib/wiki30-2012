@@ -1,9 +1,10 @@
-# wiki30
+# wiki30-2012
 
 [![XWiki labs logo](https://raw.githubusercontent.com/xwiki-labs/xwiki-labs-logo/master/projects/xwikilabs/xwikilabsprototype.png "XWiki labs")](https://labs.xwiki.com/xwiki/bin/view/Projects/XWikiLabsPrototype)
 
+WARNING: A new project codename Wiki 3.0 is under way. Check https://design.xwiki.org/xwiki/bin/view/Proposal/Wiki30
 
-The Wiki3.0 project aims at developing a next generation collaboration
+The Wiki3.0 2012 project aims at developing a next generation collaboration
 platform that integrates real-time editing and interactions,
 social-networking features, and that will take advantage of cloud
 infrastructures. The 3.0 generation, as it is envisioned by the partners
@@ -24,6 +25,6 @@ the SCORE Team of the "Institut National de Recherche en Informatique et
 Automatique (INRIA)" (http://score.loria.fr/) and the well known Linux
 distribution editor Mandriva (http://www.mandriva.com).
 
-The current website of the project is https://wiki30.xwikisas.com/
+All innovations from this project have been integrated in the XWiki software at https://xwiki.org
 
 NB: Please refer to INSTALL.txt file for installing, configuring and using the real-time editor !
